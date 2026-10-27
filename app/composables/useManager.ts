@@ -27,7 +27,7 @@ function remembered(): string | null {
 
 export function useManager() {
   const accounts = useState<AccountSummary[]>('accounts', () => [])
-  const accountsDir = useState('accountsDir', () => '')
+  const storage = useState('storage', () => '')
   const accountId = useState<string | null>('accountId', () => null)
   const templates = useState<MetaTemplate[]>('templates', () => [])
   const templatesError = useState<string | null>('templatesError', () => null)
@@ -90,10 +90,10 @@ export function useManager() {
   }
 
   async function loadAccounts(select?: string): Promise<void> {
-    const response = await api<{ data: AccountSummary[], dir: string }>('/api/accounts', { scoped: false })
+    const response = await api<{ data: AccountSummary[], storage: string }>('/api/accounts', { scoped: false })
 
     accounts.value = response.data
-    accountsDir.value = response.dir
+    storage.value = response.storage
 
     if (!response.data.length) {
       accountId.value = null
@@ -289,7 +289,7 @@ export function useManager() {
 
   return {
     accounts,
-    accountsDir,
+    storage,
     accountId,
     current,
     templates,

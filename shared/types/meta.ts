@@ -53,7 +53,6 @@ export interface Phone {
 export interface AccountSummary {
   id: string
   label: string
-  file: string
   waba_id: string
   version: string
   name: string | null

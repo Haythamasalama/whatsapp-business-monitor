@@ -9,7 +9,6 @@ const en: Dictionary = {
     accountNotFound: 'Account {id} was not found',
     accountMissing: 'Account not found',
     accountIncomplete: 'WHATSAPP_TOKEN or WHATSAPP_WABA_ID is missing',
-    accountIncompleteIn: 'WHATSAPP_TOKEN or WHATSAPP_WABA_ID is missing in {file}',
     accountIdFormat: 'Short name: lowercase English letters, digits, - and _ only',
     accountIdTaken: 'An account with this short name already exists',
     tokenFormat: 'The access token is not valid',

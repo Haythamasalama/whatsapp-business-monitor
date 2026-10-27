@@ -9,7 +9,6 @@ export default {
     accountNotFound: 'الحساب {id} غير موجود',
     accountMissing: 'الحساب غير موجود',
     accountIncomplete: 'WHATSAPP_TOKEN أو WHATSAPP_WABA_ID غير موجود',
-    accountIncompleteIn: 'WHATSAPP_TOKEN أو WHATSAPP_WABA_ID غير موجود في {file}',
     accountIdFormat: 'الاسم المختصر: أحرف إنجليزية صغيرة وأرقام و - و _ فقط',
     accountIdTaken: 'يوجد حساب بهذا الاسم المختصر',
     tokenFormat: 'رمز الوصول غير صالح',

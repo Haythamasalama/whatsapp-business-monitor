@@ -5,7 +5,7 @@ export default apiHandler(async (event): Promise<AccountsFile> => {
     throw apiError(422, t('transfer.passphraseShort', { n: MIN_PASSPHRASE }))
   }
 
-  const accounts = Object.keys(accountFiles()).map((id) => {
+  const accounts = accountIds().map((id) => {
     const { label, token, waba, version } = loadAccount(id)
 
     return { id, label, token, waba, version }

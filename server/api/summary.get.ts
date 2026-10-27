@@ -1,5 +1,5 @@
 export default apiHandler(async (): Promise<{ data: AccountStats[] }> => {
-  const data = await Promise.all(Object.keys(accountFiles()).map(async (id): Promise<AccountStats> => {
+  const data = await Promise.all(accountIds().map(async (id): Promise<AccountStats> => {
     const account = loadAccount(id)
 
     if (!account.token || !account.waba) {

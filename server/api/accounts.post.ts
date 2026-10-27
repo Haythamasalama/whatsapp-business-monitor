@@ -5,7 +5,7 @@ export default apiHandler(async (event) => {
 
   const problems = [
     ACCOUNT_ID.test(id) && !RESERVED_IDS.includes(id) ? null : t('server.accountIdFormat'),
-    accountFiles()[id] ? t('server.accountIdTaken') : null,
+    findAccount(id) ? t('server.accountIdTaken') : null,
     ...accountProblems(values),
   ].filter(Boolean)
 
@@ -15,7 +15,7 @@ export default apiHandler(async (event) => {
 
   const check = orFail(await graph(values, 'GET', values.waba, { fields: 'name' }), 422)
 
-  writeAccount(newAccountFile(id), values)
+  saveAccount(id, values)
 
   return { id, name: check.name ?? null }
 })

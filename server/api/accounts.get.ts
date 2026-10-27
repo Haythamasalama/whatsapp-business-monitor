@@ -16,7 +16,7 @@ async function profilePhoto(account: Account, phones: Phone[]): Promise<string |
 }
 
 export default apiHandler(async () => {
-  const data: AccountSummary[] = await Promise.all(Object.keys(accountFiles()).map(async (id) => {
+  const data: AccountSummary[] = await Promise.all(accountIds().map(async (id) => {
     const account = loadAccount(id)
     const meta = account.token && account.waba
       ? await graphFields(account, account.waba, ['name,phone_numbers{id,display_phone_number,verified_name}', 'name'])
@@ -26,7 +26,6 @@ export default apiHandler(async () => {
     return {
       id,
       label: account.label,
-      file: tildePath(account.file),
       waba_id: account.waba,
       version: account.version,
       name: meta.name ?? null,
@@ -36,5 +35,5 @@ export default apiHandler(async () => {
     }
   }))
 
-  return { data, dir: tildePath(accountsDir()) }
+  return { data, storage: tildePath(databaseFile()) }
 })

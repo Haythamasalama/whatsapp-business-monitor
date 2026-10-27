@@ -3,7 +3,7 @@ const props = defineProps<{ account?: AccountSummary | null }>()
 
 const open = defineModel<boolean>('open', { default: false })
 
-const { api, loadAccounts, accountsDir, screen } = useManager()
+const { api, loadAccounts, storage, screen } = useManager()
 const toast = useToast()
 const deleteAccount = useDeleteAccount()
 
@@ -16,7 +16,7 @@ const deleting = ref(false)
 const error = ref<string | null>(null)
 
 const editing = computed(() => Boolean(props.account))
-const file = computed(() => (props.account ? props.account.file : `${accountsDir.value}/${form.id || 'main'}.env`))
+const file = computed(() => storage.value)
 
 // Pasting a token is enough: the accounts and numbers it reaches are fetched once it looks complete.
 let discoverTimer: ReturnType<typeof setTimeout> | undefined
