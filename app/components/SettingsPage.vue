@@ -9,7 +9,8 @@ const { version } = useRuntimeConfig().public
 const settings = ref<SettingsInfo | null>(null)
 const general = reactive({ instance_name: '', public_url: '', default_locale: 'ar' as Locale })
 const password = reactive({ current: '', next: '', confirmation: '' })
-const autoUpdate = ref(false)
+const { info: versionInfo, updating, load: loadVersion, updateNow } = useAppUpdate()
+const autoUpdate = computed(() => versionInfo.value?.autoUpdate ?? false)
 const saving = ref<'general' | 'updates' | 'password' | null>(null)
 const error = ref<{ section: string, message: string } | null>(null)
 
@@ -17,13 +18,9 @@ const localeItems = [{ label: 'العربية', value: 'ar' }, { label: 'English
 const mismatch = computed(() => Boolean(password.confirmation) && password.confirmation !== password.next)
 
 async function load(): Promise<void> {
-  const [loaded, versionInfo] = await Promise.all([
-    api<SettingsInfo>('/api/settings', { scoped: false }),
-    api<VersionInfo>('/api/version', { scoped: false }).catch(() => null),
-  ])
+  const [loaded] = await Promise.all([api<SettingsInfo>('/api/settings', { scoped: false }), loadVersion()])
 
   settings.value = loaded
-  autoUpdate.value = versionInfo?.autoUpdate ?? false
   Object.assign(general, { instance_name: loaded.instance_name, public_url: loaded.public_url, default_locale: loaded.default_locale })
 }
 
@@ -111,8 +108,17 @@ onMounted(load)
             <dt class="text-muted">
               {{ t('settings.version') }}
             </dt>
-            <dd class="font-mono text-highlighted">
+            <dd class="flex items-center gap-2 font-mono text-highlighted">
               v{{ version }}
+              <UButton
+                v-if="versionInfo?.latest && versionInfo.canUpdateNow"
+                :label="`${t('footer.updateNow')} · v${versionInfo.latest.version}`"
+                icon="i-lucide-arrow-up-circle"
+                size="xs"
+                :loading="updating"
+                class="font-sans"
+                @click="updateNow"
+              />
             </dd>
           </div>
           <div class="flex items-center justify-between gap-3 px-4 py-2.5">
