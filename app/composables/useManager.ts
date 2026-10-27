@@ -45,7 +45,7 @@ export function useManager() {
   const groups = computed<TemplateGroup[]>(() => {
     const map = new Map<string, TemplateGroup>()
     const rank = (language: string) => {
-      const index = (LANGS as readonly string[]).indexOf(language)
+      const index = LANGS.indexOf(language)
 
       return index === -1 ? LANGS.length : index
     }

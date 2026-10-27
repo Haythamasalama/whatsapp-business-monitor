@@ -1,4 +1,4 @@
-/** One template with all its languages: what the «نسخ ولصق» tab shows, copies and reads back. */
+/** One template with all its languages: what the «نص كامل» tab shows, the copy button copies, and paste reads back. */
 export interface TemplateDoc {
   name: string
   category: string

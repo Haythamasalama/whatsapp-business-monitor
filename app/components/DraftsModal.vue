@@ -13,10 +13,6 @@ const blocked = ref<Record<number, string[]>>({})
 const tabs = ref<Record<number, 'fields' | 'code'>>({})
 
 const categoryItems: { label: string, value: string }[] = CATEGORIES.map(value => ({ label: CATEGORY[value]!, value }))
-const tabItems = [
-  { label: 'الحقول', value: 'fields', icon: 'i-lucide-list' },
-  { label: 'نسخ ولصق', value: 'code', icon: 'i-lucide-clipboard' },
-]
 
 type Plan
   = | { kind: 'create' }
@@ -207,7 +203,7 @@ async function submit(): Promise<void> {
       <div class="space-y-5">
         <UCard v-for="draft in drafts" :key="draft.key" variant="subtle" :ui="{ body: 'space-y-4' }">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <UTabs v-model="tabs[draft.key]" default-value="fields" :items="tabItems" :content="false" size="sm" />
+            <UTabs v-model="tabs[draft.key]" default-value="fields" :items="EDIT_TABS" :content="false" size="sm" />
             <UButton
               v-if="drafts.length > 1"
               icon="i-lucide-trash-2"

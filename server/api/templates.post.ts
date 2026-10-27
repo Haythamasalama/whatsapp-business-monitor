@@ -8,7 +8,7 @@ export default apiHandler(async (event) => {
 
   const problems = [
     TEMPLATE_NAME.test(name) ? null : 'الاسم: أحرف إنجليزية صغيرة وأرقام و _ فقط',
-    (CATEGORIES as readonly string[]).includes(category) ? null : 'التصنيف غير صالح',
+    CATEGORIES.some(value => value === category) ? null : 'التصنيف غير صالح',
     /^[a-z]{2,3}(_[A-Z]{2})?$/.test(language) ? null : 'رمز اللغة غير صالح',
     ...templateProblems(text),
   ].filter(Boolean)

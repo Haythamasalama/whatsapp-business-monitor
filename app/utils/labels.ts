@@ -4,6 +4,11 @@ export type Tone = 'success' | 'warning' | 'error' | 'neutral' | 'primary' | 'in
 export const LANGS = ['ar', 'en']
 export type Lang = string
 
+export const EDIT_TABS = [
+  { label: 'حقول منفصلة', value: 'fields', icon: 'i-lucide-rows-3' },
+  { label: 'نص كامل', value: 'code', icon: 'i-lucide-file-text' },
+]
+
 export const LANG_NAMES: Record<string, string> = { ar: 'العربية', en: 'الإنجليزية' }
 
 export const META_LANGUAGES = [

@@ -16,10 +16,7 @@ const values = ref<TemplateText>({ header: '', body: '', footer: '', examples: [
 const result = ref<{ tone: Tone, message: string } | null>(null)
 const saving = ref(false)
 const editTab = ref<'fields' | 'code'>('fields')
-const editTabs = [
-  { label: 'الحقول', value: 'fields', icon: 'i-lucide-list' },
-  { label: 'نسخ ولصق', value: 'code', icon: 'i-lucide-clipboard' },
-]
+const copy = useCopy()
 
 // Editing covers one language: the code shows it alone, and a pasted code with several languages
 // gives this one its text (or the first one when it is missing).
@@ -44,18 +41,6 @@ const positional = computed(() => (template.value?.parameter_format ?? 'POSITION
 const editable = computed(() => Boolean(template.value && EDITABLE_STATUSES.includes(template.value.status) && positional.value))
 const status = computed(() => statusOf(template.value?.status ?? ''))
 
-const quality = computed(() => {
-  const score = template.value?.quality_score?.score
-
-  return score && score !== 'UNKNOWN' ? QUALITY[score] : null
-})
-
-const rejected = computed(() => {
-  const reason = template.value?.rejected_reason
-
-  return reason && reason !== 'NONE' ? (REJECTIONS[reason] ?? reason) : null
-})
-
 const lockedReason = computed(() => {
   if (!positional.value) {
     return 'متغيراته مسمّاة، ويُعدَّل من Meta.'
@@ -72,22 +57,7 @@ const tabs = computed(() => (group.value?.items ?? []).map(t => ({
   badge: { label: statusOf(t.status).label, color: statusOf(t.status).tone, variant: 'subtle' as const },
 })))
 
-const details = computed(() => {
-  if (!template.value || !parts.value) {
-    return []
-  }
-
-  return [
-    { label: 'الفئة', value: CATEGORY[template.value.category] ?? template.value.category },
-    { label: 'اللغة', value: languageName(template.value.language) },
-    { label: 'المتغيرات', value: placeholders(parts.value.body).length ? `${placeholders(parts.value.body).length} متغير` : 'لا يوجد' },
-    ...(quality.value ? [{ label: 'الجودة', value: quality.value.label }] : []),
-    ...(rejected.value ? [{ label: 'سبب الرفض', value: rejected.value }] : []),
-    { label: 'المعرّف', value: template.value.id, mono: true },
-  ]
-})
-
-// Every language of the template as code, so it can be copied and reused for a new one.
+// Every language of the template as text, so it can be copied and reused for a new one.
 const asText = computed(() => (group.value ? toText([templateDoc(group.value)]) : ''))
 
 const previewValues = computed<TemplateText>(() => ({
@@ -158,27 +128,9 @@ async function save(): Promise<void> {
 
         <template v-if="mode === 'view'">
           <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_20rem]">
-            <div class="min-w-0 space-y-5">
-              <WhatsAppPreview :values="previewValues" :media="parts.media" :buttons="parts.buttons" />
-              <TemplateTextBlock :text="asText" />
-            </div>
+            <WhatsAppPreview :values="previewValues" :media="parts.media" :buttons="parts.buttons" class="min-w-0" />
 
-            <dl class="h-fit divide-y divide-default rounded-xl border border-default text-sm">
-              <div class="flex items-center justify-between gap-3 px-4 py-2.5">
-                <dt class="text-muted">
-                  الحالة
-                </dt>
-                <dd><UBadge :color="status.tone" :icon="status.icon" :label="status.label" variant="subtle" class="rounded-full" /></dd>
-              </div>
-              <div v-for="item in details" :key="item.label" class="flex items-center justify-between gap-3 px-4 py-2.5">
-                <dt class="text-muted">
-                  {{ item.label }}
-                </dt>
-                <dd class="text-end text-highlighted" :class="item.mono ? 'font-mono text-xs' : ''">
-                  {{ item.value }}
-                </dd>
-              </div>
-            </dl>
+            <TemplateDetails :template="template" />
           </div>
 
           <TemplateStatsCard
@@ -193,7 +145,7 @@ async function save(): Promise<void> {
         <template v-else>
           <UAlert v-if="!editable" color="warning" variant="subtle" icon="i-lucide-lock" :description="lockedReason" />
 
-          <UTabs v-model="editTab" :items="editTabs" :content="false" size="sm" />
+          <UTabs v-model="editTab" :items="EDIT_TABS" :content="false" size="sm" />
 
           <TemplateCodeEditor
             v-if="editTab === 'code'"
@@ -219,6 +171,9 @@ async function save(): Promise<void> {
           variant="ghost"
         />
         <div v-if="mode === 'view'" class="flex gap-2">
+          <UTooltip text="نسخ القالب بكل لغاته ومتغيراته، لتلصقه في قالب جديد">
+            <UButton label="نسخ" icon="i-lucide-copy" color="neutral" variant="outline" @click="copy(asText)" />
+          </UTooltip>
           <UTooltip :text="editable ? '' : lockedReason" :disabled="editable">
             <UButton label="تعديل" icon="i-lucide-pencil" :disabled="!editable" @click="mode = 'edit'" />
           </UTooltip>
