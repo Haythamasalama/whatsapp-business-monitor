@@ -2,28 +2,16 @@
 const { api, accountId, current } = useManager()
 
 const days = ref<number>(30)
-const granularity = ref<ReportGranularity>('DAILY')
 const phone = ref<string>('')
 const country = ref<string>('')
 
 const periods = computed(() => REPORT_PERIODS.map(value => ({ label: tOr(`reports.period.${value}`, String(value)), value })))
-const granularities = computed(() => REPORT_GRANULARITIES
-  .filter(value => value !== 'HALF_HOUR' || days.value <= HALF_HOUR_MAX_DAYS)
-  .map(value => ({ label: tOr(`reports.granularity.${value}`, value), value })))
+// The bucket follows the range, so there is one choice less to make: half hours for a day, months for a year.
+const granularity = computed<ReportGranularity>(() => (days.value === 1 ? 'HALF_HOUR' : days.value === 365 ? 'MONTHLY' : 'DAILY'))
 
-// A year by day is 365 thin bars; by month it reads at a glance. Half hours only make sense for a short range.
-watch(days, (value) => {
-  if (value > HALF_HOUR_MAX_DAYS && granularity.value === 'HALF_HOUR') {
-    granularity.value = 'DAILY'
-  }
-
-  if (value === 365) {
-    granularity.value = 'MONTHLY'
-  }
-  else if (value <= 30 && granularity.value === 'MONTHLY') {
-    granularity.value = value === 1 ? 'HALF_HOUR' : 'DAILY'
-  }
-})
+// One part at a time keeps the page short; extra cost breakdowns wait behind "More details".
+const section = ref<'costs' | 'messages' | 'templates' | 'calls'>('costs')
+const more = ref(false)
 
 const ALL = '*'
 const phoneItems = computed(() => [
@@ -105,15 +93,32 @@ const trafficPoints = computed(() => (traffic.value?.series ?? []).map(point => 
 const callPoints = computed(() => (calls.value?.series ?? []).map(point => ({ key: point.key, values: [point.count] })))
 const hasCalls = computed(() => Boolean(calls.value?.count))
 
+const sections = computed(() => [
+  { label: t('reports.costs.title'), value: 'costs', icon: 'i-lucide-wallet' },
+  { label: t('reports.traffic.title'), value: 'messages', icon: 'i-lucide-messages-square' },
+  { label: t('reports.templatesTab'), value: 'templates', icon: 'i-lucide-file-text' },
+  ...(hasCalls.value ? [{ label: t('reports.calls.title'), value: 'calls', icon: 'i-lucide-phone-call' }] : []),
+])
+
+watch(hasCalls, (value) => {
+  if (!value && section.value === 'calls') {
+    section.value = 'costs'
+  }
+})
+
 const tierProgress = (tier: CostReport['tiers'][number]) => (tier.upper ? Math.min(100, Math.round((tier.volume / tier.upper) * 100)) : 0)
 </script>
 
 <template>
   <div class="space-y-6">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <UTabs v-model="days" :items="periods" :content="false" size="sm" />
-      <div class="flex flex-wrap items-center gap-2">
-        <USelect v-model="granularity" :items="granularities" size="sm" class="w-32" :aria-label="t('reports.granularityLabel')" />
+      <UTabs v-model="section" :items="sections" :content="false" color="neutral" size="sm" />
+      <UButton :to="docsUrl('reports-and-costs')" target="_blank" icon="i-lucide-book-open" color="neutral" variant="ghost" size="sm" :label="t('reports.guide')" />
+    </div>
+
+    <div v-if="section !== 'templates'" class="flex flex-wrap items-center gap-2">
+      <UTabs v-model="days" :items="periods" :content="false" size="xs" variant="link" />
+      <div class="flex flex-wrap items-center gap-2 sm:ms-auto">
         <USelect
           v-if="phoneItems.length > 2"
           :model-value="phone || ALL"
@@ -132,39 +137,21 @@ const tierProgress = (tier: CostReport['tiers'][number]) => (tier.upper ? Math.m
           :aria-label="t('reports.country')"
           @update:model-value="(value) => (country = value === ALL ? '' : String(value))"
         />
-        <UButton :to="docsUrl('reports-and-costs')" target="_blank" icon="i-lucide-book-open" color="neutral" variant="ghost" size="sm" :label="t('reports.guide')" />
       </div>
     </div>
 
-    <!-- Costs -->
-    <section class="space-y-4">
-      <div>
-        <h2 class="font-semibold text-highlighted">
-          {{ t('reports.costs.title') }}
-        </h2>
-        <p class="mt-1 text-sm text-muted">
-          {{ t('reports.costs.intro') }}
-        </p>
-      </div>
+    <section v-if="section === 'costs'" class="space-y-4">
 
       <UAlert v-if="errors.costs" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('reports.costs.failed')" :description="errors.costs" />
 
       <template v-else>
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="grid gap-3 md:grid-cols-3">
           <StatTile :title="t('reports.costs.total')" icon="i-lucide-wallet" :hint="t('reports.costs.totalHint')" :loading="loading && !costs">
             <p class="text-2xl font-bold text-highlighted tabular-nums">
               <bdi dir="ltr">{{ money(costs?.total, currency) }}</bdi>
             </p>
             <p class="mt-1 text-xs text-muted">
-              {{ t('chart.messageCount', { n: count(costs?.messages) }) }}
-            </p>
-          </StatTile>
-          <StatTile :title="t('reports.costs.paid')" icon="i-lucide-receipt" :hint="t('reports.costs.paidHint')" :loading="loading && !costs">
-            <p class="text-2xl font-bold text-highlighted tabular-nums">
-              <bdi dir="ltr">{{ count(paidMessages) }}</bdi>
-            </p>
-            <p class="mt-1 text-xs text-muted">
-              {{ t('reports.costs.perMessage', { amount: ltr(money(paidMessages ? (costs?.total ?? 0) / paidMessages : 0, currency, 4)) }) }}
+              {{ t('reports.costs.paidCount', { n: count(paidMessages), amount: ltr(money(paidMessages ? (costs?.total ?? 0) / paidMessages : 0, currency, 3)) }) }}
             </p>
           </StatTile>
           <StatTile :title="t('reports.costs.free')" icon="i-lucide-gift" :hint="t('reports.costs.freeHint')" :loading="loading && !costs">
@@ -192,15 +179,30 @@ const tierProgress = (tier: CostReport['tiers'][number]) => (tier.upper ? Math.m
           </StatTile>
         </div>
 
-        <UAlert color="info" variant="subtle" icon="i-lucide-info" :title="t('reports.costs.octoberTitle')" :description="t('reports.costs.october')" />
+        <p class="flex items-start gap-2 rounded-lg bg-elevated/60 px-3 py-2 text-sm text-toned">
+          <UIcon name="i-lucide-info" class="mt-0.5 size-4 shrink-0 text-info" />
+          {{ t('reports.costs.october') }}
+        </p>
 
         <ReportBars :title="t('reports.costs.overTime')" :points="costPoints" :series="[{ name: t('chart.cost'), color: 'var(--chart-bar)' }]" :format="(value) => compactMoney(value, currency)" />
 
-        <!-- A lone last card takes the full row, so the grid never leaves a hole. -->
-        <div class="grid gap-3 lg:grid-cols-2 lg:[&>*:last-child:nth-child(odd)]:col-span-2">
-          <CostShares :title="t('reports.costs.byType')" :rows="shares(costs?.by_pricing_type, key => tOr(`reports.pricingType.${key}`, humanize(key)))" :total="costs?.total ?? 0" :currency="currency" />
+        <div class="grid gap-3 lg:grid-cols-2">
           <CostShares :title="t('reports.costs.byCategory')" :rows="shares(costs?.by_category, pricingLabel)" :total="costs?.total ?? 0" :currency="currency" />
           <CostShares :title="t('reports.costs.byCountry')" :rows="shares(costs?.by_country, countryName)" :total="costs?.total ?? 0" :currency="currency" />
+        </div>
+
+        <UButton
+          :label="more ? t('reports.lessDetails') : t('reports.moreDetails')"
+          :trailing-icon="more ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          @click="more = !more"
+        />
+
+        <!-- A lone last card takes the full row, so the grid never leaves a hole. -->
+        <div v-if="more" class="grid gap-3 lg:grid-cols-2 lg:[&>*:last-child:nth-child(odd)]:col-span-2">
+          <CostShares :title="t('reports.costs.byType')" :rows="shares(costs?.by_pricing_type, key => tOr(`reports.pricingType.${key}`, humanize(key)))" :total="costs?.total ?? 0" :currency="currency" />
           <CostShares v-if="(costs?.by_phone.length ?? 0) > 1" :title="t('reports.costs.byPhone')" :rows="shares(costs?.by_phone, phoneLabel)" :total="costs?.total ?? 0" :currency="currency" />
           <div v-if="costs?.tiers.length" class="rounded-xl border border-default bg-default p-5">
             <h3 class="flex items-center gap-1.5 font-semibold text-highlighted">
@@ -228,16 +230,7 @@ const tierProgress = (tier: CostReport['tiers'][number]) => (tier.upper ? Math.m
       </template>
     </section>
 
-    <!-- All messages -->
-    <section class="space-y-4">
-      <div>
-        <h2 class="font-semibold text-highlighted">
-          {{ t('reports.traffic.title') }}
-        </h2>
-        <p class="mt-1 text-sm text-muted">
-          {{ t('reports.traffic.intro') }}
-        </p>
-      </div>
+    <section v-if="section === 'messages'" class="space-y-4">
 
       <UAlert v-if="errors.traffic" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('reports.traffic.failed')" :description="errors.traffic" />
 
@@ -264,10 +257,10 @@ const tierProgress = (tier: CostReport['tiers'][number]) => (tier.upper ? Math.m
       </template>
     </section>
 
-    <ReportCompare />
+    <ReportCompare v-if="section === 'templates'" />
 
     <!-- Template groups: only when the account has some. -->
-    <section v-if="groups?.groups.length" class="space-y-4 rounded-xl border border-default bg-default p-5">
+    <section v-if="section === 'templates' && groups?.groups.length" class="space-y-4 rounded-xl border border-default bg-default p-5">
       <div>
         <h2 class="font-semibold text-highlighted">
           {{ t('reports.groups.title') }}
@@ -329,15 +322,7 @@ const tierProgress = (tier: CostReport['tiers'][number]) => (tier.upper ? Math.m
     </section>
 
     <!-- Calls: only when the account had any in the range. -->
-    <section v-if="hasCalls" class="space-y-4">
-      <div>
-        <h2 class="font-semibold text-highlighted">
-          {{ t('reports.calls.title') }}
-        </h2>
-        <p class="mt-1 text-sm text-muted">
-          {{ t('reports.calls.intro') }}
-        </p>
-      </div>
+    <section v-if="section === 'calls' && hasCalls" class="space-y-4">
       <div class="grid gap-3 sm:grid-cols-3">
         <StatTile :title="t('reports.calls.count')" icon="i-lucide-phone-call">
           <p class="text-2xl font-bold text-highlighted tabular-nums">

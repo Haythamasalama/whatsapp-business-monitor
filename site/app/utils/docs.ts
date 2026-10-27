@@ -346,7 +346,7 @@ const reportsEn: typeof en = {
   description: 'See what WhatsApp messages cost by country, number and paid or free, all messages sent and received, the 1,000 free service messages per number, volume tiers, template block rates, template groups and calls.',
   keywords: 'WhatsApp pricing analytics, WhatsApp cost by country, WhatsApp free service messages 1000, WhatsApp service message charge October 2026, WhatsApp volume tier, WhatsApp template block rate, template comparison, WhatsApp call analytics, template group analytics',
   heading: 'Reports and costs',
-  intro: 'Open an account and choose "Reports". The page reads Meta\'s analytics for the last 24 hours, 7, 30 or 90 days, or 12 months, and says in plain words what each number means. It only reads; nothing is sent or changed.',
+  intro: 'Open an account and choose "Reports". The page reads Meta\'s analytics for the last 24 hours, 7, 30 or 90 days, or 12 months, and says in plain words what each number means. It has four short tabs: costs, all messages, templates and calls (only when the account has calls). It only reads; nothing is sent or changed.',
   onThisPage: 'On this page',
   back: 'Back to the home page',
   limitsTitle: 'Meta\'s limits at a glance',
@@ -361,7 +361,7 @@ const reportsEn: typeof en = {
     {
       id: 'costs',
       title: 'Costs',
-      text: 'The amount Meta charged for messages delivered in the range, how many were paid and how many free, and the cost over time by half hour, day or month. Below it, the same money by paid or free, by category, by the customer\'s country and, with several numbers, by number.',
+      text: 'The amount Meta charged for messages delivered in the range, how many were paid and how many free, and the cost over time (by half hour for 24 hours, by month for 12 months, by day otherwise). Below it, the cost by category and by customer country; "More details" adds paid or free, each number and volume discounts.',
       points: [
         '"Paid" covers marketing and authentication templates, utility templates, and service replies after the free tier.',
         '"Free from an ad or page button" is a 72-hour window that starts when a customer messages you from an ad or a page button.',
@@ -415,7 +415,7 @@ const reportsAr: typeof ar = {
   description: 'اعرف تكلفة رسائل واتساب حسب الدولة والرقم والمدفوع والمجاني، وكل الرسائل المرسلة والواردة، والـ 1,000 رسالة خدمة المجانية لكل رقم، وشرائح الكمية، ونسبة حظر القوالب، ومجموعات القوالب والمكالمات.',
   keywords: 'تكلفة رسائل واتساب, تحليلات أسعار واتساب, رسائل الخدمة المجانية 1000, احتساب رسائل الخدمة أكتوبر 2026, شرائح الكمية واتساب, نسبة حظر القالب, مقارنة القوالب, تحليلات مكالمات واتساب',
   heading: 'التقارير والتكاليف',
-  intro: 'افتح حسابًا واختر «التقارير». تقرأ الصفحة تحليلات Meta لآخر 24 ساعة أو 7 أو 30 أو 90 يومًا أو 12 شهرًا، وتشرح بكلمات بسيطة ماذا يعني كل رقم. الصفحة تقرأ فقط؛ لا ترسل شيئًا ولا تغيّر شيئًا.',
+  intro: 'افتح حسابًا واختر «التقارير». تقرأ الصفحة تحليلات Meta لآخر 24 ساعة أو 7 أو 30 أو 90 يومًا أو 12 شهرًا، وتشرح بكلمات بسيطة ماذا يعني كل رقم. فيها أربعة تبويبات قصيرة: التكاليف، وكل الرسائل، والقوالب، والمكالمات (إن وُجدت). الصفحة تقرأ فقط؛ لا ترسل شيئًا ولا تغيّر شيئًا.',
   onThisPage: 'في هذه الصفحة',
   back: 'العودة إلى الصفحة الرئيسية',
   limitsTitle: 'حدود Meta باختصار',
@@ -430,7 +430,7 @@ const reportsAr: typeof ar = {
     {
       id: 'costs',
       title: 'التكاليف',
-      text: 'المبلغ الذي حسبته Meta على الرسائل التي وصلت في المدة، وكم منها مدفوع وكم مجاني، والتكلفة عبر الوقت بنصف الساعة أو اليوم أو الشهر. وتحتها المبلغ نفسه مقسّمًا: مدفوع أم مجاني، والفئة، ودولة العميل، والرقم إذا كان للحساب أكثر من رقم.',
+      text: 'المبلغ الذي حسبته Meta على الرسائل التي وصلت في المدة، وكم منها مدفوع وكم مجاني، والتكلفة عبر الوقت (بنصف الساعة لمدة 24 ساعة، وبالشهر لمدة 12 شهرًا، وباليوم فيما عدا ذلك). وتحتها التكلفة حسب الفئة ودولة العميل، وزر «تفاصيل أكثر» يضيف المدفوع والمجاني وكل رقم وخصومات الكمية.',
       points: [
         '«مدفوعة» تشمل قوالب التسويق والتحقق، وقوالب الخدمات، وردود الخدمة بعد انتهاء الحصة المجانية.',
         '«مجانية من إعلان أو زر صفحة» نافذة مدتها 72 ساعة تبدأ عندما يراسلك العميل من إعلان أو زر صفحة.',
