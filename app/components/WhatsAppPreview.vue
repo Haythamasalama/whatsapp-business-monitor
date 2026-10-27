@@ -20,7 +20,7 @@ function format(text: string): string {
 // WhatsApp picks the direction per paragraph, so an Arabic line and an English line each keep their own.
 const lines = computed(() => props.values.body.split('\n').map(line => (line.trim() ? format(line) : '')))
 
-const time = new Intl.DateTimeFormat('ar-u-nu-latn', { hour: 'numeric', minute: '2-digit' }).format(new Date())
+const time = computed(() => timeOfDay(new Date()))
 </script>
 
 <template>

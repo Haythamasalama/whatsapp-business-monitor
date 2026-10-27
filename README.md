@@ -24,6 +24,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 - **Templates at a glance.** Every template on the account, grouped by name, with a column per language for its review status, plus its category and quality.
 - **Three views.** A table, a list with the selected template beside it, or cards with a preview of each message. The page remembers your choice.
 - **How each template performs.** Sent, delivered, read, cost and button clicks over the last 30 days, with a daily chart, from Meta's template analytics. Sort by the most sent.
+- **Number health.** Each phone number's status, quality, daily sending limit and display-name review.
 - **What you spend.** This month's cost and message count, per day and per message type (marketing, utility, authentication, service).
 - **Preview like the customer.** The message rendered as a WhatsApp bubble, with the sample values filled in, line by line in the right direction for Arabic and English.
 - **Create and edit, two ways.** *Manual*: header, body, footer, and a sample value per `{{n}}`, with buttons to add or remove a variable (the rest are renumbered), a header or a footer. *Full content*: the whole template as plain labelled text with a live preview. Meta's rules are checked before anything is sent; buttons and media headers are kept as they are when you edit.
@@ -44,7 +45,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 - **Several accounts.** Add, edit and switch between WhatsApp Business Accounts, each shown with its WhatsApp profile photo. Paste a token and it finds the accounts and phone numbers it can reach.
 - **Private.** No account, no cloud, no tracking. The server only listens on your machine.
 
-The interface is in Arabic, right to left, in light and dark mode.
+The interface is in Arabic (right to left) or English, in light and dark mode. The page remembers your choice.
 
 ## Screenshots
 

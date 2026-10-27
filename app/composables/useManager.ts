@@ -75,7 +75,7 @@ export function useManager() {
       return await $fetch(path, {
         method,
         body,
-        headers: { 'X-Requested-With': 'whatsapp-manager' },
+        headers: { 'X-Requested-With': 'whatsapp-manager', 'X-Locale': locale.value },
         query: scoped ? { account: accountId.value } : undefined,
       }) as T
     }
@@ -84,8 +84,8 @@ export function useManager() {
       const reason = errorText(failure.data?.data?.error ?? failure.data?.error)
 
       throw new Error(reason || (failure.statusCode
-        ? `ردّ الخادم المحلي بالرمز ${failure.statusCode} دون سبب. راجع سجل الخادم.`
-        : 'تعذّر الوصول إلى الخادم المحلي. تأكد أنه يعمل.'))
+        ? t('errors.serverStatus', { status: failure.statusCode })
+        : t('errors.serverUnreachable')))
     }
   }
 
@@ -194,7 +194,7 @@ export function useManager() {
     analyticsLoading.value = !silent
 
     try {
-      const result = await api<Analytics>(`/api/analytics?ids=${templates.value.map(t => t.id).join(',')}`)
+      const result = await api<Analytics>(`/api/analytics?ids=${templates.value.map(entry => entry.id).join(',')}`)
 
       if (mine === ticket) {
         analytics.value = result
@@ -276,7 +276,7 @@ export function useManager() {
     }
   }
 
-  const findTemplate = (name: string, language: string) => templates.value.find(t => t.name === name && t.language === language)
+  const findTemplate = (name: string, language: string) => templates.value.find(entry => entry.name === name && entry.language === language)
 
   function managerUrl(): string {
     const business = overview.value?.account?.owner_business_info?.id

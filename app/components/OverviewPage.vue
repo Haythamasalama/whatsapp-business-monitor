@@ -79,17 +79,17 @@ function attentionOf(row: Row) {
   return ATTENTION.map(status => ({ status, count: row.stats?.templates?.statuses[status] ?? 0 })).filter(item => item.count)
 }
 
-const qualityOf = (row: Row) => QUALITY[row.stats?.phones[0]?.quality_rating ?? ''] ?? null
+const phoneQuality = (row: Row) => qualityOf(row.stats?.phones[0]?.quality_rating)
 
-const columns: TableColumn<Row>[] = [
-  { id: 'account', header: 'الحساب', meta: { class: { td: 'w-full min-w-52' } } },
-  { id: 'cost', header: 'تكلفة الشهر' },
-  { id: 'messages', header: 'الرسائل', meta: { class: { th: 'hidden sm:table-cell', td: 'hidden sm:table-cell' } } },
-  { id: 'templates', header: 'القوالب', meta: { class: { th: 'hidden md:table-cell', td: 'hidden md:table-cell' } } },
-  { id: 'attention', header: 'تحتاج متابعة', meta: { class: { th: 'hidden lg:table-cell', td: 'hidden lg:table-cell' } } },
-  { id: 'quality', header: 'جودة الرقم', meta: { class: { th: 'hidden md:table-cell', td: 'hidden md:table-cell' } } },
-  { id: 'open', header: () => h('span', { class: 'sr-only' }, 'فتح'), meta: { class: { td: 'w-0' } } },
-]
+const columns = computed<TableColumn<Row>[]>(() => [
+  { id: 'account', header: t('overview.account'), meta: { class: { td: 'w-full min-w-52' } } },
+  { id: 'cost', header: t('stats.monthCost') },
+  { id: 'messages', header: t('chart.messages'), meta: { class: { th: 'hidden sm:table-cell', td: 'hidden sm:table-cell' } } },
+  { id: 'templates', header: t('overview.templates'), meta: { class: { th: 'hidden md:table-cell', td: 'hidden md:table-cell' } } },
+  { id: 'attention', header: t('overview.attention'), meta: { class: { th: 'hidden lg:table-cell', td: 'hidden lg:table-cell' } } },
+  { id: 'quality', header: t('overview.quality'), meta: { class: { th: 'hidden md:table-cell', td: 'hidden md:table-cell' } } },
+  { id: 'open', header: () => h('span', { class: 'sr-only' }, t('overview.open')), meta: { class: { td: 'w-0' } } },
+])
 
 const loading = computed(() => summaryLoading.value && !summary.value)
 </script>
@@ -98,11 +98,11 @@ const loading = computed(() => summaryLoading.value && !summary.value)
   <div class="space-y-6">
     <div>
       <h1 class="text-2xl font-bold text-highlighted">
-        نظرة عامة
+        {{ t('nav.overview') }}
       </h1>
       <p class="mt-1 text-sm text-muted">
-        {{ count(accounts.length) }} {{ accounts.length === 1 ? 'حساب' : 'حسابات' }}<template v-if="main">
-          · منذ {{ monthDay(main.since) }}
+        {{ t('overview.accountCount', { n: accounts.length }) }}<template v-if="main">
+          · {{ t('stats.since', { date: monthDay(main.since) }) }}
         </template>
       </p>
     </div>
@@ -110,7 +110,7 @@ const loading = computed(() => summaryLoading.value && !summary.value)
     <UAlert v-if="summaryError" color="error" variant="subtle" icon="i-lucide-circle-alert" :description="summaryError" />
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <StatTile title="تكلفة الشهر" icon="i-lucide-receipt" :loading="loading">
+      <StatTile :title="t('stats.monthCost')" icon="i-lucide-receipt" :loading="loading">
         <template v-if="totals.length">
           <p class="text-3xl font-semibold text-highlighted">
             <span dir="ltr">{{ money(totals[0]!.total, totals[0]!.currency) }}</span>
@@ -119,29 +119,29 @@ const loading = computed(() => summaryLoading.value && !summary.value)
             <span dir="ltr">+ {{ money(other.total, other.currency) }}</span>
           </p>
           <p class="mt-1 text-xs text-muted">
-            كل الحسابات
+            {{ t('overview.allAccounts') }}
           </p>
         </template>
         <p v-else class="text-sm text-muted">
-          غير متاح
+          {{ t('common.unavailable') }}
         </p>
       </StatTile>
 
-      <StatTile title="الرسائل المرسلة" icon="i-lucide-send" :loading="loading">
+      <StatTile :title="t('stats.messages')" icon="i-lucide-send" :loading="loading">
         <template v-if="spends.length">
           <p class="text-3xl font-semibold text-highlighted">
             {{ count(messages) }}
           </p>
           <p v-if="main?.messages && totals.length === 1" class="mt-1 text-xs text-muted">
-            متوسط <span dir="ltr">{{ money(main.total / main.messages, main.currency, 4) }}</span> للرسالة
+            {{ t('stats.averageBefore') }} <span dir="ltr">{{ money(main.total / main.messages, main.currency, 4) }}</span> {{ t('stats.averageAfter') }}
           </p>
         </template>
         <p v-else class="text-sm text-muted">
-          غير متاح
+          {{ t('common.unavailable') }}
         </p>
       </StatTile>
 
-      <StatTile title="القوالب" icon="i-lucide-layout-template" :loading="loading">
+      <StatTile :title="t('overview.templates')" icon="i-lucide-layout-template" :loading="loading">
         <p class="text-3xl font-semibold text-highlighted">
           {{ count(templatesTotal) }}
         </p>
@@ -150,12 +150,12 @@ const loading = computed(() => summaryLoading.value && !summary.value)
         </p>
       </StatTile>
 
-      <StatTile title="تحتاج متابعة" icon="i-lucide-bell-ring" :loading="loading">
+      <StatTile :title="t('overview.attention')" icon="i-lucide-bell-ring" :loading="loading">
         <p class="text-3xl font-semibold" :class="attention.length ? 'text-highlighted' : 'text-dimmed'">
           {{ count(attention.reduce((sum, item) => sum + item.count, 0)) }}
         </p>
         <p class="mt-1 text-xs text-muted">
-          {{ attention.length ? attention.map(item => `${statusOf(item.status).label} ${count(item.count)}`).join(' · ') : 'لا شيء بانتظارك' }}
+          {{ attention.length ? attention.map(item => `${statusOf(item.status).label} ${count(item.count)}`).join(' · ') : t('overview.nothingWaiting') }}
         </p>
       </StatTile>
     </div>
@@ -166,12 +166,12 @@ const loading = computed(() => summaryLoading.value && !summary.value)
     </div>
     <div v-else-if="main" class="grid gap-4 lg:grid-cols-3">
       <SpendChart :daily="main.daily" :currency="main.currency" class="lg:col-span-2" />
-      <CostShares title="التكلفة حسب الحساب" :rows="byAccount" :total="main.total" :currency="main.currency" />
+      <CostShares :title="t('chart.byAccount')" :rows="byAccount" :total="main.total" :currency="main.currency" />
     </div>
 
     <section class="rounded-xl border border-default bg-default">
       <h2 class="p-5 pb-4 text-lg font-semibold text-highlighted">
-        الحسابات
+        {{ t('overview.accounts') }}
       </h2>
       <UTable
         :data="rows"
@@ -194,7 +194,7 @@ const loading = computed(() => summaryLoading.value && !summary.value)
                 {{ accountTitle(row.original.account) }}
               </p>
               <p class="truncate text-xs text-muted">
-                <bdi dir="ltr">{{ row.original.account.phones.map(phone => phone.display_phone_number).join('، ') || row.original.account.waba_id }}</bdi>
+                <bdi dir="ltr">{{ row.original.account.phones.map(phone => phone.display_phone_number).join(t('common.listSeparator')) || row.original.account.waba_id }}</bdi>
               </p>
             </div>
             <UTooltip v-if="row.original.stats?.error || row.original.account.error" :text="row.original.stats?.error || row.original.account.error || ''">
@@ -208,7 +208,7 @@ const loading = computed(() => summaryLoading.value && !summary.value)
             {{ money(row.original.stats.spend.total, row.original.stats.spend.currency) }}
           </span>
           <UTooltip v-else-if="row.original.stats?.spendError" :text="row.original.stats.spendError">
-            <span class="text-xs text-dimmed">غير متاح</span>
+            <span class="text-xs text-dimmed">{{ t('common.unavailable') }}</span>
           </UTooltip>
           <span v-else class="text-dimmed">—</span>
         </template>
@@ -247,7 +247,7 @@ const loading = computed(() => summaryLoading.value && !summary.value)
         </template>
 
         <template #quality-cell="{ row }">
-          <UBadge v-if="qualityOf(row.original)" :color="qualityOf(row.original)!.tone" :label="qualityOf(row.original)!.label" variant="subtle" class="rounded-full" />
+          <UBadge v-if="phoneQuality(row.original)" :color="phoneQuality(row.original)!.tone" :label="phoneQuality(row.original)!.label" variant="subtle" class="rounded-full" />
           <span v-else class="text-dimmed">—</span>
         </template>
 

@@ -19,22 +19,23 @@ const category = ref('ALL')
 const sort = ref<'sent' | 'meta'>('sent')
 const enabling = ref(false)
 
-const sortItems = [{ label: 'الأكثر إرسالاً', value: 'sent' }, { label: 'ترتيب Meta', value: 'meta' }]
+const sortItems = computed(() => [{ label: t('templates.sortSent'), value: 'sent' }, { label: t('templates.sortMeta'), value: 'meta' }])
 
 type View = 'table' | 'split' | 'cards'
 
 const VIEW_KEY = 'whatsapp-templates:view'
-const views: { value: View, label: string, icon: string }[] = [
-  { value: 'table', label: 'جدول', icon: 'i-lucide-list' },
-  { value: 'split', label: 'قائمة ومعاينة', icon: 'i-lucide-columns-2' },
-  { value: 'cards', label: 'بطاقات', icon: 'i-lucide-layout-grid' },
+const VIEWS: { value: View, icon: string }[] = [
+  { value: 'table', icon: 'i-lucide-list' },
+  { value: 'split', icon: 'i-lucide-columns-2' },
+  { value: 'cards', icon: 'i-lucide-layout-grid' },
 ]
+const views = computed(() => VIEWS.map(view => ({ ...view, label: t(`templates.views.${view.value}`) })))
 
 function storedView(): View {
   try {
     const value = localStorage.getItem(VIEW_KEY)
 
-    return views.some(view => view.value === value) ? value as View : 'table'
+    return VIEWS.some(view => view.value === value) ? value as View : 'table'
   }
   catch {
     return 'table'
@@ -52,13 +53,13 @@ watch(view, (value) => {
   }
 })
 
-const groupStats = (group: TemplateGroup) => statsFor(group.items.map(t => t.id))
+const groupStats = (group: TemplateGroup) => statsFor(group.items.map(entry => entry.id))
 
 async function enable(): Promise<void> {
   const confirmed = await confirm({
-    title: 'تفعيل إحصاءات القوالب؟',
-    description: 'لا يمكن إلغاء التفعيل لاحقاً.',
-    confirmLabel: 'تفعيل',
+    title: t('templates.enableTitle'),
+    description: t('templates.enableNote'),
+    confirmLabel: t('templates.enableConfirm'),
   })
 
   if (!confirmed) {
@@ -69,10 +70,10 @@ async function enable(): Promise<void> {
 
   try {
     await enableAnalytics()
-    toast.add({ title: 'فُعّلت إحصاءات القوالب', color: 'success', icon: 'i-lucide-check' })
+    toast.add({ title: t('templates.enabled'), color: 'success', icon: 'i-lucide-check' })
   }
   catch (error) {
-    toast.add({ title: 'تعذّر التفعيل', description: (error as Error).message, color: 'error' })
+    toast.add({ title: t('templates.enableFailed'), description: (error as Error).message, color: 'error' })
   }
   finally {
     enabling.value = false
@@ -87,41 +88,41 @@ function sendsCell(group: TemplateGroup) {
   const stats = groupStats(group)
 
   if (!stats) {
-    return h('span', { class: 'text-xs text-dimmed' }, analyticsError.value ? 'غير متاح' : '—')
+    return h('span', { class: 'text-xs text-dimmed' }, analyticsError.value ? t('common.unavailable') : '—')
   }
 
   if (!stats.sent) {
     return h('div', { class: 'whitespace-nowrap' }, [
       h('p', { class: 'font-semibold text-dimmed tabular-nums' }, '0'),
-      h('p', { class: 'text-xs text-muted' }, 'لم يُرسل خلال الفترة'),
+      h('p', { class: 'text-xs text-muted' }, t('templates.notSent')),
     ])
   }
 
   return h('div', { class: 'whitespace-nowrap' }, [
     h('p', { class: 'font-semibold text-highlighted tabular-nums' }, count(stats.sent)),
-    h('p', { class: 'text-xs text-muted' }, `تسليم ${rate(stats.delivered, stats.sent)} · قراءة ${rate(stats.read, stats.delivered)}`),
+    h('p', { class: 'text-xs text-muted' }, t('templates.rates', { delivered: rate(stats.delivered, stats.sent), read: rate(stats.read, stats.delivered) })),
   ])
 }
 
 const bodyOf = (template?: MetaTemplate) => template?.components?.find(c => c.type === 'BODY')?.text ?? ''
-const inLanguage = (group: TemplateGroup, lang: string) => group.items.find(t => t.language === lang)
-const editableIn = (group: TemplateGroup) => group.items.find(t => EDITABLE_STATUSES.includes(t.status) && (t.parameter_format ?? 'POSITIONAL') === 'POSITIONAL')
+const inLanguage = (group: TemplateGroup, lang: string) => group.items.find(entry => entry.language === lang)
+const editableIn = (group: TemplateGroup) => group.items.find(entry => EDITABLE_STATUSES.includes(entry.status) && (entry.parameter_format ?? 'POSITIONAL') === 'POSITIONAL')
 
 function hasStatus(group: TemplateGroup, value: string): boolean {
   if (value === 'ALL') {
     return true
   }
 
-  return group.items.some(t => (value === 'OTHER' ? !MAIN_STATUSES.includes(t.status) : t.status === value))
+  return group.items.some(entry => (value === 'OTHER' ? !MAIN_STATUSES.includes(entry.status) : entry.status === value))
 }
 
 const statusTabs = computed(() => ['ALL', ...MAIN_STATUSES, 'OTHER'].map(value => ({
   value,
-  label: value === 'ALL' ? 'الكل' : value === 'OTHER' ? 'أخرى' : statusOf(value).label,
+  label: value === 'ALL' ? t('templates.all') : value === 'OTHER' ? t('templates.other') : statusOf(value).label,
   badge: { label: String(groups.value.filter(group => hasStatus(group, value)).length), color: 'neutral' as const, variant: 'subtle' as const },
 })))
 
-const categoryItems = [{ label: 'كل الفئات', value: 'ALL' }, ...CATEGORIES.map(value => ({ label: CATEGORY[value]!, value }))]
+const categoryItems = computed(() => [{ label: t('templates.allCategories'), value: 'ALL' }, ...CATEGORIES.map(value => ({ label: categoryLabel(value), value }))])
 
 const filtered = computed(() => {
   const needle = search.value.trim().toLowerCase()
@@ -129,7 +130,7 @@ const filtered = computed(() => {
   const list = groups.value.filter(group =>
     hasStatus(group, status.value)
     && (category.value === 'ALL' || group.category === category.value)
-    && (!needle || group.name.includes(needle) || group.items.some(t => bodyOf(t).toLowerCase().includes(needle))))
+    && (!needle || group.name.includes(needle) || group.items.some(entry => bodyOf(entry).toLowerCase().includes(needle))))
 
   return sort.value === 'sent' && analytics.value
     ? [...list].sort((a, b) => (groupStats(b)?.sent ?? 0) - (groupStats(a)?.sent ?? 0))
@@ -161,12 +162,12 @@ function action(icon: string, label: string, onClick: () => void, disabled = fal
   }))
 }
 
-const hasOtherLanguages = computed(() => groups.value.some(group => group.items.some(t => !LANGS.includes(t.language))))
+const hasOtherLanguages = computed(() => groups.value.some(group => group.items.some(entry => !LANGS.includes(entry.language))))
 
 const columns = computed<TableColumn<TemplateGroup>[]>(() => [
   {
     accessorKey: 'name',
-    header: 'القالب',
+    header: t('templates.template'),
     meta: { class: { td: 'max-w-0 w-full min-w-44' } },
     cell: ({ row }) => h('div', { class: 'min-w-0' }, [
       h('p', { class: 'font-mono text-sm font-medium text-highlighted' }, [h('bdi', { dir: 'ltr' }, row.original.name)]),
@@ -175,14 +176,14 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
   },
   {
     id: 'sent',
-    header: () => h('span', { class: 'whitespace-nowrap' }, `الإرسال · آخر ${analytics.value?.days ?? 30} يوماً`),
+    header: () => h('span', { class: 'whitespace-nowrap' }, t('templates.sends', { days: analytics.value?.days ?? 30 })),
     cell: ({ row }) => sendsCell(row.original),
   },
   {
     accessorKey: 'category',
-    header: 'الفئة',
+    header: t('details.category'),
     meta: { class: { th: 'hidden md:table-cell', td: 'hidden md:table-cell' } },
-    cell: ({ row }) => h(UBadge, { color: 'neutral', variant: 'outline', label: CATEGORY[row.original.category] ?? row.original.category, class: 'rounded-full' }),
+    cell: ({ row }) => h(UBadge, { color: 'neutral', variant: 'outline', label: categoryLabel(row.original.category), class: 'rounded-full' }),
   },
   ...LANGS.map((lang): TableColumn<TemplateGroup> => ({
     id: lang,
@@ -192,15 +193,15 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
   ...(hasOtherLanguages.value
     ? [{
         id: 'other',
-        header: 'لغات أخرى',
+        header: t('templates.otherLanguages'),
         cell: ({ row }: { row: { original: TemplateGroup } }) => {
-          const others = row.original.items.filter(t => !LANGS.includes(t.language))
+          const others = row.original.items.filter(entry => !LANGS.includes(entry.language))
 
           return others.length
-            ? h('div', { class: 'flex flex-wrap gap-1' }, others.map((t) => {
-                const { tone, icon } = statusOf(t.status)
+            ? h('div', { class: 'flex flex-wrap gap-1' }, others.map((entry) => {
+                const { tone, icon } = statusOf(entry.status)
 
-                return h(UBadge, { color: tone, variant: 'subtle', icon, label: languageCode(t.language), class: 'rounded-full font-mono' })
+                return h(UBadge, { color: tone, variant: 'subtle', icon, label: languageCode(entry.language), class: 'rounded-full font-mono' })
               }))
             : h('span', { class: 'text-dimmed' }, '—')
         },
@@ -208,16 +209,16 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
     : []),
   {
     id: 'actions',
-    header: () => h('span', { class: 'sr-only' }, 'الإجراءات'),
+    header: () => h('span', { class: 'sr-only' }, t('templates.actions')),
     meta: { class: { td: 'w-0' } },
     cell: ({ row }) => {
       const editable = editableIn(row.original)
 
       return h('div', { class: 'flex items-center justify-end gap-0.5' }, [
-        action('i-lucide-eye', 'معاينة', () => emit('open', row.original.name, 'view')),
+        action('i-lucide-eye', t('common.preview'), () => emit('open', row.original.name, 'view')),
         action(
           'i-lucide-pencil',
-          editable ? 'تعديل' : 'لا تقبل Meta تعديله الآن',
+          editable ? t('common.edit') : t('templates.locked'),
           () => emit('open', row.original.name, 'edit', editable?.id),
           !editable,
         ),
@@ -232,14 +233,14 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
     <div class="flex flex-wrap items-center justify-between gap-3 p-5 pb-4">
       <div>
         <h2 class="text-lg font-semibold text-highlighted">
-          قوالب الرسائل
+          {{ t('templates.title') }}
         </h2>
         <p class="text-xs text-muted">
-          {{ groups.length ? `${count(filtered.length)} من ${count(groups.length)} قالب` : 'لا توجد قوالب بعد' }}
+          {{ groups.length ? t('templates.count', { shown: count(filtered.length), total: count(groups.length) }) : t('templates.none') }}
         </p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <UFieldGroup aria-label="طريقة العرض">
+        <UFieldGroup :aria-label="t('templates.view')">
           <UTooltip v-for="item in views" :key="item.value" :text="item.label">
             <UButton
               :icon="item.icon"
@@ -251,20 +252,20 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
             />
           </UTooltip>
         </UFieldGroup>
-        <UTooltip text="ألصق محتوى قالب أو أكثر: يُنشأ الجديد ويُحدَّث الموجود">
-          <UButton label="إنشاء أو تحديث من محتوى قالب" icon="i-lucide-clipboard-paste" color="neutral" variant="outline" :disabled="!accountId" @click="emit('paste')" />
+        <UTooltip :text="t('templates.pasteHint')">
+          <UButton :label="t('templates.paste')" icon="i-lucide-clipboard-paste" color="neutral" variant="outline" :disabled="!accountId" @click="emit('paste')" />
         </UTooltip>
-        <UButton label="قالب جديد" icon="i-lucide-plus" :disabled="!accountId" @click="emit('create')" />
+        <UButton :label="t('templates.new')" icon="i-lucide-plus" :disabled="!accountId" @click="emit('create')" />
       </div>
     </div>
 
     <div class="flex flex-wrap items-center gap-3 border-y border-default bg-muted/60 px-5 py-3">
-      <UInput v-model="search" icon="i-lucide-search" placeholder="ابحث باسم القالب أو نصّه" class="min-w-56 flex-1" />
+      <UInput v-model="search" icon="i-lucide-search" :placeholder="t('templates.search')" class="min-w-56 flex-1" />
       <div class="max-w-full min-w-0 overflow-x-auto">
         <UTabs v-model="status" :items="statusTabs" :content="false" size="sm" :ui="{ list: 'w-max' }" />
       </div>
-      <USelect v-model="category" :items="categoryItems" class="w-36" aria-label="الفئة" />
-      <USelect v-model="sort" :items="sortItems" icon="i-lucide-arrow-down-wide-narrow" class="w-44" aria-label="الترتيب" :disabled="!analytics" />
+      <USelect v-model="category" :items="categoryItems" class="w-36" :aria-label="t('details.category')" />
+      <USelect v-model="sort" :items="sortItems" icon="i-lucide-arrow-down-wide-narrow" class="w-44" :aria-label="t('templates.sort')" :disabled="!analytics" />
     </div>
 
     <UAlert
@@ -272,9 +273,9 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
       color="warning"
       variant="subtle"
       icon="i-lucide-chart-no-axes-column"
-      title="أرقام الإرسال غير متاحة"
+      :title="t('templates.statsUnavailable')"
       :description="analyticsError"
-      :actions="[{ label: 'تفعيل الإحصاءات', color: 'warning', variant: 'solid', loading: enabling, onClick: enable }]"
+      :actions="[{ label: t('templates.enable'), color: 'warning', variant: 'solid', loading: enabling, onClick: enable }]"
       class="mx-5 mt-4"
     />
 
@@ -292,7 +293,7 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
     </div>
 
     <p v-else-if="view !== 'table' && !filtered.length" class="p-10 text-center text-sm text-muted">
-      {{ groups.length ? 'لا توجد نتائج مطابقة' : 'لا توجد قوالب على هذا الحساب' }}
+      {{ groups.length ? t('templates.noMatch') : t('templates.noneOnAccount') }}
     </p>
 
     <TemplateSplit v-else-if="view === 'split'" :groups="filtered" @open="(...args) => emit('open', ...args)" />
@@ -304,7 +305,7 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
       :data="filtered"
       :columns="columns"
       :loading="loading"
-      :empty="groups.length ? 'لا توجد نتائج مطابقة' : 'لا توجد قوالب على هذا الحساب'"
+      :empty="groups.length ? t('templates.noMatch') : t('templates.noneOnAccount')"
       :ui="{ th: 'py-2.5 text-xs font-medium text-muted', td: 'py-3.5', tr: 'cursor-pointer hover:bg-muted/50' }"
       @select="(_event: Event, row) => emit('open', row.original.name, 'view')"
     />

@@ -7,8 +7,8 @@ const emit = defineEmits<{ close: [value: boolean] }>()
 <template>
   <UModal :title="title" :description="description" :close="false" :dismissible="false" :ui="{ footer: 'justify-end' }">
     <template #footer>
-      <UButton label="إلغاء" color="neutral" variant="outline" @click="emit('close', false)" />
-      <UButton :label="confirmLabel ?? 'متابعة'" icon="i-lucide-send" @click="emit('close', true)" />
+      <UButton :label="t('common.cancel')" color="neutral" variant="outline" @click="emit('close', false)" />
+      <UButton :label="confirmLabel ?? t('common.continue')" icon="i-lucide-send" @click="emit('close', true)" />
     </template>
   </UModal>
 </template>

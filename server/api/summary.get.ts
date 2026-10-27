@@ -3,7 +3,7 @@ export default apiHandler(async (): Promise<{ data: AccountStats[] }> => {
     const account = loadAccount(id)
 
     if (!account.token || !account.waba) {
-      return { id, spend: null, spendError: null, phones: [], templates: null, error: 'WHATSAPP_TOKEN أو WHATSAPP_WABA_ID غير موجود' }
+      return { id, spend: null, spendError: null, phones: [], templates: null, error: t('server.accountIncomplete') }
     }
 
     const [overview, templates] = await Promise.all([

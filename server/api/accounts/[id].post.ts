@@ -3,7 +3,7 @@ export default apiHandler(async (event) => {
   const file = accountFiles()[id]
 
   if (!file) {
-    throw apiError(404, 'الحساب غير موجود')
+    throw apiError(404, t('server.accountMissing'))
   }
 
   // An empty token field keeps the stored one, so editing the name never needs the token again.

@@ -2,7 +2,7 @@
   <footer class="flex justify-center py-1">
     <div class="inline-flex items-center gap-2.5 rounded-full border border-default bg-default py-1.5 ps-3.5 pe-3 text-xs text-muted">
       <span>
-        صُنع بواسطة
+        {{ t('footer.madeBy') }}
         <a
           href="https://haythamasalama.me"
           target="_blank"
@@ -18,7 +18,7 @@
         target="_blank"
         rel="noopener"
         class="inline-flex items-center text-toned transition-colors hover:text-highlighted"
-        aria-label="المشروع على GitHub"
+        :aria-label="t('footer.github')"
         title="GitHub"
       >
         <!-- GitHub's mark, inline so the footer needs no extra icon set. -->

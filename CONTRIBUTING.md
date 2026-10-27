@@ -6,7 +6,7 @@ Thank you for helping improve the project. This guide shows how to set it up, ho
 
 - **Report a bug.** Open an [issue](https://github.com/Haythamasalama/whatsapp-manager-monitoring/issues/new/choose) with the steps to reproduce it and a screenshot if you can. Remove tokens, phone numbers and customer data first.
 - **Suggest a feature.** Describe the problem first, then the solution you have in mind.
-- **Translate.** The interface is Arabic today. An English (or any other) translation is very welcome; open an issue first so we can agree on the approach.
+- **Translate.** The interface is in Arabic and English. Another language is very welcome; open an issue first so we can agree on the approach.
 - **Write code.** Pick an issue labelled `good first issue` or `help wanted`, and leave a comment so others know you're working on it.
 
 ## Set up
@@ -29,7 +29,7 @@ Work with `bun run demo` whenever you can: it never calls Meta and never writes 
 - **`server/api/`** holds one Nitro route per action: accounts, templates, overview (spend), analytics. Every Graph API call goes through `server/utils/graph.ts`.
 - **`server/middleware/1.guard.ts`** refuses other hosts and requests without the `X-Requested-With` header. **`2.demo.ts`** answers every `/api` call with the fixtures in `server/utils/demo.ts` when demo mode is on.
 - **`server/utils/accounts.ts`** reads and writes the account files. Tokens never leave the server.
-- **`shared/`** is used by both sides: types for Meta's payloads and the template rules (`templateProblems()`), so the page and the server check a template the same way.
+- **`shared/`** is used by both sides: types for Meta's payloads, the template rules (`templateProblems()`), so the page and the server check a template the same way, and the translations: `t()` in `shared/utils/i18n.ts` with the dictionaries in `shared/locales/`.
 - **`app/composables/useManager.ts`** holds the page state and the API helper. Components read from it.
 - **`app/components/`** is the interface, built with [Nuxt UI](https://ui.nuxt.com) components.
 
@@ -37,8 +37,8 @@ Work with `bun run demo` whenever you can: it never calls Meta and never writes 
 
 - Follow the style of the surrounding code: TypeScript, two-space indentation, no semicolons, small components with clear names.
 - Use Nuxt UI components and its colour tokens (`text-muted`, `bg-elevated`, `primary`…) rather than raw colours.
-- The page is right to left. Use logical classes (`ms-*`, `pe-*`, `start-*`, `text-start`), and wrap phone numbers, IDs and other left-to-right values in `<bdi dir="ltr">`.
-- Every user-visible string is Arabic (Modern Standard Arabic). Translate Meta's error codes in `shared/utils/rules.ts` rather than showing raw English.
+- The page runs right to left in Arabic and left to right in English. Use logical classes (`ms-*`, `pe-*`, `start-*`, `text-start`), and wrap phone numbers, IDs and other left-to-right values in `<bdi dir="ltr">`.
+- Every user-visible string goes through `t('key')`, with the text in both `shared/locales/ar.ts` (Modern Standard Arabic) and `shared/locales/en.ts`; `bun run typecheck` fails when a key is missing from either. The server answers in the language of the page's `X-Locale` header. Translate Meta's error codes in `shared/utils/rules.ts` rather than showing raw English.
 - Respect the privacy promise: no analytics, no third-party calls except Meta's Graph API, no token in any response.
 
 ## Pull requests

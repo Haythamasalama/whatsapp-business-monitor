@@ -45,3 +45,9 @@
 [dir="rtl"] .iconify.i-lucide\:chevron-right {
   transform: scaleX(-1);
 }
+
+/* The page is muted, so overscroll and short pages must not show a white strip under it. */
+html,
+body {
+  background-color: var(--ui-bg-muted);
+}

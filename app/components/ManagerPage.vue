@@ -24,9 +24,14 @@ function refreshIfStale(): void {
   }
 }
 
-const lastLoaded = computed(() => (loadedAt.value
-  ? new Intl.DateTimeFormat('ar-u-nu-latn', { hour: 'numeric', minute: '2-digit' }).format(loadedAt.value)
-  : ''))
+const lastLoaded = computed(() => (loadedAt.value ? timeOfDay(loadedAt.value) : ''))
+
+// Errors and sample names come back from the server in the request's language, so a switch asks again.
+watch(locale, () => {
+  if (accounts.value.length) {
+    void refresh(true)
+  }
+})
 
 onMounted(() => {
   window.addEventListener('focus', refreshIfStale)
@@ -59,7 +64,7 @@ const booting = ref(true)
 const OVERVIEW = '*'
 
 const accountItems = computed(() => [
-  { value: OVERVIEW, label: 'نظرة عامة' },
+  { value: OVERVIEW, label: t('nav.overview') },
   ...accounts.value.map(account => ({ value: account.id, label: accountTitle(account) })),
 ])
 
@@ -72,7 +77,7 @@ const subtitle = computed(() => {
     return ''
   }
 
-  return current.value.phones.map(phone => phone.display_phone_number).join('، ')
+  return current.value.phones.map(phone => phone.display_phone_number).join(t('common.listSeparator'))
 })
 
 function openAccount(account: AccountSummary | null = null): void {
@@ -101,7 +106,7 @@ onMounted(async () => {
     }
   }
   catch (error) {
-    toast.add({ title: 'تعذّر تحميل الحسابات', description: (error as Error).message, color: 'error' })
+    toast.add({ title: t('accounts.loadFailed'), description: (error as Error).message, color: 'error' })
   }
   finally {
     booting.value = false
@@ -122,7 +127,7 @@ onMounted(async () => {
           :aria-current="onOverview ? 'page' : undefined"
           @click="showOverview()"
         >
-          <UIcon name="i-lucide-layout-dashboard" class="size-4.5" /> نظرة عامة
+          <UIcon name="i-lucide-layout-dashboard" class="size-4.5" /> {{ t('nav.overview') }}
         </button>
       </nav>
 
@@ -140,20 +145,31 @@ onMounted(async () => {
             :model-value="onOverview ? OVERVIEW : accountId ?? undefined"
             :items="accountItems"
             class="w-52 max-w-full"
-            aria-label="الحساب"
+            :aria-label="t('accounts.picker')"
             @update:model-value="(id) => pick(String(id))"
           />
         </div>
         <span class="hidden lg:block" />
 
         <div class="flex items-center gap-1 rounded-lg border border-default bg-default p-1">
-          <UTooltip :text="lastLoaded ? `تحديث البيانات · آخر تحديث ${lastLoaded}` : 'تحديث البيانات'">
-            <UButton icon="i-lucide-refresh-cw" color="neutral" variant="ghost" size="sm" aria-label="تحديث البيانات" :loading="refreshing" :disabled="!accounts.length" @click="refresh()" />
+          <UTooltip :text="lastLoaded ? t('header.refreshedAt', { time: lastLoaded }) : t('header.refresh')">
+            <UButton icon="i-lucide-refresh-cw" color="neutral" variant="ghost" size="sm" :aria-label="t('header.refresh')" :loading="refreshing" :disabled="!accounts.length" @click="refresh()" />
           </UTooltip>
-          <UTooltip text="إضافة حساب">
-            <UButton icon="i-lucide-user-plus" color="neutral" variant="ghost" size="sm" aria-label="إضافة حساب" class="lg:hidden" @click="openAccount()" />
+          <UTooltip :text="t('accounts.add')">
+            <UButton icon="i-lucide-user-plus" color="neutral" variant="ghost" size="sm" :aria-label="t('accounts.add')" class="lg:hidden" @click="openAccount()" />
           </UTooltip>
-          <UTooltip text="الوضع الفاتح أو الداكن">
+          <UTooltip :text="t('header.language')">
+            <UButton
+              :label="locale === 'ar' ? 'EN' : 'AR'"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              class="font-mono font-semibold"
+              :aria-label="t('header.language')"
+              @click="setLocale(locale === 'ar' ? 'en' : 'ar')"
+            />
+          </UTooltip>
+          <UTooltip :text="t('header.colorMode')">
             <UColorModeButton size="sm" />
           </UTooltip>
         </div>
@@ -172,11 +188,11 @@ onMounted(async () => {
               </span>
               <span class="inline-flex items-center gap-1.5">
                 <UIcon name="i-lucide-building-2" class="size-3.5 text-dimmed" />
-                حساب الأعمال <bdi dir="ltr" class="font-mono text-xs">{{ current.waba_id }}</bdi>
+                {{ t('accounts.business') }} <bdi dir="ltr" class="font-mono text-xs">{{ current.waba_id }}</bdi>
               </span>
             </p>
           </div>
-          <UButton label="تعديل الحساب" icon="i-lucide-pencil" color="neutral" variant="outline" size="sm" @click="openAccount(current)" />
+          <UButton :label="t('accounts.edit')" icon="i-lucide-pencil" color="neutral" variant="outline" size="sm" @click="openAccount(current)" />
         </div>
 
         <UAlert
@@ -184,7 +200,7 @@ onMounted(async () => {
           color="error"
           variant="subtle"
           icon="i-lucide-circle-alert"
-          title="تعذّر الوصول إلى الحساب"
+          :title="t('accounts.unreachable')"
           :description="current.error"
         />
 
@@ -198,9 +214,9 @@ onMounted(async () => {
             <UIcon name="i-lucide-message-circle-plus" class="size-6" />
           </span>
           <p class="font-semibold text-highlighted">
-            لا يوجد حساب بعد
+            {{ t('accounts.empty') }}
           </p>
-          <UButton label="إضافة حساب" icon="i-lucide-plus" @click="openAccount()" />
+          <UButton :label="t('accounts.add')" icon="i-lucide-plus" @click="openAccount()" />
         </div>
 
         <OverviewPage v-else-if="onOverview" @open="switchAccount" />
@@ -209,7 +225,7 @@ onMounted(async () => {
           <StatsCards />
           <TemplatesPanel
             @open="openTemplate"
-            @create="openDrafts([newDraft()], 'قالب جديد')"
+            @create="openDrafts([newDraft()], t('templates.new'))"
             @paste="pasteOpen = true"
           />
         </template>
@@ -219,7 +235,7 @@ onMounted(async () => {
     </div>
 
     <AccountModal v-model:open="accountOpen" :account="editingAccount" />
-    <PasteModal v-model:open="pasteOpen" @parsed="(list) => openDrafts(list, list.length > 1 ? `محتوى ملصوق (${list.length} قوالب)` : 'محتوى ملصوق')" />
+    <PasteModal v-model:open="pasteOpen" @parsed="(list) => openDrafts(list, list.length > 1 ? t('paste.draftsTitleMany', { n: list.length }) : t('paste.draftsTitle'))" />
     <DraftsModal v-model:open="draftsOpen" v-model:drafts="drafts" :title="draftsTitle" />
     <TemplateModal v-model:open="templateOpen" v-model:mode="templateMode" :name="opened.name" :initial-id="opened.id" />
   </div>

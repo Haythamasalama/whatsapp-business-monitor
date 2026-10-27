@@ -10,7 +10,7 @@ const spend = computed(() => {
 const spendError = computed(() => {
   const value = overview.value?.spend
 
-  return (value && 'error' in value ? errorText(value.error) : overviewError.value) || 'غير متاح'
+  return (value && 'error' in value ? errorText(value.error) : overviewError.value) || t('common.unavailable')
 })
 
 const average = computed(() => (spend.value?.messages ? spend.value.total / spend.value.messages : 0))
@@ -22,27 +22,27 @@ const creditHint = computed(() => {
   const reason = value?.credit?.error
     ? errorText(value.credit.error)
     : value?.credit
-      ? 'لا يوجد خط ائتمان.'
+      ? t('stats.noCreditLine')
       : errorText(value?.account?.error) || overviewError.value || ''
 
-  return ['لا تعرض Meta رصيد الدفع بالبطاقة.', reason].filter(Boolean).join(' ')
+  return [t('stats.cardBalance'), reason].filter(Boolean).join(' ')
 })
 
 const phone = computed(() => overview.value?.phones?.data?.[0] ?? null)
 const otherPhones = computed(() => (overview.value?.phones?.data ?? []).length - 1)
-const quality = computed(() => QUALITY[phone.value?.quality_rating ?? ''] ?? QUALITY.UNKNOWN!)
+const quality = computed(() => qualityOf(phone.value?.quality_rating) ?? qualityOf('UNKNOWN')!)
 </script>
 
 <template>
   <div class="space-y-4">
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <StatTile title="تكلفة الشهر" icon="i-lucide-receipt" :loading="loading">
+      <StatTile :title="t('stats.monthCost')" icon="i-lucide-receipt" :loading="loading">
         <template v-if="spend">
           <p class="text-3xl font-semibold text-highlighted">
             <span dir="ltr">{{ money(spend.total, spend.currency) }}</span>
           </p>
           <p class="mt-1 text-xs text-muted">
-            منذ {{ monthDay(spend.since) }}
+            {{ t('stats.since', { date: monthDay(spend.since) }) }}
           </p>
         </template>
         <p v-else class="text-sm text-muted">
@@ -50,38 +50,38 @@ const quality = computed(() => QUALITY[phone.value?.quality_rating ?? ''] ?? QUA
         </p>
       </StatTile>
 
-      <StatTile title="الرسائل المرسلة" icon="i-lucide-send" :loading="loading">
+      <StatTile :title="t('stats.messages')" icon="i-lucide-send" :loading="loading">
         <template v-if="spend">
           <p class="text-3xl font-semibold text-highlighted">
             {{ count(spend.messages) }}
           </p>
           <p class="mt-1 text-xs text-muted">
-            متوسط <span dir="ltr">{{ money(average, spend.currency, 4) }}</span> للرسالة
+            {{ t('stats.averageBefore') }} <span dir="ltr">{{ money(average, spend.currency, 4) }}</span> {{ t('stats.averageAfter') }}
           </p>
         </template>
         <p v-else class="text-sm text-muted">
-          غير متاح
+          {{ t('common.unavailable') }}
         </p>
       </StatTile>
 
-      <StatTile title="الرصيد" icon="i-lucide-wallet" :hint="credit ? undefined : creditHint" :loading="loading">
+      <StatTile :title="t('stats.balance')" icon="i-lucide-wallet" :hint="credit ? undefined : creditHint" :loading="loading">
         <template v-if="credit">
           <p class="text-3xl font-semibold text-highlighted">
             <span dir="ltr">{{ amount(credit.credit_available ?? credit.balance) }}</span>
           </p>
           <p class="mt-1 text-xs text-muted">
-            المتاح من خط الائتمان
+            {{ t('stats.creditAvailable') }}
           </p>
         </template>
         <template v-else>
           <p class="text-lg font-semibold text-highlighted">
-            غير متاح من Meta
+            {{ t('stats.balanceUnavailable') }}
           </p>
           <UButton
             to="https://business.facebook.com/billing_hub/payment_settings"
             target="_blank"
             external
-            label="عرض الفوترة"
+            :label="t('stats.billing')"
             trailing-icon="i-lucide-external-link"
             color="primary"
             variant="link"
@@ -91,19 +91,19 @@ const quality = computed(() => QUALITY[phone.value?.quality_rating ?? ''] ?? QUA
         </template>
       </StatTile>
 
-      <StatTile title="رقم واتساب" icon="i-lucide-phone" :loading="loading">
+      <StatTile :title="t('stats.phone')" icon="i-lucide-phone" :loading="loading">
         <template v-if="phone">
           <p class="font-mono text-lg font-semibold whitespace-nowrap text-highlighted">
             <bdi dir="ltr">{{ phone.display_phone_number }}</bdi>
           </p>
           <div class="mt-2 flex flex-wrap items-center gap-1.5">
-            <UBadge :color="quality.tone" variant="subtle" size="sm" :label="`الجودة: ${quality.label}`" />
+            <UBadge :color="quality.tone" variant="subtle" size="sm" :label="t('stats.quality', { quality: quality.label })" />
             <UBadge v-if="phone.messaging_limit_tier" color="neutral" variant="subtle" size="sm" :label="messagingLimit(phone.messaging_limit_tier)" />
-            <span v-if="otherPhones > 0" class="text-xs text-muted">+{{ otherPhones }} أرقام</span>
+            <span v-if="otherPhones > 0" class="text-xs text-muted">{{ t('stats.otherPhones', { n: otherPhones }) }}</span>
           </div>
         </template>
         <p v-else class="text-sm text-muted">
-          لا يوجد رقم
+          {{ t('stats.noPhone') }}
         </p>
       </StatTile>
     </div>
@@ -116,5 +116,7 @@ const quality = computed(() => QUALITY[phone.value?.quality_rating ?? ''] ?? QUA
       <SpendChart :daily="spend.daily" :currency="spend.currency" class="lg:col-span-2" />
       <CategoryBreakdown :spend="spend" />
     </div>
+
+    <PhonesHealth v-if="!loading && overview?.phones?.data?.length" :phones="overview.phones.data" />
   </div>
 </template>

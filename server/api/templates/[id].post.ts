@@ -9,11 +9,11 @@ export default apiHandler(async (event) => {
   const current = orFail(await graph(account, 'GET', id, { fields: 'id,name,language,status,parameter_format,components' }))
 
   if (!EDITABLE_STATUSES.includes(current.status)) {
-    throw apiError(422, `لا يقبل Meta تعديل قالب حالته ${current.status}`)
+    throw apiError(422, t('server.editStatus', { status: current.status }))
   }
 
   if ((current.parameter_format ?? 'POSITIONAL') !== 'POSITIONAL') {
-    throw apiError(422, 'القوالب ذات المتغيرات المسمّاة تُعدَّل من WhatsApp Manager')
+    throw apiError(422, t('server.editNamed'))
   }
 
   const text = readTemplateText(await readBody<Record<string, unknown>>(event))

@@ -18,12 +18,7 @@ function store(account: string, statuses: Record<string, string>): void {
   }
 }
 
-const TITLE: Record<string, { title: string, color: Tone }> = {
-  APPROVED: { title: 'اعتُمد قالب', color: 'success' },
-  REJECTED: { title: 'رُفض قالب', color: 'error' },
-  PAUSED: { title: 'أُوقف قالب مؤقتاً', color: 'warning' },
-  DISABLED: { title: 'عُطّل قالب', color: 'error' },
-}
+const COLORS: Record<string, Tone> = { APPROVED: 'success', REJECTED: 'error', PAUSED: 'warning', DISABLED: 'error' }
 
 /**
  * Toasts every template whose review status changed since the last load. The statuses are kept per
@@ -46,17 +41,20 @@ export function useStatusAlerts() {
     const changed = previous ? list.filter(template => previous[template.id] && previous[template.id] !== template.status) : []
 
     if (changed.length > 3) {
-      toast.add({ title: `تغيّرت حالة ${changed.length} قوالب`, icon: 'i-lucide-bell', color: 'info' })
+      toast.add({ title: t('alerts.many', { n: changed.length }), icon: 'i-lucide-bell', color: 'info' })
     }
     else {
       for (const template of changed) {
-        const { title, color } = TITLE[template.status] ?? { title: 'تغيّرت حالة قالب', color: 'info' as Tone }
-
         toast.add({
-          title,
-          description: `${template.name} · ${languageName(template.language)}: ${statusOf(previous![template.id]!).label} ← ${statusOf(template.status).label}`,
+          title: tOr(`alerts.${template.status}`, t('alerts.changed')),
+          description: t('alerts.change', {
+            name: template.name,
+            language: languageName(template.language),
+            from: statusOf(previous![template.id]!).label,
+            to: statusOf(template.status).label,
+          }),
           icon: statusOf(template.status).icon,
-          color,
+          color: COLORS[template.status] ?? 'info',
           duration: 8000,
         })
       }

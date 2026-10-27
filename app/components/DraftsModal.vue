@@ -12,21 +12,17 @@ const submitting = ref(false)
 const blocked = ref<Record<number, string[]>>({})
 const tabs = ref<Record<number, 'fields' | 'code'>>({})
 
-const categoryItems: { label: string, value: string }[] = CATEGORIES.map(value => ({ label: CATEGORY[value]!, value }))
+const categoryItems = computed(() => CATEGORIES.map((value): { label: string, value: string } => ({ label: categoryLabel(value), value })))
 
 type Plan
   = | { kind: 'create' }
     | { kind: 'update' | 'same', template: MetaTemplate }
     | { kind: 'locked', template: MetaTemplate, reason: string }
 
-const PLAN_BADGE: Record<Plan['kind'], { label: string, tone: Tone }> = {
-  create: { label: 'جديد', tone: 'primary' },
-  update: { label: 'تحديث', tone: 'info' },
-  same: { label: 'بلا تغيير', tone: 'neutral' },
-  locked: { label: 'لا يُعدَّل', tone: 'warning' },
-}
+const PLAN_TONES: Record<Plan['kind'], Tone> = { create: 'primary', update: 'info', same: 'neutral', locked: 'warning' }
+const planBadge = (kind: Plan['kind']) => ({ label: t(`drafts.plan.${kind}`), tone: PLAN_TONES[kind] })
 
-const nameError = (draft: Draft) => (draft.name && !TEMPLATE_NAME.test(draft.name) ? 'أحرف إنجليزية صغيرة وأرقام و _ فقط' : undefined)
+const nameError = (draft: Draft) => (draft.name && !TEMPLATE_NAME.test(draft.name) ? t('drafts.nameFormat') : undefined)
 const langsOf = (draft: Draft) => sortLanguages(Object.keys(draft.languages))
 const existing = (draft: Draft, lang: Lang) => (draft.name ? findTemplate(draft.name, lang) : undefined)
 const existsOnMeta = (draft: Draft) => langsOf(draft).some(lang => existing(draft, lang))
@@ -51,7 +47,7 @@ function planFor(draft: Draft, lang: Lang): Plan {
   }
 
   if (!EDITABLE_STATUSES.includes(found.status) || (found.parameter_format ?? 'POSITIONAL') !== 'POSITIONAL') {
-    return { kind: 'locked', template: found, reason: `لا يُعدَّل وهو «${statusOf(found.status).label}»` }
+    return { kind: 'locked', template: found, reason: t('template.lockedStatus', { status: statusOf(found.status).label }) }
   }
 
   return { kind: 'update', template: found }
@@ -104,7 +100,7 @@ function remove(draft: Draft): void {
 }
 
 function skipped(plan: Plan): { tone: Tone, message: string } {
-  return { tone: 'neutral', message: plan.kind === 'locked' ? plan.reason : 'بلا تغيير، لم يُرسل' }
+  return { tone: 'neutral', message: plan.kind === 'locked' ? plan.reason : t('drafts.unchanged') }
 }
 
 async function submit(): Promise<void> {
@@ -116,8 +112,8 @@ async function submit(): Promise<void> {
     const plans = filled.map(lang => [lang, planFor(draft, lang)] as const)
     const toSend = plans.filter(([, plan]) => plan.kind === 'create' || plan.kind === 'update')
     const list = [
-      ...(TEMPLATE_NAME.test(draft.name) ? [] : ['الاسم: أحرف إنجليزية صغيرة وأرقام و _ فقط']),
-      ...(filled.length ? [] : ['أدخل النص بلغة واحدة على الأقل']),
+      ...(TEMPLATE_NAME.test(draft.name) ? [] : [t('rules.nameFormat')]),
+      ...(filled.length ? [] : [t('drafts.needOneLanguage')]),
       ...toSend.flatMap(([lang]) => templateProblems(draft.languages[lang]!).map(p => `${languageName(lang)}: ${p}`)),
     ]
 
@@ -142,15 +138,15 @@ async function submit(): Promise<void> {
 
   if (!creates && !updates) {
     jobs.forEach(([draft, lang, plan]) => (draft.results[lang] = skipped(plan)))
-    toast.add({ title: 'لا شيء لإرساله', color: 'neutral' })
+    toast.add({ title: t('drafts.nothingToSend'), color: 'neutral' })
 
     return
   }
 
   const confirmed = await confirm({
-    title: `إرسال ${creates + updates} قالب للمراجعة؟`,
-    description: [creates && `جديد: ${creates}`, updates && `تحديث: ${updates}`].filter(Boolean).join(' · '),
-    confirmLabel: 'إرسال',
+    title: t('drafts.submitTitle', { n: creates + updates }),
+    description: [creates && t('drafts.creates', { n: creates }), updates && t('drafts.updates', { n: updates })].filter(Boolean).join(' · '),
+    confirmLabel: t('template.submitConfirm'),
   })
 
   if (!confirmed) {
@@ -170,7 +166,7 @@ async function submit(): Promise<void> {
     try {
       if (plan.kind === 'update') {
         await api(`/api/templates/${plan.template.id}`, { method: 'POST', body: { ...draft.languages[lang] } })
-        draft.results[lang] = { tone: 'success', message: 'أُرسل التحديث للمراجعة' }
+        draft.results[lang] = { tone: 'success', message: t('drafts.updateSent') }
       }
       else {
         const response = await api<{ id: string, status: string, category?: string }>('/api/templates', {
@@ -178,10 +174,10 @@ async function submit(): Promise<void> {
           body: { name: draft.name, category: draft.category, language: lang, ...draft.languages[lang] },
         })
         const moved = response.category && response.category !== draft.category
-          ? ` · نقله Meta إلى «${CATEGORY[response.category] ?? response.category}»`
+          ? ` · ${t('drafts.moved', { category: categoryLabel(response.category) })}`
           : ''
 
-        draft.results[lang] = { tone: 'success', message: `أُنشئ · ${statusOf(response.status).label}${moved}` }
+        draft.results[lang] = { tone: 'success', message: `${t('drafts.created')} · ${statusOf(response.status).label}${moved}` }
       }
 
       sent++
@@ -193,7 +189,7 @@ async function submit(): Promise<void> {
 
   submitting.value = false
   await reloadTemplates()
-  toast.add({ title: sent ? `أُرسل ${sent} قالب للمراجعة` : 'لم يُرسل أي قالب', color: sent ? 'success' : 'warning' })
+  toast.add({ title: sent ? t('drafts.sent', { n: sent }) : t('drafts.noneSent'), color: sent ? 'success' : 'warning' })
 }
 </script>
 
@@ -203,14 +199,14 @@ async function submit(): Promise<void> {
       <div class="space-y-5">
         <UCard v-for="draft in drafts" :key="draft.key" variant="subtle" :ui="{ body: 'space-y-4' }">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <UTabs v-model="tabs[draft.key]" default-value="fields" :items="EDIT_TABS" :content="false" size="sm" />
+            <UTabs v-model="tabs[draft.key]" default-value="fields" :items="editTabs()" :content="false" size="sm" />
             <UButton
               v-if="drafts.length > 1"
               icon="i-lucide-trash-2"
               color="neutral"
               variant="ghost"
               size="sm"
-              aria-label="حذف القالب"
+              :aria-label="t('drafts.removeTemplate')"
               @click="remove(draft)"
             />
           </div>
@@ -233,7 +229,7 @@ async function submit(): Promise<void> {
 
           <template v-else>
             <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_12rem]">
-              <UFormField label="اسم القالب" :error="nameError(draft)">
+              <UFormField :label="t('drafts.name')" :error="nameError(draft)">
                 <UInput
                   v-model.trim="draft.name"
                   :dir="draft.name ? 'ltr' : undefined"
@@ -243,7 +239,7 @@ async function submit(): Promise<void> {
                   @update:model-value="syncWithMeta(draft)"
                 />
               </UFormField>
-              <UFormField label="الفئة">
+              <UFormField :label="t('details.category')">
                 <USelect v-model="draft.category" :items="categoryItems" class="w-full" :disabled="existsOnMeta(draft)" />
               </UFormField>
             </div>
@@ -256,8 +252,8 @@ async function submit(): Promise<void> {
                 <div class="flex items-center gap-1">
                   <UBadge
                     v-if="draft.name && draft.languages[lang]!.body.trim()"
-                    :label="PLAN_BADGE[planFor(draft, lang).kind].label"
-                    :color="PLAN_BADGE[planFor(draft, lang).kind].tone"
+                    :label="planBadge(planFor(draft, lang).kind).label"
+                    :color="planBadge(planFor(draft, lang).kind).tone"
                     variant="subtle"
                     class="rounded-full"
                   />
@@ -267,7 +263,7 @@ async function submit(): Promise<void> {
                     color="neutral"
                     variant="ghost"
                     size="xs"
-                    :aria-label="`حذف ${languageName(lang)}`"
+                    :aria-label="t('drafts.removeLanguage', { language: languageName(lang) })"
                     @click="removeLanguage(draft, lang)"
                   />
                 </div>
@@ -295,11 +291,11 @@ async function submit(): Promise<void> {
               <USelectMenu
                 :items="otherLanguages(draft)"
                 value-key="value"
-                placeholder="لغة أخرى"
+                :placeholder="t('drafts.otherLanguage')"
                 size="xs"
                 icon="i-lucide-languages"
                 class="w-44"
-                :search-input="{ placeholder: 'ابحث عن لغة' }"
+                :search-input="{ placeholder: t('drafts.searchLanguage') }"
                 @update:model-value="(code) => code && addLanguage(draft, String(code))"
               />
             </div>
@@ -310,8 +306,8 @@ async function submit(): Promise<void> {
 
     <template #footer>
       <div class="flex w-full flex-wrap justify-between gap-2">
-        <UButton label="قالب آخر" icon="i-lucide-plus" color="neutral" variant="outline" :disabled="submitting" @click="drafts.push(newDraft())" />
-        <UButton label="إرسال للمراجعة" icon="i-lucide-send" :loading="submitting" @click="submit" />
+        <UButton :label="t('drafts.another')" icon="i-lucide-plus" color="neutral" variant="outline" :disabled="submitting" @click="drafts.push(newDraft())" />
+        <UButton :label="t('template.submit')" icon="i-lucide-send" :loading="submitting" @click="submit" />
       </div>
     </template>
   </UModal>

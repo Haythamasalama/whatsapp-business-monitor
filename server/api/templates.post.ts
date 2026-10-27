@@ -7,9 +7,9 @@ export default apiHandler(async (event) => {
   const text = readTemplateText(body)
 
   const problems = [
-    TEMPLATE_NAME.test(name) ? null : 'الاسم: أحرف إنجليزية صغيرة وأرقام و _ فقط',
-    CATEGORIES.some(value => value === category) ? null : 'التصنيف غير صالح',
-    /^[a-z]{2,3}(_[A-Z]{2})?$/.test(language) ? null : 'رمز اللغة غير صالح',
+    TEMPLATE_NAME.test(name) ? null : t('rules.nameFormat'),
+    CATEGORIES.some(value => value === category) ? null : t('rules.categoryInvalid'),
+    /^[a-z]{2,3}(_[A-Z]{2})?$/.test(language) ? null : t('rules.languageInvalid'),
     ...templateProblems(text),
   ].filter(Boolean)
 

@@ -19,7 +19,7 @@ const shares = computed(() => props.rows
     </h3>
 
     <p v-if="!shares.length" class="grid h-40 place-items-center text-sm text-muted">
-      لا توجد رسائل هذا الشهر
+      {{ t('chart.empty') }}
     </p>
 
     <ul v-else class="mt-5 space-y-4">
@@ -32,7 +32,7 @@ const shares = computed(() => props.rows
           <div class="h-full rounded-full bg-(--chart-bar)" :style="{ width: `${row.share}%` }" />
         </div>
         <p class="mt-1 text-xs text-muted">
-          {{ count(row.messages) }} رسالة · {{ row.share }}٪
+          {{ t('chart.messageCount', { n: count(row.messages) }) }} · {{ t('common.percent', { n: row.share }) }}
         </p>
       </li>
     </ul>

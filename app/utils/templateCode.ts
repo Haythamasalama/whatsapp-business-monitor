@@ -1,4 +1,4 @@
-/** One template with all its languages: what the «المحتوى كاملاً» tab shows, the copy button copies, and paste reads back. */
+/** One template with all its languages: what the full-content tab shows, the copy button copies, and paste reads back. */
 export interface TemplateDoc {
   name: string
   category: string
@@ -25,8 +25,10 @@ const KEYS: Record<string, 'name' | 'category' | 'language' | 'header' | 'footer
   'footer': 'footer',
 }
 
+// A pasted category may be a code or its label in either interface language.
 function normalizeCategory(value: string): string {
-  const byLabel = Object.entries(CATEGORY).find(([, label]) => label === value)?.[0]
+  const wanted = value.trim().toLowerCase()
+  const byLabel = CATEGORIES.find(code => LOCALES.some(other => translate(other, `category.${code}`)?.toLowerCase() === wanted))
 
   return byLabel ?? (value.toUpperCase() || 'UTILITY')
 }
@@ -40,13 +42,13 @@ function normalizeLanguage(value: string): string {
 
   const loose = code.replace('-', '_').toLowerCase()
 
-  return META_LANGUAGES.find(meta => meta.toLowerCase() === loose || languageName(meta) === value) ?? value
+  return META_LANGUAGES.find(meta => meta.toLowerCase() === loose || LOCALES.some(other => languageName(meta, other) === value)) ?? value
 }
 
-/** The text a template is copied as: labelled lines in Arabic, the body as it is, then `{{n}} = value`. */
+/** The text a template is copied as: labelled lines in the interface language, the body as it is, then `{{n}} = value`. */
 export function toText(docs: TemplateDoc[]): string {
   return docs.map((doc) => {
-    const lines = [`الاسم: ${doc.name}`, `الفئة: ${CATEGORY[doc.category] ?? doc.category}`]
+    const lines = [`${t('textFormat.name')}: ${doc.name}`, `${t('textFormat.category')}: ${categoryLabel(doc.category)}`]
 
     for (const code of sortLanguages(Object.keys(doc.languages))) {
       const values = doc.languages[code]!
@@ -59,10 +61,10 @@ export function toText(docs: TemplateDoc[]): string {
 
       lines.push(
         SEPARATOR,
-        `اللغة: ${code}`,
-        ...(values.header ? [`العنوان: ${values.header}`] : []),
+        `${t('textFormat.language')}: ${code}`,
+        ...(values.header ? [`${t('textFormat.header')}: ${values.header}`] : []),
         values.body.trim(),
-        ...(values.footer ? [`التذييل: ${values.footer}`] : []),
+        ...(values.footer ? [`${t('textFormat.footer')}: ${values.footer}`] : []),
         ...(vars.length ? ['', ...vars.map((n, i) => `{{${n}}} = ${values.examples[i] ?? ''}`)] : []),
       )
     }
@@ -73,7 +75,7 @@ export function toText(docs: TemplateDoc[]): string {
 
 /**
  * Reads that text back, and the older paste format too: a bare name line with blocks split by
- * dashes. A block without an `اللغة:` line is Arabic when it has Arabic letters, English otherwise.
+ * dashes. A block without a language line is Arabic when it has Arabic letters, English otherwise.
  */
 export function fromText(text: string): TemplateDoc[] {
   const docs: TemplateDoc[] = []

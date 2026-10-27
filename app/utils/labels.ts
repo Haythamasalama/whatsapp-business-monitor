@@ -4,12 +4,10 @@ export type Tone = 'success' | 'warning' | 'error' | 'neutral' | 'primary' | 'in
 export const LANGS = ['ar', 'en']
 export type Lang = string
 
-export const EDIT_TABS = [
-  { label: 'يدوي', value: 'fields', icon: 'i-lucide-text-cursor-input' },
-  { label: 'المحتوى كاملاً', value: 'code', icon: 'i-lucide-clipboard-list' },
+export const editTabs = () => [
+  { label: t('editTabs.fields'), value: 'fields', icon: 'i-lucide-text-cursor-input' },
+  { label: t('editTabs.content'), value: 'code', icon: 'i-lucide-clipboard-list' },
 ]
-
-export const LANG_NAMES: Record<string, string> = { ar: 'العربية', en: 'الإنجليزية' }
 
 export const META_LANGUAGES = [
   'af', 'sq', 'ar', 'az', 'bn', 'bg', 'ca', 'zh_CN', 'zh_HK', 'zh_TW', 'hr', 'cs', 'da', 'nl', 'en', 'en_GB', 'en_US',
@@ -29,81 +27,88 @@ export function sortLanguages(codes: string[]): string[] {
   return [...codes].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))
 }
 
-export const STATUS: Record<string, { label: string, tone: Tone, icon: string }> = {
-  APPROVED: { label: 'مُعتمد', tone: 'success', icon: 'i-lucide-circle-check' },
-  PENDING: { label: 'قيد المراجعة', tone: 'warning', icon: 'i-lucide-clock' },
-  IN_APPEAL: { label: 'قيد الاعتراض', tone: 'warning', icon: 'i-lucide-scale' },
-  PAUSED: { label: 'موقوف مؤقتاً', tone: 'warning', icon: 'i-lucide-circle-pause' },
-  REJECTED: { label: 'مرفوض', tone: 'error', icon: 'i-lucide-circle-x' },
-  DISABLED: { label: 'معطّل', tone: 'error', icon: 'i-lucide-ban' },
-  LIMIT_EXCEEDED: { label: 'تجاوز الحد', tone: 'error', icon: 'i-lucide-octagon-alert' },
-  PENDING_DELETION: { label: 'قيد الحذف', tone: 'neutral', icon: 'i-lucide-trash-2' },
-  DELETED: { label: 'محذوف', tone: 'neutral', icon: 'i-lucide-trash-2' },
-  ARCHIVED: { label: 'مؤرشف', tone: 'neutral', icon: 'i-lucide-archive' },
+const STATUS_STYLE: Record<string, { tone: Tone, icon: string }> = {
+  APPROVED: { tone: 'success', icon: 'i-lucide-circle-check' },
+  PENDING: { tone: 'warning', icon: 'i-lucide-clock' },
+  IN_APPEAL: { tone: 'warning', icon: 'i-lucide-scale' },
+  PAUSED: { tone: 'warning', icon: 'i-lucide-circle-pause' },
+  REJECTED: { tone: 'error', icon: 'i-lucide-circle-x' },
+  DISABLED: { tone: 'error', icon: 'i-lucide-ban' },
+  LIMIT_EXCEEDED: { tone: 'error', icon: 'i-lucide-octagon-alert' },
+  PENDING_DELETION: { tone: 'neutral', icon: 'i-lucide-trash-2' },
+  DELETED: { tone: 'neutral', icon: 'i-lucide-trash-2' },
+  ARCHIVED: { tone: 'neutral', icon: 'i-lucide-archive' },
 }
 
 export const MAIN_STATUSES = ['APPROVED', 'PENDING', 'REJECTED']
 
-export const CATEGORY: Record<string, string> = {
-  UTILITY: 'إشعارات',
-  MARKETING: 'تسويق',
-  AUTHENTICATION: 'رموز تحقق',
+export function statusOf(status: string): { label: string, tone: Tone, icon: string } {
+  const style = STATUS_STYLE[status] ?? { tone: 'neutral' as Tone, icon: 'i-lucide-circle-help' }
+
+  return { label: tOr(`status.${status}`, status), ...style }
 }
 
-export const PRICING: Record<string, string> = {
-  MARKETING: 'تسويق',
-  MARKETING_LITE: 'تسويق مخفّف',
-  UTILITY: 'إشعارات',
-  AUTHENTICATION: 'رموز تحقق',
-  AUTHENTICATION_INTERNATIONAL: 'رموز تحقق دولية',
-  SERVICE: 'خدمة العملاء',
-  ALL: 'كل الرسائل',
+export const categoryLabel = (category: string) => tOr(`category.${category}`, category)
+
+export const pricingLabel = (category: string) => tOr(`pricing.${category}`, category)
+
+export const rejectionLabel = (reason: string) => tOr(`rejection.${reason}`, reason)
+
+const QUALITY_TONES: Record<string, Tone> = { GREEN: 'success', YELLOW: 'warning', RED: 'error', UNKNOWN: 'neutral' }
+
+/** A phone number's or a template's quality rating, or null when Meta sent none it names. */
+export function qualityOf(rating?: string | null): { label: string, tone: Tone } | null {
+  const tone = rating ? QUALITY_TONES[rating] : undefined
+
+  return tone ? { label: t(`quality.${rating}` as MessageKey), tone } : null
 }
 
-export const QUALITY: Record<string, { label: string, tone: Tone }> = {
-  GREEN: { label: 'عالية', tone: 'success' },
-  YELLOW: { label: 'متوسطة', tone: 'warning' },
-  RED: { label: 'منخفضة', tone: 'error' },
-  UNKNOWN: { label: 'غير محددة', tone: 'neutral' },
+const PHONE_STATUS_TONES: Record<string, Tone> = {
+  CONNECTED: 'success',
+  PENDING: 'warning',
+  FLAGGED: 'warning',
+  RATE_LIMITED: 'warning',
+  UNVERIFIED: 'warning',
+  RESTRICTED: 'error',
+  BANNED: 'error',
+  DISCONNECTED: 'error',
+  MIGRATED: 'neutral',
+  DELETED: 'neutral',
+  UNKNOWN: 'neutral',
 }
 
-export const TIERS: Record<string, string> = {
-  TIER_50: '50',
-  TIER_250: '250',
-  TIER_1K: '1,000',
-  TIER_2K: '2,000',
-  TIER_10K: '10,000',
-  TIER_100K: '100,000',
+const NAME_STATUS_TONES: Record<string, Tone> = {
+  APPROVED: 'success',
+  AVAILABLE_WITHOUT_REVIEW: 'success',
+  PENDING_REVIEW: 'warning',
+  DECLINED: 'error',
+  EXPIRED: 'error',
+  NONE: 'neutral',
 }
 
-export const REJECTIONS: Record<string, string> = {
-  ABUSIVE_CONTENT: 'محتوى مسيء',
-  INVALID_FORMAT: 'صيغة غير صالحة',
-  PROMOTIONAL: 'محتوى ترويجي في فئة غير تسويقية',
-  TAG_CONTENT_MISMATCH: 'المحتوى لا يطابق الفئة',
-  INCORRECT_CATEGORY: 'فئة غير صحيحة',
-  SCAM: 'اشتباه احتيال',
-}
+export const phoneStatusOf = (status?: string) => (status ? { label: tOr(`phoneStatus.${status}`, status), tone: PHONE_STATUS_TONES[status] ?? 'neutral' } : null)
 
-export function languageName(code: string): string {
-  if (LANG_NAMES[code]) {
-    return LANG_NAMES[code]
-  }
+export const nameStatusOf = (status?: string) => (status ? { label: tOr(`nameStatus.${status}`, status), tone: NAME_STATUS_TONES[status] ?? 'neutral' } : null)
 
-  try {
-    return new Intl.DisplayNames(['ar'], { type: 'language' }).of(code.replace('_', '-')) ?? code
-  }
-  catch {
-    return code
-  }
-}
-
-export const statusOf = (status: string) => STATUS[status] ?? { label: status, tone: 'neutral' as Tone, icon: 'i-lucide-circle-help' }
+const TIERS: Record<string, number> = { TIER_50: 50, TIER_250: 250, TIER_1K: 1_000, TIER_2K: 2_000, TIER_10K: 10_000, TIER_100K: 100_000 }
 
 export function messagingLimit(tier?: string): string {
   if (!tier) {
     return ''
   }
 
-  return tier === 'TIER_UNLIMITED' ? 'دون حد يومي' : `${TIERS[tier] ?? tier} عميل يومياً`
+  if (tier === 'TIER_UNLIMITED') {
+    return t('phone.unlimited')
+  }
+
+  return t('phone.limit', { n: TIERS[tier] ? count(TIERS[tier]) : tier })
+}
+
+export function languageName(code: string, inLocale: Locale = locale.value): string {
+  try {
+    return new Intl.DisplayNames([inLocale], { type: 'language' }).of(code.replace('_', '-')) ?? code
+  }
+  catch {
+    return code
+  }
 }

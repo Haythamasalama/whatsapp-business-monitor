@@ -4,10 +4,10 @@ export function useCopy() {
   return async (text: string): Promise<void> => {
     try {
       await navigator.clipboard.writeText(text)
-      toast.add({ title: 'نُسخ النص', color: 'success', icon: 'i-lucide-check' })
+      toast.add({ title: t('common.copied'), color: 'success', icon: 'i-lucide-check' })
     }
     catch {
-      toast.add({ title: 'تعذّر النسخ', color: 'error' })
+      toast.add({ title: t('common.copyFailed'), color: 'error' })
     }
   }
 }

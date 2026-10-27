@@ -10,9 +10,9 @@ const isOpen = (id: string) => screen.value === 'account' && accountId.value ===
   <div>
     <div class="mb-2 flex items-center justify-between px-2">
       <p class="text-xs font-semibold text-highlighted">
-        حسابات واتساب
+        {{ t('accounts.title') }}
       </p>
-      <UButton label="إضافة" icon="i-lucide-plus" variant="link" size="xs" class="px-0" @click="emit('add')" />
+      <UButton :label="t('common.add')" icon="i-lucide-plus" variant="link" size="xs" class="px-0" @click="emit('add')" />
     </div>
 
     <ul class="space-y-1">
@@ -38,20 +38,20 @@ const isOpen = (id: string) => screen.value === 'account' && accountId.value ===
           <span class="min-w-0 flex-1">
             <span class="block truncate text-sm font-medium text-highlighted">{{ accountTitle(account) }}</span>
             <span class="block truncate text-xs text-muted">
-              <bdi dir="ltr">{{ account.phones.map(phone => phone.display_phone_number).join('، ') || account.waba_id }}</bdi>
+              <bdi dir="ltr">{{ account.phones.map(phone => phone.display_phone_number).join(t('common.listSeparator')) || account.waba_id }}</bdi>
             </span>
           </span>
           <UTooltip v-if="account.error" :text="account.error">
             <UIcon name="i-lucide-circle-alert" class="size-4 text-error" />
           </UTooltip>
         </button>
-        <UTooltip text="تعديل الحساب">
+        <UTooltip :text="t('accounts.edit')">
           <UButton
             icon="i-lucide-pencil"
             color="neutral"
             variant="ghost"
             size="xs"
-            aria-label="تعديل الحساب"
+            :aria-label="t('accounts.edit')"
             class="opacity-60 group-hover:opacity-100 focus-visible:opacity-100"
             @click="emit('edit', account)"
           />
@@ -60,7 +60,7 @@ const isOpen = (id: string) => screen.value === 'account' && accountId.value ===
     </ul>
 
     <p v-if="!accounts.length" class="px-2 text-xs text-muted">
-      لم يُضَف حساب بعد.
+      {{ t('accounts.none') }}
     </p>
   </div>
 </template>

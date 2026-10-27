@@ -46,6 +46,8 @@ export interface Phone {
   quality_rating?: string
   messaging_limit_tier?: string
   status?: string
+  name_status?: string
+  throughput?: { level?: string }
 }
 
 export interface AccountSummary {
