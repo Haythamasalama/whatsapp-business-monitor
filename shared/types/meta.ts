@@ -125,3 +125,14 @@ export interface AccountStats {
   templates: TemplateCounts | null
   error: string | null
 }
+
+export interface Release {
+  version: string
+  url: string
+}
+
+export interface VersionInfo {
+  current: string
+  /** A newer release than the one running, or null. */
+  latest: Release | null
+}

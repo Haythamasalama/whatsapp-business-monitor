@@ -17,6 +17,10 @@ async function demoAnswer(event: H3Event) {
     return demoAccounts()
   }
 
+  if (!post && path === '/api/version') {
+    return { current: String(useRuntimeConfig().public.version), latest: null }
+  }
+
   if (!post && path === '/api/summary') {
     return demoSummary()
   }

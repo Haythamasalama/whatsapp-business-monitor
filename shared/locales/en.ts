@@ -131,6 +131,9 @@ const en: Dictionary = {
     description: 'A local dashboard for your WhatsApp Business templates, how they perform and what they cost.',
   },
   footer: {
+    update: 'New version v{version}',
+    updateHint: 'To update: docker compose pull && docker compose up -d',
+    releases: 'Releases',
     madeBy: 'Made by',
     github: 'The project on GitHub',
   },

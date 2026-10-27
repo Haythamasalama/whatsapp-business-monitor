@@ -131,6 +131,9 @@ export default {
     description: 'لوحة محلية لمراقبة قوالب واتساب الأعمال وأدائها وتكلفتها.',
   },
   footer: {
+    update: 'إصدار جديد v{version}',
+    updateHint: 'للتحديث: docker compose pull && docker compose up -d',
+    releases: 'الإصدارات',
     madeBy: 'صُنع بواسطة',
     github: 'المشروع على GitHub',
   },

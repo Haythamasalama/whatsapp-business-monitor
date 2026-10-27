@@ -12,7 +12,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 ![Nuxt 4](https://img.shields.io/badge/Nuxt-4-317455?logo=nuxt&logoColor=white)
 ![Node 22.21+ or 24.11+](https://img.shields.io/badge/node-22.21%2B%20%7C%2024.11%2B-317455?logo=node.js&logoColor=white)
 
-[Features](#-features) · [Get started](#-get-started) · [Demo](#-try-the-demo) · [Contribute](CONTRIBUTING.md)
+[Features](#-features) · [Docker](#-run-with-docker) · [Demo](#-try-the-demo) · [From source](#-run-from-source) · [Contribute](CONTRIBUTING.md)
 
 <img src="docs/screenshots/overview.png" width="860" alt="The overview of two accounts of a fictional store: this month's cost, messages sent, templates that need attention, a daily cost chart, the cost per account and a table of accounts.">
 
@@ -59,7 +59,33 @@ Your order {{1}} is confirmed.
 
 All screenshots use the built-in demo data.
 
-## 🚀 Get started
+## 🐳 Run with Docker
+
+One command, no Node.js needed:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/Haythamasalama/whatsapp-manager-monitoring/main/compose.yaml && docker compose up -d
+```
+
+Open <http://127.0.0.1:3210>, choose **Add account** and paste a Meta system user token with `whatsapp_business_management`. The app finds the business accounts and numbers it can reach.
+
+**Update to a new version** (from the same folder):
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+Your accounts stay in `~/.config/whatsapp-templates`. When a new version is out, the page footer says so.
+
+## 🎮 Try the demo
+
+```bash
+WHATSAPP_TEMPLATES_DEMO=true docker compose up -d
+```
+
+Or from source: `bun run demo`, then <http://127.0.0.1:3211>. Nothing is sent to Meta and no file is written.
+
+## 💻 Run from source
 
 You need Node.js 22.21+ or 24.11+ and [Bun](https://bun.sh) or npm.
 
@@ -70,20 +96,13 @@ bun install
 bun run dev
 ```
 
-Open <http://127.0.0.1:3210>, choose **Add account** and paste a Meta system user token with `whatsapp_business_management`. The app finds the business accounts and numbers it can reach.
-
-## 🎮 Try the demo
-
-```bash
-bun run demo
-```
-
-Open <http://127.0.0.1:3211>. Nothing is sent to Meta and no file is written.
+Then open <http://127.0.0.1:3210>. To update: `git pull && bun install`.
 
 ## 🔐 Accounts and security
 
 - Each account is one file in `~/.config/whatsapp-templates/` (or `WHATSAPP_TEMPLATES_DIR`), written with `600` permissions.
 - The server listens on `127.0.0.1` only. No response contains a token, and `/api` refuses other hosts and requests without its `X-Requested-With` header.
+- Besides Meta, the server only asks GitHub once a day whether a new version is out. Set `WHATSAPP_TEMPLATES_UPDATE_CHECK=false` to turn that off.
 - There is no login, so don't deploy it to a public server. Found a vulnerability? See the [security policy](SECURITY.md).
 
 ## ⚠️ Limits from Meta

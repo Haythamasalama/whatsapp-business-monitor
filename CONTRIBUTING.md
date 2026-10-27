@@ -39,7 +39,7 @@ Work with `bun run demo` whenever you can: it never calls Meta and never writes 
 - Use Nuxt UI components and its colour tokens (`text-muted`, `bg-elevated`, `primary`…) rather than raw colours.
 - The page runs right to left in Arabic and left to right in English. Use logical classes (`ms-*`, `pe-*`, `start-*`, `text-start`), and wrap phone numbers, IDs and other left-to-right values in `<bdi dir="ltr">`.
 - Every user-visible string goes through `t('key')`, with the text in both `shared/locales/ar.ts` (Modern Standard Arabic) and `shared/locales/en.ts`; `bun run typecheck` fails when a key is missing from either. The server answers in the language of the page's `X-Locale` header. Translate Meta's error codes in `shared/utils/rules.ts` rather than showing raw English.
-- Respect the privacy promise: no analytics, no third-party calls except Meta's Graph API, no token in any response.
+- Respect the privacy promise: no analytics, no token in any response, and no outside calls except Meta's Graph API and the once-a-day release check on GitHub (`server/utils/version.ts`).
 
 ## Pull requests
 
@@ -60,6 +60,12 @@ docs: explain where account files live
 ```
 
 Types: `feat`, `fix`, `perf`, `refactor`, `i18n`, `docs`, `test`, `build`, `ci`, `chore`. Scopes are optional: `dashboard`, `templates`, `analytics`, `accounts`, `server`, `demo`, `docs`.
+
+## Releases
+
+1. Bump `version` in `package.json` and merge it to `main`.
+2. Tag the merge commit and push the tag: `git tag v0.2.0 && git push origin v0.2.0`.
+3. The **Docker image** workflow publishes `ghcr.io/haythamasalama/whatsapp-manager-monitoring` as `0.2.0`, `0.2` and `latest`. Users update with `docker compose pull && docker compose up -d`.
 
 ## Code of Conduct
 

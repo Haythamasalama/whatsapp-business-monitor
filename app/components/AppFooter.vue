@@ -1,3 +1,19 @@
+<script setup lang="ts">
+const { version } = useRuntimeConfig().public
+const { api } = useManager()
+
+const update = ref<Release | null>(null)
+
+onMounted(async () => {
+  try {
+    update.value = (await api<VersionInfo>('/api/version', { scoped: false })).latest
+  }
+  catch {
+    // The footer simply shows no update when the check fails.
+  }
+})
+</script>
+
 <template>
   <footer class="flex justify-center py-1">
     <div class="inline-flex items-center gap-2.5 rounded-full border border-default bg-default py-1.5 ps-3.5 pe-3 text-xs text-muted">
@@ -12,6 +28,28 @@
       </span>
 
       <span class="h-3.5 w-px bg-(--ui-border-accented)" aria-hidden="true" />
+
+      <a
+        href="https://github.com/Haythamasalama/whatsapp-manager-monitoring/releases"
+        target="_blank"
+        rel="noopener"
+        class="font-mono text-toned transition-colors hover:text-highlighted"
+        :title="t('footer.releases')"
+      >v{{ version }}</a>
+
+      <UTooltip v-if="update" :text="t('footer.updateHint')">
+        <UButton
+          :to="update.url"
+          target="_blank"
+          external
+          :label="t('footer.update', { version: update.version })"
+          icon="i-lucide-arrow-up-circle"
+          color="primary"
+          variant="soft"
+          size="xs"
+          class="rounded-full"
+        />
+      </UTooltip>
 
       <a
         href="https://github.com/Haythamasalama/whatsapp-manager-monitoring"
