@@ -70,8 +70,8 @@ const templateMode = ref<'view' | 'edit'>('view')
 const booting = ref(true)
 const accountTab = ref('templates')
 const accountTabs = computed(() => [
-  { label: t('business.templatesTab'), value: 'templates', icon: 'i-lucide-layout-template' },
-  { label: t('business.tab'), value: 'business', icon: 'i-lucide-building-2' },
+  { label: t('business.templatesTab'), value: 'templates', icon: 'i-lucide-house' },
+  { label: t('business.tab'), value: 'business', icon: 'i-lucide-settings' },
 ])
 
 // Account ids start with a letter or digit, so '*' can stand for the overview in the mobile picker.

@@ -461,8 +461,8 @@ const en: Dictionary = {
     name: 'Optional. Shown in the sidebar, the page title and the sign-in page.',
   },
   business: {
-    tab: 'Account and numbers',
-    templatesTab: 'Spend and templates',
+    tab: 'Account settings',
+    templatesTab: 'Home',
     intro: 'Whether this account can send, its details, its numbers and who can reach it.',
     help: 'What is on this page?',
     loadFailed: 'Could not load the account details',
