@@ -66,7 +66,7 @@ Types: `feat`, `fix`, `perf`, `refactor`, `i18n`, `docs`, `test`, `build`, `ci`,
 
 1. Bump `version` in `package.json` and merge it to `main`.
 2. Tag the merge commit and push the tag: `git tag v0.2.0 && git push origin v0.2.0`.
-3. The **Docker image** workflow publishes `ghcr.io/haythamasalama/whatsapp-business-monitor` (and the old name, `whatsapp-manager-monitoring`, for installs made before the rename) as `0.2.0`, `0.2` and `latest`. Users update with `docker compose pull && docker compose up -d`.
+3. The **Docker image** workflow publishes `ghcr.io/haythamasalama/whatsapp-business-monitor` as `0.2.0`, `0.2` and `latest`. Users update with `docker compose pull && docker compose up -d`.
 
 ## Code of Conduct
 

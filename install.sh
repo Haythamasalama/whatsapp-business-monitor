@@ -10,10 +10,6 @@ set -eu
 
 REPO="Haythamasalama/whatsapp-business-monitor"
 DIR="${WHATSAPP_MANAGER_DIR:-$HOME/whatsapp-business-monitor}"
-# Installs made before the rename keep their folder, and with it their settings and data.
-if [ -z "${WHATSAPP_MANAGER_DIR:-}" ] && [ -d "$HOME/whatsapp-manager" ] && [ ! -d "$DIR" ]; then
-  DIR="$HOME/whatsapp-manager"
-fi
 PORT="${WHATSAPP_MANAGER_PORT:-3210}"
 BIND="127.0.0.1"
 
@@ -43,15 +39,8 @@ set_default() {
 set_default WHATSAPP_MANAGER_BIND "$BIND"
 set_default WHATSAPP_MANAGER_PORT "$PORT"
 
-# The database lives next to this file, unless an older install already keeps accounts in the old folder.
-if ! grep -q '^WHATSAPP_MANAGER_DATA=' .env; then
-  LEGACY="$HOME/.config/whatsapp-templates"
-  if [ -d "$LEGACY" ] && ls "$LEGACY" 2>/dev/null | grep -qE '\.(env|db)$'; then
-    set_default WHATSAPP_MANAGER_DATA "$LEGACY"
-  else
-    set_default WHATSAPP_MANAGER_DATA "$DIR/data"
-  fi
-fi
+# The database lives next to this file.
+set_default WHATSAPP_MANAGER_DATA "$DIR/data"
 DATA="$(sed -n 's/^WHATSAPP_MANAGER_DATA=//p' .env | tail -n 1)"
 mkdir -p "$DATA"
 
@@ -67,11 +56,6 @@ fi
 [ -n "${WHATSAPP_MANAGER_VERSION:-}" ] && { sed -i.bak '/^WHATSAPP_MANAGER_VERSION=/d' .env && rm -f .env.bak; printf 'WHATSAPP_MANAGER_VERSION=%s\n' "$WHATSAPP_MANAGER_VERSION" >> .env; }
 
 docker compose pull
-
-# Before the rename the containers had other names; the data is in the folder above, so they can go.
-if ! grep -q '^name: whatsapp-manager-monitoring' compose.yaml; then
-  docker rm -f whatsapp-manager-monitoring whatsapp-manager-monitoring-updater >/dev/null 2>&1 || true
-fi
 
 docker compose up -d --remove-orphans
 CONTAINER="$(sed -n 's/^ *container_name: *//p' compose.yaml | head -n 1)"

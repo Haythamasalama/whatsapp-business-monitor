@@ -151,7 +151,7 @@ analytics, no fonts or scripts from a CDN, no error reporting service. Keep it t
   git fetch origin && git tag -a v0.4.0 origin/main -m "v0.4.0" && git push origin v0.4.0
   ```
 
-  `.github/workflows/docker.yml` then publishes `ghcr.io/haythamasalama/whatsapp-business-monitor` (and the pre-rename `whatsapp-manager-monitoring`) as
+  `.github/workflows/docker.yml` then publishes `ghcr.io/haythamasalama/whatsapp-business-monitor` as
   `0.4.0`, `0.4` and `latest` for amd64 and arm64, and creates the GitHub release with generated notes.
 
 ## Before you push

@@ -58,7 +58,6 @@ Open the address it prints, create your admin account, then add a WhatsApp accou
 - **On a server:** add `--server` so other computers can open it: `… | sh -s -- --server`
 - **Updates install themselves** every 6 hours, with the same settings and data. To update right away, run the command again.
 - **Your data** stays in `~/whatsapp-business-monitor`: the settings in `.env`, the database in `data/`.
-- **Installed it as WhatsApp Manager Monitoring?** That was its old name. Run the command again: it keeps your `~/whatsapp-manager` folder, settings and data, and the old image keeps getting updates too.
 
 <details>
 <summary>🌐 HTTPS on a server</summary>
