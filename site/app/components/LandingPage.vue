@@ -137,20 +137,22 @@ useSiteSeo()
         </ul>
       </section>
       <section id="faq" class="border-t border-default bg-default">
-        <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+        <div class="mx-auto max-w-3xl px-4 py-20 sm:px-6">
           <h2 class="text-center text-3xl font-semibold tracking-tight text-highlighted">
             {{ text.faq.title }}
           </h2>
-          <dl class="mx-auto mt-10 grid max-w-5xl gap-x-10 gap-y-8 md:grid-cols-2">
-            <div v-for="item in text.faq.items" :key="item.question">
-              <dt class="font-semibold text-highlighted">
+          <!-- Native details keep every answer in the page's HTML, for search engines and AI answers. -->
+          <div class="mt-10 divide-y divide-default overflow-hidden rounded-2xl border border-default bg-muted/40">
+            <details v-for="(item, index) in text.faq.items" :key="item.question" class="group" :open="index === 0">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium text-highlighted transition-colors hover:bg-elevated/50 focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
                 {{ item.question }}
-              </dt>
-              <dd class="mt-2 text-sm/6 text-muted">
+                <UIcon name="i-lucide-chevron-down" class="size-5 shrink-0 text-muted transition-transform duration-200 group-open:rotate-180" />
+              </summary>
+              <p class="px-5 pb-5 text-sm/7 text-muted">
                 {{ item.answer }}
-              </dd>
-            </div>
-          </dl>
+              </p>
+            </details>
+          </div>
         </div>
       </section>
     </main>

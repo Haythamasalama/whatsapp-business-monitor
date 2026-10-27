@@ -34,15 +34,10 @@ const links = computed(() => [
         </nav>
       </div>
 
-      <div class="mt-8 flex flex-col gap-2 border-t border-default pt-6 text-xs text-dimmed sm:flex-row sm:items-start sm:justify-between sm:gap-8">
-        <p class="shrink-0">
-          {{ text.footer.madeBy }}
-          <ULink href="https://haythamasalama.me" target="_blank" class="text-muted hover:text-highlighted">Haytham A. Salama</ULink>
-        </p>
-        <p class="max-w-xl sm:text-end">
-          {{ text.footer.trademark }}
-        </p>
-      </div>
+      <p class="mt-8 border-t border-default pt-6 text-xs text-dimmed">
+        {{ text.footer.madeBy }}
+        <ULink href="https://haythamasalama.me" target="_blank" class="text-muted hover:text-highlighted">Haytham A. Salama</ULink>
+      </p>
     </div>
   </footer>
 </template>

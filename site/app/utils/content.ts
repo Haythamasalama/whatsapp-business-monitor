@@ -4,6 +4,7 @@ const en = {
   keywords: 'WhatsApp Business monitoring, WhatsApp Business API dashboard, WhatsApp Cloud API, manage WhatsApp templates, WhatsApp template analytics, WhatsApp number quality, WhatsApp messaging limit, WhatsApp business profile, WhatsApp QR code, self-hosted, open source',
   brand: 'WhatsApp Business Monitor',
   nav: { features: 'Features', screenshots: 'Screenshots', install: 'Install', faq: 'FAQ', docs: 'Docs' },
+  menu: 'Menu',
   language: 'العربية',
   hero: {
     badge: 'Free and open source',
@@ -82,7 +83,6 @@ const en = {
   footer: {
     madeBy: 'Made by',
     license: 'MIT license',
-    trademark: 'WhatsApp is a trademark of Meta Platforms, Inc. This project is not affiliated with or endorsed by Meta.',
   },
 }
 
@@ -92,6 +92,7 @@ const ar: typeof en = {
   keywords: 'مراقبة واتساب الأعمال, إدارة واتساب للأعمال, لوحة تحكم واتساب, واتساب API, قوالب واتساب, إحصاءات قوالب واتساب, تكلفة رسائل واتساب, جودة رقم واتساب, حد رسائل واتساب, رمز QR واتساب, مفتوح المصدر',
   brand: 'مراقب واتساب الأعمال',
   nav: { features: 'المميزات', screenshots: 'الصور', install: 'التثبيت', faq: 'الأسئلة الشائعة', docs: 'الدليل' },
+  menu: 'القائمة',
   language: 'English',
   hero: {
     badge: 'مجاني ومفتوح المصدر',
@@ -170,7 +171,6 @@ const ar: typeof en = {
   footer: {
     madeBy: 'من تطوير',
     license: 'رخصة MIT',
-    trademark: 'WhatsApp علامة تجارية لشركة Meta Platforms, Inc. وهذا المشروع غير تابع لها ولا معتمد منها.',
   },
 }
 
