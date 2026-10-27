@@ -8,7 +8,12 @@ const INSTALL = installCommand(repo)
 const shot = ref('dashboard.png')
 const tabs = computed(() => text.value.screenshots.tabs.map(tab => ({ label: tab.label, value: tab.file })))
 const currentShot = computed(() => text.value.screenshots.tabs.find(tab => tab.file === shot.value) ?? text.value.screenshots.tabs[0]!)
-const serverText = computed(() => text.value.install.server.split('{flag}'))
+const installOn = ref<'computer' | 'server'>('computer')
+const installTabs = computed(() => [
+  { label: text.value.install.tabs.computer, value: 'computer', icon: 'i-lucide-laptop' },
+  { label: text.value.install.tabs.server, value: 'server', icon: 'i-lucide-server' },
+])
+const installCommandFor = computed(() => (installOn.value === 'server' ? `${INSTALL} -s -- --server` : INSTALL))
 
 useSiteSeo()
 </script>
@@ -28,7 +33,7 @@ useSiteSeo()
         </p>
         <div class="mt-8 flex flex-wrap justify-center gap-3">
           <UButton :label="text.hero.install" href="#install" icon="i-lucide-download" size="xl" />
-          <UButton :label="text.hero.github" :href="repo" target="_blank" icon="i-lucide-github" size="xl" color="neutral" variant="outline" class="bg-default" />
+          <UButton :label="text.hero.docs" :to="docs[lang].path" icon="i-lucide-book-open" size="xl" color="neutral" variant="outline" class="bg-default" />
         </div>
         <ul class="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-toned">
           <li v-for="note in text.hero.notes" :key="note" class="inline-flex items-center gap-1.5">
@@ -98,48 +103,18 @@ useSiteSeo()
       </section>
 
       <section id="install" class="border-y border-default bg-default">
-        <div class="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-          <div class="text-center">
-            <h2 class="text-3xl font-semibold tracking-tight text-highlighted">
-              {{ text.install.title }}
-            </h2>
-            <p class="mt-3 text-pretty text-muted">
-              {{ text.install.text }}
-            </p>
-          </div>
-
-          <ol class="mt-10 space-y-6">
-            <li v-for="(step, index) in text.install.steps" :key="step.title" class="flex gap-4">
-              <span class="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-inverted">{{ index + 1 }}</span>
-              <div class="min-w-0 flex-1 pt-1">
-                <h3 class="font-semibold text-highlighted">
-                  {{ step.title }}
-                </h3>
-                <p class="mt-1 text-sm/6 text-muted">
-                  {{ step.text }}
-                </p>
-                <CommandBox v-if="index === 0" :command="INSTALL" class="mt-3" />
-              </div>
-            </li>
-          </ol>
-
-          <div class="mt-10 space-y-3 rounded-xl border border-default bg-muted/50 p-5 text-sm/6 text-toned">
-            <p>
-              {{ serverText[0] }}<code dir="ltr" class="rounded bg-elevated px-1.5 py-0.5 font-mono text-[13px] text-highlighted">--server</code>{{ serverText[1] }}
-            </p>
-            <CommandBox :command="`${INSTALL} -s -- --server`" />
-            <p class="flex items-start gap-2 pt-2">
-              <UIcon name="i-lucide-refresh-cw" class="mt-1 size-4 shrink-0 text-primary" />
-              {{ text.install.updates }}
-            </p>
-            <p class="flex items-start gap-2">
-              <UIcon name="i-lucide-terminal" class="mt-1 size-4 shrink-0 text-primary" />
-              <span>
-                {{ text.install.source }}
-                <ULink :href="`${repo}#readme`" target="_blank" class="font-medium text-primary hover:underline">{{ text.install.sourceLink }}</ULink>
-              </span>
-            </p>
-          </div>
+        <div class="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6">
+          <h2 class="text-3xl font-semibold tracking-tight text-highlighted">
+            {{ text.install.title }}
+          </h2>
+          <p class="mt-3 text-muted">
+            {{ text.install.text }}
+          </p>
+          <UTabs v-model="installOn" :items="installTabs" :content="false" class="mx-auto mt-8 w-max" />
+          <CommandBox :command="installCommandFor" class="mt-4" />
+          <p class="mt-4 text-sm text-muted">
+            {{ text.install.next }}
+          </p>
         </div>
       </section>
 
@@ -162,42 +137,26 @@ useSiteSeo()
         </ul>
       </section>
       <section id="faq" class="border-t border-default bg-default">
-        <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+        <div class="mx-auto max-w-3xl px-4 py-20 sm:px-6">
           <h2 class="text-center text-3xl font-semibold tracking-tight text-highlighted">
             {{ text.faq.title }}
           </h2>
-          <dl class="mx-auto mt-10 grid max-w-5xl gap-x-10 gap-y-8 md:grid-cols-2">
-            <div v-for="item in text.faq.items" :key="item.question">
-              <dt class="font-semibold text-highlighted">
+          <!-- Native details keep every answer in the page's HTML, for search engines and AI answers. -->
+          <div class="mt-10 divide-y divide-default overflow-hidden rounded-2xl border border-default bg-muted/40">
+            <details v-for="(item, index) in text.faq.items" :key="item.question" class="group" :open="index === 0">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium text-highlighted transition-colors hover:bg-elevated/50 focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
                 {{ item.question }}
-              </dt>
-              <dd class="mt-2 text-sm/6 text-muted">
+                <UIcon name="i-lucide-chevron-down" class="size-5 shrink-0 text-muted transition-transform duration-200 group-open:rotate-180" />
+              </summary>
+              <p class="px-5 pb-5 text-sm/7 text-muted">
                 {{ item.answer }}
-              </dd>
-            </div>
-          </dl>
+              </p>
+            </details>
+          </div>
         </div>
       </section>
     </main>
 
-    <footer class="border-t border-default">
-      <div class="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-10 text-center text-sm text-muted sm:px-6">
-        <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-          <span class="inline-flex items-center gap-2 font-medium text-highlighted">
-            <img :src="asset('logo.svg')" width="20" height="20" alt="" class="size-5">
-            {{ text.brand }}
-          </span>
-          <span aria-hidden="true">·</span>
-          <ULink :href="`${repo}/releases`" target="_blank" class="font-mono hover:text-highlighted"><bdi dir="ltr">v{{ version }}</bdi></ULink>
-          <span aria-hidden="true">·</span>
-          <ULink :href="`${repo}/blob/main/LICENSE`" target="_blank" class="hover:text-highlighted">{{ text.footer.license }}</ULink>
-          <span aria-hidden="true">·</span>
-          <span>{{ text.footer.madeBy }} <ULink href="https://haythamasalama.me" target="_blank" class="font-medium text-highlighted hover:underline">Haytham A. Salama</ULink></span>
-        </div>
-        <p class="max-w-xl text-xs text-dimmed">
-          {{ text.footer.trademark }}
-        </p>
-      </div>
-    </footer>
+    <SiteFooter />
   </div>
 </template>
