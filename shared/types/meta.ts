@@ -1,0 +1,108 @@
+export interface MetaError {
+  message?: string
+  error_user_title?: string
+  error_user_msg?: string
+  code?: number
+  error_subcode?: number
+}
+
+export interface MetaComponent {
+  type: string
+  format?: string
+  text?: string
+  example?: { body_text?: string[][], header_handle?: string[] }
+  buttons?: { type: string, text: string }[]
+}
+
+export interface MetaTemplate {
+  id: string
+  name: string
+  language: string
+  status: string
+  category: string
+  parameter_format?: string
+  components?: MetaComponent[]
+  quality_score?: { score?: string }
+  rejected_reason?: string
+}
+
+export interface TemplateGroup {
+  name: string
+  category: string
+  items: MetaTemplate[]
+}
+
+export interface TemplateText {
+  header?: string
+  body: string
+  footer?: string
+  examples: string[]
+}
+
+export interface Phone {
+  display_phone_number: string
+  verified_name?: string
+  quality_rating?: string
+  messaging_limit_tier?: string
+  status?: string
+}
+
+export interface AccountSummary {
+  id: string
+  label: string
+  file: string
+  waba_id: string
+  version: string
+  name: string | null
+  phones: Phone[]
+  error: string | null
+}
+
+export interface DiscoveredAccount {
+  waba_id: string
+  name: string | null
+  phones: Phone[]
+}
+
+export interface CurrencyAmount {
+  amount?: string
+  currency?: string
+}
+
+export interface CreditLine {
+  id: string
+  legal_entity_name?: string
+  balance?: CurrencyAmount
+  credit_available?: CurrencyAmount
+  max_balance?: CurrencyAmount
+}
+
+export interface Spend {
+  since: string
+  currency: string | null
+  total: number
+  messages: number
+  by_category: Record<string, { cost: number, messages: number }>
+  daily: { date: string, cost: number, messages: number }[]
+}
+
+export interface TemplateStats {
+  sent: number
+  delivered: number
+  read: number
+  clicked: number
+  cost: number
+  daily: { date: string, sent: number }[]
+}
+
+export interface Analytics {
+  data: Record<string, TemplateStats>
+  days: number
+}
+
+export interface Overview {
+  account: { name?: string, currency?: string, owner_business_info?: { id: string, name?: string }, error?: MetaError }
+  phones: { data?: Phone[], error?: MetaError }
+  spend: Spend | { error: MetaError }
+  credit: { data?: CreditLine[], error?: MetaError } | null
+}
