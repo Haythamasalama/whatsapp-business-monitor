@@ -21,9 +21,9 @@ watch(text, (value) => {
     <div class="min-w-0 space-y-2">
       <div class="flex items-center justify-between gap-2">
         <p class="text-xs text-muted">
-          الصق نص قالب أو عدّله هنا
+          الصق محتوى قالب أو عدّله هنا
         </p>
-        <UButton label="نسخ" icon="i-lucide-copy" color="neutral" variant="ghost" size="xs" @click="copy(text)" />
+        <UButton label="نسخ المحتوى" icon="i-lucide-copy" color="neutral" variant="ghost" size="xs" @click="copy(text)" />
       </div>
       <UTextarea
         v-model="text"

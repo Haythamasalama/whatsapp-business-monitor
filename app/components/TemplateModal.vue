@@ -171,8 +171,8 @@ async function save(): Promise<void> {
           variant="ghost"
         />
         <div v-if="mode === 'view'" class="flex gap-2">
-          <UTooltip text="نسخ القالب بكل لغاته ومتغيراته، لتلصقه في قالب جديد">
-            <UButton label="نسخ" icon="i-lucide-copy" color="neutral" variant="outline" @click="copy(asText)" />
+          <UTooltip text="نسخ محتوى القالب كاملاً بكل لغاته ومتغيراته، لتلصقه في قالب جديد">
+            <UButton label="نسخ المحتوى" icon="i-lucide-copy" color="neutral" variant="outline" @click="copy(asText)" />
           </UTooltip>
           <UTooltip :text="editable ? '' : lockedReason" :disabled="editable">
             <UButton label="تعديل" icon="i-lucide-pencil" :disabled="!editable" @click="mode = 'edit'" />

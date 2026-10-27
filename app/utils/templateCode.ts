@@ -1,4 +1,4 @@
-/** One template with all its languages: what the «كود القالب» tab shows, the copy button copies, and paste reads back. */
+/** One template with all its languages: what the «المحتوى كاملاً» tab shows, the copy button copies, and paste reads back. */
 export interface TemplateDoc {
   name: string
   category: string

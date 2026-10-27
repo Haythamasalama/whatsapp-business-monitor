@@ -70,8 +70,8 @@ watch(() => group.value?.name, () => {
           </p>
         </div>
         <div class="flex gap-2">
-          <UTooltip text="نسخ القالب بكل لغاته ومتغيراته، لتلصقه في قالب جديد">
-            <UButton label="نسخ" icon="i-lucide-copy" color="neutral" variant="outline" size="sm" @click="copy(toText([templateDoc(group)]))" />
+          <UTooltip text="نسخ محتوى القالب كاملاً بكل لغاته ومتغيراته، لتلصقه في قالب جديد">
+            <UButton label="نسخ المحتوى" icon="i-lucide-copy" color="neutral" variant="outline" size="sm" @click="copy(toText([templateDoc(group)]))" />
           </UTooltip>
           <UButton
             label="تعديل"
