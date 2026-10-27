@@ -17,6 +17,18 @@ async function demoAnswer(event: H3Event) {
     return demoAccounts()
   }
 
+  if (!post && path === '/api/app') {
+    return { setup_required: false, user: { username: 'demo' }, instance_name: '', public_url: 'http://127.0.0.1:3211', default_locale: 'ar' }
+  }
+
+  if (!post && path === '/api/settings') {
+    return { instance_name: '', public_url: 'http://127.0.0.1:3211', default_locale: 'ar', update_check: true, storage: '~/.config/whatsapp-templates/whatsapp-manager.db', update_check_forced_off: false }
+  }
+
+  if (post && ['/api/setup', '/api/settings', '/api/auth/password'].includes(path!)) {
+    throw apiError(422, t('server.notInDemo'))
+  }
+
   if (!post && path === '/api/version') {
     return { current: String(useRuntimeConfig().public.version), latest: null, autoUpdate: false }
   }

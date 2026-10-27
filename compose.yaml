@@ -10,8 +10,6 @@ services:
       - "127.0.0.1:3210:3210"
     environment:
       WHATSAPP_TEMPLATES_UPDATE_CHECK: ${WHATSAPP_TEMPLATES_UPDATE_CHECK:-true}
-      # Extra names to open the app with, such as a Herd proxy (whatsapp.test). Set them in .env.
-      WHATSAPP_TEMPLATES_HOSTS: ${WHATSAPP_TEMPLATES_HOSTS:-}
       # Tells the page that the updater below installs new versions on its own.
       WHATSAPP_TEMPLATES_AUTO_UPDATE: "true"
     volumes:

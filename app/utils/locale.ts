@@ -1,17 +1,24 @@
 const LOCALE_KEY = 'whatsapp-templates:locale'
 
-function storedLocale(): Locale {
+function storedLocale(): Locale | null {
   try {
     const value = localStorage.getItem(LOCALE_KEY)
 
-    return isLocale(value) ? value : 'ar'
+    return isLocale(value) ? value : null
   }
   catch {
-    return 'ar'
+    return null
   }
 }
 
-export const locale = ref<Locale>(storedLocale())
+export const locale = ref<Locale>(storedLocale() ?? 'ar')
+
+/** The language set in the app's settings, used until this browser picks one. */
+export function useDefaultLocale(fallback: Locale): void {
+  if (!storedLocale()) {
+    locale.value = fallback
+  }
+}
 
 export function setLocale(next: Locale): void {
   locale.value = next

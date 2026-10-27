@@ -39,7 +39,7 @@ export function useManager() {
   const analyticsLoading = useState('analyticsLoading', () => false)
   const templatesFor = useState<string | null>('templatesFor', () => null)
   const lastLoadedAt = useState('lastLoadedAt', () => 0)
-  const screen = useState<'overview' | 'account' | 'accounts'>('screen', () => 'overview')
+  const screen = useState<'overview' | 'account' | 'accounts' | 'settings'>('screen', () => 'overview')
   const summary = useState<AccountStats[] | null>('summary', () => null)
   const summaryError = useState<string | null>('summaryError', () => null)
   const summaryLoading = useState('summaryLoading', () => false)
@@ -81,6 +81,11 @@ export function useManager() {
     }
     catch (error) {
       const failure = error as { data?: { data?: { error?: MetaError }, error?: MetaError }, statusCode?: number }
+
+      if (failure.statusCode === 401) {
+        useSession().signedOut()
+      }
+
       const reason = errorText(failure.data?.data?.error ?? failure.data?.error)
 
       throw new Error(reason || (failure.statusCode
@@ -110,7 +115,7 @@ export function useManager() {
       screen.value = 'account'
     }
 
-    if (screen.value !== 'accounts') {
+    if (screen.value === 'overview' || screen.value === 'account') {
       await (screen.value === 'account' ? loadAccountData() : loadSummary())
     }
   }

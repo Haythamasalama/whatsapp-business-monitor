@@ -2,6 +2,7 @@
 const { accounts, accountId, current, loading, templates, lastLoadedAt, screen, summaryLoading, summaryLoadedAt, loadAccounts, loadAccountData, loadSummary, switchAccount, showOverview } = useManager()
 
 const onAccount = computed(() => screen.value === 'account')
+const { signOut } = useSession()
 const toast = useToast()
 
 useStatusAlerts()
@@ -17,7 +18,7 @@ const refreshing = computed(() => (onOverview.value ? summaryLoading.value : onA
 const loadedAt = computed(() => (onOverview.value ? summaryLoadedAt.value : lastLoadedAt.value))
 
 function refresh(silent = false): Promise<void> {
-  if (screen.value === 'accounts') {
+  if (screen.value === 'accounts' || screen.value === 'settings') {
     return loadAccounts()
   }
 
@@ -71,16 +72,18 @@ const booting = ref(true)
 // Account ids start with a letter or digit, so '*' can stand for the overview in the mobile picker.
 const OVERVIEW = '*'
 const MANAGE = '+'
+const SETTINGS = '#'
 
 const accountItems = computed(() => [
   { value: OVERVIEW, label: t('nav.overview') },
   { value: MANAGE, label: t('nav.accounts') },
+  { value: SETTINGS, label: t('nav.settings') },
   ...accounts.value.map(account => ({ value: account.id, label: accountTitle(account) })),
 ])
 
 function pick(value: string): void {
-  if (value === MANAGE) {
-    screen.value = 'accounts'
+  if (value === MANAGE || value === SETTINGS) {
+    screen.value = value === MANAGE ? 'accounts' : 'settings'
 
     return
   }
@@ -154,6 +157,15 @@ onMounted(async () => {
         >
           <UIcon name="i-lucide-users" class="size-4.5" /> {{ t('nav.accounts') }}
         </button>
+        <button
+          type="button"
+          class="mt-1 flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+          :class="screen === 'settings' ? 'bg-elevated text-highlighted' : 'text-toned hover:bg-elevated/70'"
+          :aria-current="screen === 'settings' ? 'page' : undefined"
+          @click="screen = 'settings'"
+        >
+          <UIcon name="i-lucide-settings" class="size-4.5" /> {{ t('nav.settings') }}
+        </button>
       </nav>
 
       <USeparator />
@@ -167,7 +179,7 @@ onMounted(async () => {
           <AppBrand compact />
           <USelect
             v-if="accounts.length"
-            :model-value="onOverview ? OVERVIEW : screen === 'accounts' ? MANAGE : accountId ?? undefined"
+            :model-value="onOverview ? OVERVIEW : screen === 'accounts' ? MANAGE : screen === 'settings' ? SETTINGS : accountId ?? undefined"
             :items="accountItems"
             class="w-52 max-w-full"
             :aria-label="t('accounts.picker')"
@@ -193,6 +205,9 @@ onMounted(async () => {
               :aria-label="t('header.language')"
               @click="setLocale(locale === 'ar' ? 'en' : 'ar')"
             />
+          </UTooltip>
+          <UTooltip :text="t('settings.signOut')">
+            <UButton icon="i-lucide-log-out" color="neutral" variant="ghost" size="sm" :aria-label="t('settings.signOut')" @click="signOut()" />
           </UTooltip>
           <UTooltip :text="t('header.colorMode')">
             <UColorModeButton size="sm" />
@@ -234,7 +249,7 @@ onMounted(async () => {
           <USkeleton class="h-32 w-full rounded-xl" />
         </div>
 
-        <div v-else-if="!accounts.length" class="grid place-items-center gap-3 py-20 text-center">
+        <div v-else-if="!accounts.length && (onOverview || onAccount)" class="grid place-items-center gap-3 py-20 text-center">
           <span class="grid size-14 place-items-center rounded-full bg-elevated text-muted">
             <UIcon name="i-lucide-message-circle-plus" class="size-6" />
           </span>
@@ -248,6 +263,8 @@ onMounted(async () => {
         </div>
 
         <OverviewPage v-else-if="onOverview" @open="switchAccount" />
+
+        <SettingsPage v-else-if="screen === 'settings'" @export="exportOpen = true" @import="importOpen = true" />
 
         <AccountsPage
           v-else-if="screen === 'accounts'"
