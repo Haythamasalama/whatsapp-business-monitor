@@ -30,7 +30,12 @@ async function demoAnswer(event: H3Event) {
   }
 
   if (!post && path === '/api/version') {
-    return { current: String(useRuntimeConfig().public.version), latest: null, autoUpdate: false }
+    return { current: String(useRuntimeConfig().public.version), latest: null, autoUpdate: false, canUpdateNow: false }
+  }
+
+  // The demo has no updater to ask.
+  if (post && path === '/api/version/update') {
+    throw apiError(422, t('server.notInDemo'))
   }
 
   if (!post && path === '/api/summary') {

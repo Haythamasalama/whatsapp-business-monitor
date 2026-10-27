@@ -1,21 +1,10 @@
 <script setup lang="ts">
 const { version } = useRuntimeConfig().public
-const { api } = useManager()
+const { info, updating, load, updateNow } = useAppUpdate()
 
-const update = ref<Release | null>(null)
-const autoUpdate = ref(false)
+const update = computed(() => info.value?.latest ?? null)
 
-onMounted(async () => {
-  try {
-    const info = await api<VersionInfo>('/api/version', { scoped: false })
-
-    update.value = info.latest
-    autoUpdate.value = info.autoUpdate
-  }
-  catch {
-    // The footer simply shows no update when the check fails.
-  }
-})
+onMounted(load)
 </script>
 
 <template>
@@ -41,7 +30,19 @@ onMounted(async () => {
         :title="t('footer.releases')"
       >v{{ version }}</a>
 
-      <UTooltip v-if="update" :text="autoUpdate ? t('footer.updateAuto') : t('footer.updateHint')">
+      <UTooltip v-if="update && info?.canUpdateNow" :text="t('footer.updateAuto')">
+        <UButton
+          :label="t('footer.updateNow') + ` · v${update.version}`"
+          icon="i-lucide-arrow-up-circle"
+          color="primary"
+          variant="soft"
+          size="xs"
+          class="rounded-full"
+          :loading="updating"
+          @click="updateNow"
+        />
+      </UTooltip>
+      <UTooltip v-else-if="update" :text="info?.autoUpdate ? `${t('footer.updateAuto')} · ${t('footer.updateEnable')}` : t('footer.updateHint')">
         <UButton
           :to="update.url"
           target="_blank"

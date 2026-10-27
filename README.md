@@ -62,7 +62,7 @@ curl -fsSL https://raw.githubusercontent.com/Haythamasalama/whatsapp-business-mo
 Open the address it prints, create your admin account, then add a WhatsApp account with a Meta system user token that has `whatsapp_business_management`.
 
 - **On a server:** add `--server` so other computers can open it: `… | sh -s -- --server`
-- **Updates install themselves** every 6 hours, with the same settings and data. To update right away, run the command again.
+- **Updates install themselves** every 6 hours, with the same settings and data. To update right away, press **Update now** at the bottom of the app or in Settings. Installs made before v0.7.0 get the button after running the install command once more.
 - **Your data** stays in `~/whatsapp-business-monitor`: the settings in `.env`, the database in `data/`.
 
 <details>
