@@ -1,5 +1,5 @@
 import { content, installCommand } from '../../app/utils/content'
-import { docs } from '../../app/utils/docs'
+import { guides } from '../../app/utils/docs'
 
 // The llms.txt convention (llmstxt.org): the whole page as plain Markdown, for AI assistants and search.
 export default defineEventHandler((event) => {
@@ -37,21 +37,25 @@ export default defineEventHandler((event) => {
     '## Questions',
     '',
     ...en.faq.items.flatMap(item => [`### ${item.question}`, '', item.answer, '']),
-    `## ${docs.en.heading}`,
-    '',
-    docs.en.intro,
-    '',
-    ...docs.en.sections.flatMap(section => [`### ${section.title}`, '', section.text, ...(section.points ?? []).map(point => `- ${point}`), '']),
-    `### ${docs.en.limitsTitle}`,
-    '',
-    ...docs.en.limits.map(([name, limit]) => `- **${name}:** ${limit}`),
-    '',
+    ...Object.values(guides).flatMap(({ en: guide }) => [
+      `## ${guide.heading}`,
+      '',
+      guide.intro,
+      '',
+      ...guide.sections.flatMap(section => [`### ${section.title}`, '', section.text, ...(section.points ?? []).map(point => `- ${point}`), '']),
+      `### ${guide.limitsTitle}`,
+      '',
+      ...guide.limits.map(([name, limit]) => `- **${name}:** ${limit}`),
+      '',
+    ]),
     '## Links',
     '',
     `- [Website](${siteUrl}/): features, screenshots and install`,
     `- [Website in Arabic](${siteUrl}/ar/)`,
-    `- [Accounts & numbers guide](${siteUrl}${docs.en.path})`,
-    `- [Accounts & numbers guide in Arabic](${siteUrl}${docs.ar.path})`,
+    ...Object.values(guides).flatMap(guide => [
+      `- [${guide.en.heading} guide](${siteUrl}${guide.en.path})`,
+      `- [${guide.en.heading} guide in Arabic](${siteUrl}${guide.ar.path})`,
+    ]),
     `- [Source code and README](${repo})`,
     `- [Releases](${repo}/releases)`,
     `- [Contributing](${repo}/blob/main/CONTRIBUTING.md)`,

@@ -1,4 +1,4 @@
-// The "Accounts & numbers" guide, in both languages. The screenshots come from demo mode.
+// The guides, in both languages. The screenshots come from demo mode.
 
 export interface DocSection {
   id: string
@@ -10,6 +10,7 @@ export interface DocSection {
 
 const en = {
   path: '/docs/accounts-and-numbers/',
+  cover: 'account-settings.png',
   nav: 'Accounts & numbers',
   title: 'Accounts & numbers: WhatsApp Business Monitor docs',
   description: 'What the "Account settings" tab shows and lets you change: sending health, verification, payment method, phone numbers, profile, display name, green badge, username, chat start, QR codes and blocked people.',
@@ -94,6 +95,7 @@ const en = {
 
 const ar: typeof en = {
   path: '/ar/docs/accounts-and-numbers/',
+  cover: 'account-settings-ar.png',
   nav: 'الحسابات والأرقام',
   title: 'الحسابات والأرقام: دليل مراقب واتساب الأعمال',
   description: 'ما يعرضه تبويب «إعدادات الحساب» وما يتيح تغييره: قدرة الإرسال، والتوثيق، ووسيلة الدفع، والأرقام، والملف، والاسم الظاهر، والشارة الخضراء، واسم المستخدم، وبداية المحادثة، ورموز QR، والمحظورون.',
@@ -177,3 +179,165 @@ const ar: typeof en = {
 }
 
 export const docs = { en, ar }
+
+const templatesEn: typeof en = {
+  path: '/docs/templates/',
+  cover: 'templates-actions.png',
+  nav: 'Templates',
+  title: 'Templates: WhatsApp Business Monitor docs',
+  description: 'Delete, archive, unarchive, unpause and copy WhatsApp message templates between accounts, and see how many of your 250 or 6,000 templates are used.',
+  keywords: 'delete WhatsApp template, archive WhatsApp template, unpause WhatsApp template, paused template, migrate WhatsApp templates, copy templates between WABA, WhatsApp template limit, message_templates API',
+  heading: 'Templates',
+  intro: 'Open an account to see its templates. Besides creating and editing them, you can now delete, archive, unpause and copy them, alone or several at once. Every change asks you to confirm first and says what Meta does with it.',
+  onThisPage: 'On this page',
+  back: 'Back to the home page',
+  limitsTitle: 'Meta\'s limits at a glance',
+  limits: [
+    ['Templates per account', '250 on an unverified business, 6,000 on a verified one; every language counts'],
+    ['Delete', 'a deleted name can\'t be used again for 30 days; disabled templates can\'t be deleted; up to 100 at a time'],
+    ['Archive', 'approved or rejected templates only; up to 100 at a time'],
+    ['Auto-archive', 'after 12 months unused; deleted 28 days later unless unarchived'],
+    ['Pause', '3 hours the first time, 6 hours the second; the third time the template is disabled'],
+    ['Copy', 'same business only; approved templates with green or unknown quality; up to 500 at a time'],
+  ],
+  sections: [
+    {
+      id: 'quota',
+      title: 'How many templates you have left',
+      text: 'Under the title the page shows how many templates the account has and how many Meta allows: 250 when the business is not verified, 6,000 when it is. Each language of a template counts as one.',
+      image: { file: 'templates-actions.png', alt: 'The templates of a fictional store: the count used out of 6,000, two templates selected, and the archive, unarchive, copy and delete buttons.' },
+    },
+    {
+      id: 'select',
+      title: 'Acting on several templates',
+      text: 'Tick templates in the table to archive, unarchive, copy or delete them together. Ticking a name includes every language of it.',
+      points: [
+        'Meta takes up to 100 templates in one delete or archive, and up to 500 in one copy.',
+        'When Meta refuses some of them, the page lists which ones and why.',
+      ],
+    },
+    {
+      id: 'delete',
+      title: 'Deleting',
+      text: 'From a template\'s "More actions" menu, delete the language you are looking at or every language of the name. This can\'t be undone.',
+      points: [
+        'The name can\'t be used for a new template for 30 days.',
+        'Disabled templates can\'t be deleted. In a bulk delete, one disabled template makes Meta delete none, so the page stops before sending.',
+        'A template with messages still being delivered shows "Being deleted" for up to 30 days.',
+      ],
+    },
+    {
+      id: 'archive',
+      title: 'Archiving',
+      text: 'An archived template stays in the list with the "Archived" status but can\'t be sent. Unarchive it to put it back in the status it had.',
+      points: [
+        'Only approved or rejected templates can be archived.',
+        'Meta archives a template unused for 12 months on its own, and deletes it 28 days later unless you unarchive it.',
+      ],
+    },
+    {
+      id: 'unpause',
+      title: 'Unpausing',
+      text: 'Meta pauses a template when people report or block it. The template\'s window explains why and has an "Unpause" button.',
+      points: [
+        'A quality pause lasts 3 hours the first time and 6 hours the second; the third time the template is disabled.',
+        'A template paused by pacing stays paused until someone unpauses it.',
+      ],
+      image: { file: 'template-paused.png', alt: 'A paused template: the reason and pause rules, an Unpause button, and the More actions menu with unpause, copy and delete.' },
+    },
+    {
+      id: 'copy',
+      title: 'Copying to another account',
+      text: '"Copy to another account" asks Meta to copy templates to another saved account of the same business. Choose the account and the templates, then see which ones were copied and which were not, with Meta\'s reason.',
+      points: [
+        'Only approved templates with green or unknown quality can be copied.',
+        'The copies are new templates in the other account and go through review there.',
+      ],
+      image: { file: 'templates-copy.png', alt: 'The copy window after a copy: two templates copied to the other account.' },
+    },
+  ],
+}
+
+const templatesAr: typeof ar = {
+  path: '/ar/docs/templates/',
+  cover: 'templates-actions-ar.png',
+  nav: 'القوالب',
+  title: 'القوالب: دليل مراقب واتساب الأعمال',
+  description: 'احذف قوالب رسائل واتساب وأرشفها وألغِ أرشفتها وألغِ إيقافها وانسخها بين الحسابات، واعرف كم استخدمت من 250 أو 6,000 قالب.',
+  keywords: 'حذف قالب واتساب, أرشفة قالب واتساب, قالب موقوف واتساب, إلغاء إيقاف القالب, نسخ القوالب بين الحسابات, حد قوالب واتساب, واجهة قوالب واتساب',
+  heading: 'القوالب',
+  intro: 'افتح حساباً لترى قوالبه. إلى جانب إنشائها وتعديلها، تستطيع الآن حذفها وأرشفتها وإلغاء إيقافها ونسخها، واحداً واحداً أو عدة قوالب معاً. كل تغيير يطلب تأكيدك أولاً ويذكر ما يفعله Meta به.',
+  onThisPage: 'في هذه الصفحة',
+  back: 'العودة إلى الصفحة الرئيسية',
+  limitsTitle: 'حدود Meta باختصار',
+  limits: [
+    ['القوالب في الحساب', '250 للنشاط غير الموثّق، و6,000 للموثّق، وكل لغة تُحسب قالباً'],
+    ['الحذف', 'لا يُستخدم الاسم المحذوف قبل 30 يوماً، والقالب المعطّل لا يُحذف، وحتى 100 في المرة'],
+    ['الأرشفة', 'للقالب المعتمد أو المرفوض فقط، وحتى 100 في المرة'],
+    ['الأرشفة التلقائية', 'بعد 12 شهراً دون استخدام، ويُحذف بعدها بـ 28 يوماً إن لم تُلغَ أرشفته'],
+    ['الإيقاف', '3 ساعات في المرة الأولى، و6 في الثانية، وفي الثالثة يُعطَّل القالب'],
+    ['النسخ', 'داخل النشاط التجاري نفسه فقط، للقالب المعتمد بجودة خضراء أو غير معروفة، وحتى 500 في المرة'],
+  ],
+  sections: [
+    {
+      id: 'quota',
+      title: 'كم بقي لك من القوالب',
+      text: 'تحت العنوان تعرض الصفحة عدد قوالب الحساب وما يسمح به Meta: 250 إن لم يكن النشاط موثّقاً، و6,000 إن كان موثّقاً. وكل لغة من القالب تُحسب قالباً.',
+      image: { file: 'templates-actions-ar.png', alt: 'قوالب متجر خيالي: العدد المستخدم من 6,000، وقالبان محدّدان، وأزرار الأرشفة وإلغائها والنسخ والحذف.' },
+    },
+    {
+      id: 'select',
+      title: 'العمل على عدة قوالب',
+      text: 'حدّد القوالب في الجدول لتؤرشفها أو تلغي أرشفتها أو تنسخها أو تحذفها معاً. تحديد الاسم يشمل كل لغاته.',
+      points: [
+        'يقبل Meta حتى 100 قالب في الحذف أو الأرشفة الواحدة، وحتى 500 في النسخ الواحد.',
+        'حين يرفض Meta بعضها، تعرض الصفحة أيها وسبب الرفض.',
+      ],
+    },
+    {
+      id: 'delete',
+      title: 'الحذف',
+      text: 'من قائمة «إجراءات أخرى» في القالب، احذف اللغة المعروضة أو كل لغات الاسم. لا يمكن التراجع عن الحذف.',
+      points: [
+        'لا يُستخدم الاسم لقالب جديد قبل 30 يوماً.',
+        'القالب المعطّل لا يُحذف. وفي الحذف الجماعي يكفي قالب معطّل واحد ليرفض Meta حذفها كلها، لذا تتوقف الصفحة قبل الإرسال.',
+        'القالب الذي ما زالت رسائله تُسلَّم يظهر «قيد الحذف» حتى 30 يوماً.',
+      ],
+    },
+    {
+      id: 'archive',
+      title: 'الأرشفة',
+      text: 'القالب المؤرشف يبقى في القائمة بحالة «مؤرشف» لكنه لا يُرسل. ألغِ أرشفته ليعود إلى حالته السابقة.',
+      points: [
+        'لا يُؤرشف إلا القالب المعتمد أو المرفوض.',
+        'يؤرشف Meta وحده كل قالب لم يُستخدم 12 شهراً، ثم يحذفه بعد 28 يوماً إن لم تلغِ أرشفته.',
+      ],
+    },
+    {
+      id: 'unpause',
+      title: 'إلغاء الإيقاف',
+      text: 'يوقف Meta القالب حين يبلّغ الناس عنه أو يحظرونه. تشرح نافذة القالب السبب وفيها زر «إلغاء الإيقاف».',
+      points: [
+        'إيقاف الجودة يدوم 3 ساعات في المرة الأولى و6 في الثانية، وفي الثالثة يُعطَّل القالب.',
+        'القالب الموقوف بسبب التدرّج يبقى موقوفاً حتى يُلغى إيقافه.',
+      ],
+      image: { file: 'template-paused-ar.png', alt: 'قالب موقوف: السبب وقواعد الإيقاف، وزر إلغاء الإيقاف، وقائمة إجراءات أخرى فيها إلغاء الإيقاف والنسخ والحذف.' },
+    },
+    {
+      id: 'copy',
+      title: 'النسخ إلى حساب آخر',
+      text: '«نسخ إلى حساب آخر» يطلب من Meta نسخ القوالب إلى حساب محفوظ آخر للنشاط التجاري نفسه. اختر الحساب والقوالب، ثم اعرف أيها نُسخ وأيها لم يُنسخ مع سبب Meta.',
+      points: [
+        'لا يُنسخ إلا القالب المعتمد بجودة خضراء أو غير معروفة.',
+        'النسخ قوالب جديدة في الحساب الآخر، وتمر بالمراجعة هناك.',
+      ],
+      image: { file: 'templates-copy-ar.png', alt: 'نافذة النسخ بعد النسخ: قالبان نُسخا إلى الحساب الآخر.' },
+    },
+  ],
+}
+
+export const templateDocs = { en: templatesEn, ar: templatesAr }
+
+/** Every guide, in the order the docs menu lists them. */
+export const guides = { accounts: docs, templates: templateDocs }
+export type Guide = keyof typeof guides

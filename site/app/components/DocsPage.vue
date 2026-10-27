@@ -1,7 +1,11 @@
 <script setup lang="ts">
+const props = defineProps<{ guide: Guide }>()
+
 const { text, lang, isRtl } = useLang()
 const { siteUrl } = useRuntimeConfig().public
-const page = computed(() => docs[lang.value])
+const pages = computed(() => guides[props.guide])
+const page = computed(() => pages.value[lang.value])
+const otherGuides = computed(() => Object.values(guides).map(guide => guide[lang.value]))
 
 useHead({
   htmlAttrs: { lang, dir: () => (isRtl.value ? 'rtl' : 'ltr') },
@@ -9,9 +13,9 @@ useHead({
   link: [
     { rel: 'icon', type: 'image/svg+xml', href: asset('favicon.svg') },
     { rel: 'canonical', href: () => `${siteUrl}${page.value.path}` },
-    { rel: 'alternate', hreflang: 'en', href: `${siteUrl}${docs.en.path}` },
-    { rel: 'alternate', hreflang: 'ar', href: `${siteUrl}${docs.ar.path}` },
-    { rel: 'alternate', hreflang: 'x-default', href: `${siteUrl}${docs.en.path}` },
+    { rel: 'alternate', hreflang: 'en', href: () => `${siteUrl}${pages.value.en.path}` },
+    { rel: 'alternate', hreflang: 'ar', href: () => `${siteUrl}${pages.value.ar.path}` },
+    { rel: 'alternate', hreflang: 'x-default', href: () => `${siteUrl}${pages.value.en.path}` },
   ],
   script: [{
     type: 'application/ld+json',
@@ -25,7 +29,7 @@ useHead({
           'keywords': page.value.keywords,
           'inLanguage': lang.value,
           'url': `${siteUrl}${page.value.path}`,
-          'image': `${siteUrl}/screenshots/${lang.value === 'ar' ? 'account-settings-ar.png' : 'account-settings.png'}`,
+          'image': `${siteUrl}/screenshots/${page.value.cover}`,
           'author': { '@type': 'Person', 'name': 'Haytham A. Salama', 'url': 'https://haythamasalama.me' },
           'about': { '@id': `${siteUrl}/#app` },
           'articleSection': page.value.sections.map(section => section.title),
@@ -54,7 +58,7 @@ useSeoMeta({
   ogTitle: () => page.value.title,
   ogDescription: () => page.value.description,
   ogUrl: () => `${siteUrl}${page.value.path}`,
-  ogImage: () => `${siteUrl}/screenshots/${lang.value === 'ar' ? 'account-settings-ar.png' : 'account-settings.png'}`,
+  ogImage: () => `${siteUrl}/screenshots/${page.value.cover}`,
 })
 </script>
 
@@ -65,6 +69,20 @@ useSeoMeta({
     <main class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[14rem_1fr]">
       <aside class="hidden lg:block">
         <nav class="sticky top-24 space-y-1 text-sm">
+          <p class="mb-2 font-semibold text-highlighted">
+            {{ text.nav.docs }}
+          </p>
+          <a
+            v-for="guide in otherGuides"
+            :key="guide.path"
+            :href="guide.path"
+            class="block rounded-md px-2 py-1 hover:bg-elevated hover:text-highlighted"
+            :class="guide.path === page.path ? 'bg-elevated font-medium text-highlighted' : 'text-muted'"
+            :aria-current="guide.path === page.path ? 'page' : undefined"
+          >
+            {{ guide.nav }}
+          </a>
+          <div class="my-4 border-t border-default" />
           <p class="mb-2 font-semibold text-highlighted">
             {{ page.onThisPage }}
           </p>

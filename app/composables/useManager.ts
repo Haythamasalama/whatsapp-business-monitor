@@ -31,6 +31,7 @@ export function useManager() {
   const accountId = useState<string | null>('accountId', () => null)
   const templates = useState<MetaTemplate[]>('templates', () => [])
   const templatesError = useState<string | null>('templatesError', () => null)
+  const templateQuota = useState<TemplateQuota | null>('templateQuota', () => null)
   const overview = useState<Overview | null>('overview', () => null)
   const overviewError = useState<string | null>('overviewError', () => null)
   const loading = useState('loading', () => false)
@@ -104,6 +105,7 @@ export function useManager() {
     if (!response.data.length) {
       accountId.value = null
       templates.value = []
+      templateQuota.value = null
       overview.value = null
 
       return
@@ -164,7 +166,7 @@ export function useManager() {
 
     const [overviewResult, templatesResult] = await Promise.allSettled([
       api<Overview>('/api/overview'),
-      api<{ data: MetaTemplate[] }>('/api/templates'),
+      api<{ data: MetaTemplate[], quota: TemplateQuota | null }>('/api/templates'),
     ])
 
     if (mine !== ticket) {
@@ -179,6 +181,7 @@ export function useManager() {
     if (templatesResult.status === 'fulfilled' || !silent) {
       templatesFor.value = account
       templates.value = templatesResult.status === 'fulfilled' ? templatesResult.value.data : []
+      templateQuota.value = templatesResult.status === 'fulfilled' ? templatesResult.value.quota : null
       templatesError.value = templatesResult.status === 'rejected' ? (templatesResult.reason as Error).message : null
     }
 
@@ -230,10 +233,11 @@ export function useManager() {
     const account = accountId.value
 
     try {
-      const list = (await api<{ data: MetaTemplate[] }>('/api/templates')).data
+      const result = await api<{ data: MetaTemplate[], quota: TemplateQuota | null }>('/api/templates')
 
       templatesFor.value = account
-      templates.value = list
+      templates.value = result.data
+      templateQuota.value = result.quota
       templatesError.value = null
       lastLoadedAt.value = Date.now()
     }
@@ -301,6 +305,7 @@ export function useManager() {
     current,
     templates,
     templatesError,
+    templateQuota,
     overview,
     overviewError,
     loading,

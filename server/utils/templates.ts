@@ -69,3 +69,30 @@ export function readTemplateText(body: Record<string, unknown>): TemplateText {
     examples: Array.isArray(body.examples) ? body.examples.map(String) : [],
   }
 }
+
+/** Meta answers failures as a map of template id to reason; the page gets a list. */
+export function failedTemplates(value: unknown): TemplateActionResult['failed'] {
+  if (Array.isArray(value)) {
+    return value.map(id => ({ id: String(id), reason: '' }))
+  }
+
+  return Object.entries((value ?? {}) as Record<string, unknown>).map(([id, reason]) => ({ id, reason: String(reason ?? '') }))
+}
+
+/** How many templates the account has and may have (250 or 6,000). Null when Meta does not say. */
+export async function templateQuota(account: Account): Promise<TemplateQuota | null> {
+  // https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/overview
+  const response = await graph(account, 'GET', `${account.waba}/message_templates`, {
+    fields: 'id',
+    limit: 1,
+    summary: 'total_count,message_template_count,message_template_limit',
+  })
+  const used = Number(response.summary?.message_template_count ?? response.summary?.total_count)
+  const limit = Number(response.summary?.message_template_limit)
+
+  return response.error || !Number.isFinite(used) || !Number.isFinite(limit) || limit <= 0 ? null : { used, limit }
+}
+
+export function readTemplateIds(value: unknown): string[] {
+  return Array.isArray(value) ? [...new Set(value.map(id => String(id).trim()).filter(Boolean))] : []
+}

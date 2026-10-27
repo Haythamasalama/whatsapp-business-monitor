@@ -26,6 +26,7 @@ Free and open source. It runs on your computer or your server, and your tokens n
 - 🔔 **Alerts** when a template is approved, rejected or paused, with Meta's reason in plain words.
 - 📱 **Number health:** whether each number can send now and why not, its quality rating and daily limit.
 - ⚙️ **Account settings:** business verification, payment method, people with access and the activity log; for each number its profile and photo, display name, green badge, username, ice breakers and commands, QR codes and short links, and blocked people. [Guide](https://wbm.haythamasalama.me/docs/accounts-and-numbers/)
+- 🗂️ **Template housekeeping:** delete a template in one language or all, archive and unarchive, unpause a paused one, copy templates to another account of the same business, act on several at once, and see how many of your 250 or 6,000 templates are used. [Guide](https://wbm.haythamasalama.me/docs/templates/)
 - 👥 **Several accounts:** find them from a token, and move them all to another computer in one encrypted file.
 - 🌍 **Arabic or English,** light or dark.
 
@@ -36,6 +37,8 @@ Free and open source. It runs on your computer or your server, and your tokens n
 | <img src="docs/screenshots/dashboard.png" alt="An account: cost, messages, number, daily cost, cost by type, number health and the templates table."> | <img src="docs/screenshots/template-preview.png" alt="A template's preview, details and 30-day numbers."> |
 | **List and preview** | **Paste templates as text** |
 | <img src="docs/screenshots/views-split.png" alt="The templates as a list, with the selected one's preview and numbers beside it."> | <img src="docs/screenshots/create-from-text.png" alt="Two pasted templates: one update and one new template."> |
+| **Template housekeeping** | **A paused template** |
+| <img src="docs/screenshots/templates-actions.png" alt="Templates with two selected and the archive, unarchive, copy and delete buttons, and the count used out of 6,000."> | <img src="docs/screenshots/template-paused.png" alt="A paused template with the pause rules, an Unpause button and the More actions menu."> |
 | **Account settings** | **A number's QR codes** |
 | <img src="docs/screenshots/account-settings.png" alt="Account settings: sending health with reasons, account details, numbers, people with access and the activity log."> | <img src="docs/screenshots/number-qr.png" alt="A number's QR codes with download, edit and delete."> |
 | **Accounts** | **Settings** |

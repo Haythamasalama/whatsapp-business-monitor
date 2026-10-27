@@ -17,6 +17,9 @@ const result = ref<{ tone: Tone, message: string } | null>(null)
 const saving = ref(false)
 const editTab = ref<'fields' | 'code'>('fields')
 const copy = useCopy()
+const { run, busy } = useTemplateAction()
+const { accounts } = useManager()
+const copyOpen = ref(false)
 
 // Editing covers one language: the code shows it alone, and a pasted code with several languages
 // gives this one its text (or the first one when it is missing).
@@ -81,6 +84,72 @@ watch([() => template.value?.id, mode], () => {
   result.value = null
 }, { immediate: true })
 
+// Writes on this template. Each one is confirmed with Meta's rule for it before anything is sent.
+async function unpause(): Promise<void> {
+  if (template.value) {
+    await run({ path: `/api/templates/${template.value.id}/unpause`, confirm: t('templateActions.unpauseConfirm'), confirmLabel: t('templateActions.unpause'), done: () => t('templateActions.unpaused') })
+  }
+}
+
+async function archive(unarchive: boolean): Promise<void> {
+  if (template.value) {
+    await run<TemplateActionResult>({
+      path: '/api/templates/archive',
+      body: { ids: [template.value.id], action: unarchive ? 'unarchive' : 'archive' },
+      confirm: t(unarchive ? 'templateActions.unarchiveConfirm' : 'templateActions.archiveConfirm', { n: 1 }),
+      confirmLabel: t(unarchive ? 'templateActions.unarchive' : 'templateActions.archive'),
+      done: result => t(unarchive ? 'templateActions.unarchivedDone' : 'templateActions.archived', { n: result.done.length }),
+    })
+  }
+}
+
+async function remove(all: boolean): Promise<void> {
+  const current = template.value
+
+  if (!current) {
+    return
+  }
+
+  const removed = await run<{ success?: boolean }>({
+    path: '/api/templates',
+    method: 'DELETE',
+    query: all ? { name: current.name } : { name: current.name, id: current.id },
+    confirm: all
+      ? t('templateActions.deleteAllConfirm', { name: current.name })
+      : t('templateActions.deleteOneConfirm', { name: current.name, language: languageName(current.language) }),
+    confirmLabel: t('templateActions.deleteSelected'),
+    danger: true,
+    done: () => t('templateActions.deleted'),
+  })
+
+  if (removed && (all || (group.value?.items.length ?? 0) === 0)) {
+    open.value = false
+  }
+}
+
+const anyDisabled = computed(() => Boolean(group.value?.items.some(entry => entry.status === 'DISABLED')))
+
+const actions = computed(() => {
+  const current = template.value
+
+  if (!current) {
+    return []
+  }
+
+  return [
+    [
+      ...(current.status === 'PAUSED' ? [{ label: t('templateActions.unpause'), icon: 'i-lucide-circle-play', onSelect: unpause }] : []),
+      ...(ARCHIVABLE_STATUSES.includes(current.status) ? [{ label: t('templateActions.archive'), icon: 'i-lucide-archive', onSelect: () => archive(false) }] : []),
+      ...(current.status === 'ARCHIVED' ? [{ label: t('templateActions.unarchive'), icon: 'i-lucide-archive-restore', onSelect: () => archive(true) }] : []),
+      { label: t('templateActions.copy'), icon: 'i-lucide-copy-plus', disabled: accounts.value.length < 2 || !canCopyTemplate(current), onSelect: () => { copyOpen.value = true } },
+    ],
+    [
+      { label: t('templateActions.deleteOne'), icon: 'i-lucide-trash', color: 'error' as const, disabled: current.status === 'DISABLED', onSelect: () => remove(false) },
+      { label: t('templateActions.deleteAll'), icon: 'i-lucide-trash-2', color: 'error' as const, disabled: anyDisabled.value, onSelect: () => remove(true) },
+    ],
+  ]
+})
+
 async function save(): Promise<void> {
   const problems = templateProblems(values.value)
 
@@ -127,6 +196,9 @@ async function save(): Promise<void> {
         <UTabs v-if="tabs.length > 1" v-model="activeId" :items="tabs" :content="false" variant="link" />
 
         <template v-if="mode === 'view'">
+          <UAlert v-if="template.status === 'PAUSED'" color="warning" variant="subtle" icon="i-lucide-circle-pause" :description="t('templateActions.pausedNote')" :actions="[{ label: t('templateActions.unpause'), color: 'warning', variant: 'solid', loading: busy, onClick: unpause }]" />
+          <UAlert v-else-if="template.status === 'ARCHIVED'" color="neutral" variant="subtle" icon="i-lucide-archive" :description="t('templateActions.archivedNote')" :actions="[{ label: t('templateActions.unarchive'), color: 'neutral', variant: 'solid', loading: busy, onClick: () => archive(true) }]" />
+
           <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_20rem]">
             <WhatsAppPreview :values="previewValues" :media="parts.media" :buttons="parts.buttons" class="min-w-0" />
 
@@ -171,6 +243,9 @@ async function save(): Promise<void> {
           variant="ghost"
         />
         <div v-if="mode === 'view'" class="flex gap-2">
+          <UDropdownMenu :items="actions" :content="{ align: 'end' }">
+            <UButton :label="t('templateActions.more')" icon="i-lucide-ellipsis" color="neutral" variant="outline" :loading="busy" />
+          </UDropdownMenu>
           <UTooltip :text="t('template.copyHint')">
             <UButton :label="t('template.copy')" icon="i-lucide-copy" color="neutral" variant="outline" @click="copy(asText)" />
           </UTooltip>
@@ -188,4 +263,6 @@ async function save(): Promise<void> {
       </div>
     </template>
   </UModal>
+
+  <CopyTemplatesModal v-if="template" v-model:open="copyOpen" :ids="[template.id]" />
 </template>

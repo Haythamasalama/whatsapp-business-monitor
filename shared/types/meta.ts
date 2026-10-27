@@ -274,3 +274,13 @@ export interface PhoneSettings {
   qr: { data?: QrCode[], error?: MetaError }
   blocked: { data?: BlockedUser[], error?: MetaError, more?: boolean }
 }
+
+export interface TemplateQuota {
+  used: number
+  limit: number
+}
+
+export interface TemplateActionResult {
+  done: string[]
+  failed: { id: string, reason: string }[]
+}

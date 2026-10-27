@@ -4,11 +4,12 @@ import type { TableColumn } from '@nuxt/ui'
 
 const emit = defineEmits<{ open: [name: string, mode: 'view' | 'edit', id?: string], create: [], paste: [] }>()
 
-const { groups, loading, templatesError, accountId, analytics, analyticsError, analyticsLoading, statsFor, enableAnalytics } = useManager()
+const { groups, loading, templatesError, templateQuota, accounts, accountId, analytics, analyticsError, analyticsLoading, statsFor, enableAnalytics } = useManager()
 const confirm = useConfirm()
 const toast = useToast()
 
 const UBadge = resolveComponent('UBadge')
+const UCheckbox = resolveComponent('UCheckbox')
 const UButton = resolveComponent('UButton')
 const UTooltip = resolveComponent('UTooltip')
 const USkeleton = resolveComponent('USkeleton')
@@ -52,6 +53,67 @@ watch(view, (value) => {
     // The choice is only a convenience; without storage it resets on the next visit.
   }
 })
+
+// Templates chosen by name for a bulk action; every language of a chosen name is included.
+const selected = ref<string[]>([])
+const copyOpen = ref(false)
+const { run, busy } = useTemplateAction()
+
+watch(accountId, () => (selected.value = []))
+watch(groups, list => (selected.value = selected.value.filter(name => list.some(group => group.name === name))))
+
+const selectedItems = computed(() => groups.value.filter(group => selected.value.includes(group.name)).flatMap(group => group.items))
+const selectedIds = computed(() => selectedItems.value.map(entry => entry.id))
+
+function toggle(name: string, on: boolean | 'indeterminate'): void {
+  selected.value = on === true ? [...new Set([...selected.value, name])] : selected.value.filter(value => value !== name)
+}
+
+const allSelected = computed(() => filtered.value.length > 0 && filtered.value.every(group => selected.value.includes(group.name)))
+
+function toggleAll(on: boolean | 'indeterminate'): void {
+  selected.value = on === true ? filtered.value.map(group => group.name) : []
+}
+
+async function bulkArchive(unarchive: boolean): Promise<void> {
+  const ids = selectedItems.value.filter(entry => (unarchive ? entry.status === 'ARCHIVED' : ARCHIVABLE_STATUSES.includes(entry.status))).map(entry => entry.id)
+
+  if (!ids.length) {
+    toast.add({ title: t('templateActions.failedTitle'), color: 'warning' })
+
+    return
+  }
+
+  if (await run<TemplateActionResult>({
+    path: '/api/templates/archive',
+    body: { ids, action: unarchive ? 'unarchive' : 'archive' },
+    confirm: t(unarchive ? 'templateActions.unarchiveConfirm' : 'templateActions.archiveConfirm', { n: ids.length }),
+    confirmLabel: t(unarchive ? 'templateActions.unarchive' : 'templateActions.archive'),
+    done: result => t(unarchive ? 'templateActions.unarchivedDone' : 'templateActions.archived', { n: result.done.length }),
+  })) {
+    selected.value = []
+  }
+}
+
+async function bulkDelete(): Promise<void> {
+  if (selectedItems.value.some(entry => entry.status === 'DISABLED')) {
+    toast.add({ title: t('templateActions.disabledNoDelete'), color: 'warning', icon: 'i-lucide-ban' })
+
+    return
+  }
+
+  if (await run<TemplateActionResult>({
+    path: '/api/templates',
+    method: 'DELETE',
+    query: { ids: selectedIds.value.join(',') },
+    confirm: t('templateActions.deleteManyConfirm', { n: selectedIds.value.length }),
+    confirmLabel: t('templateActions.deleteSelected'),
+    danger: true,
+    done: result => t('templateActions.deletedMany', { n: result.done.length }),
+  })) {
+    selected.value = []
+  }
+}
 
 const groupStats = (group: TemplateGroup) => statsFor(group.items.map(entry => entry.id))
 
@@ -166,6 +228,16 @@ const hasOtherLanguages = computed(() => groups.value.some(group => group.items.
 
 const columns = computed<TableColumn<TemplateGroup>[]>(() => [
   {
+    id: 'select',
+    header: () => h(UCheckbox, { 'modelValue': allSelected.value, 'aria-label': t('templateActions.selectAll'), 'onUpdate:modelValue': toggleAll }),
+    meta: { class: { td: 'w-0' } },
+    cell: ({ row }) => h('div', { onClick: (event: Event) => event.stopPropagation() }, [h(UCheckbox, {
+      'modelValue': selected.value.includes(row.original.name),
+      'aria-label': t('templateActions.select', { name: row.original.name }),
+      'onUpdate:modelValue': (value: boolean | 'indeterminate') => toggle(row.original.name, value),
+    })]),
+  },
+  {
     accessorKey: 'name',
     header: t('templates.template'),
     meta: { class: { td: 'max-w-0 w-full min-w-44' } },
@@ -237,9 +309,14 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
         </h2>
         <p class="text-xs text-muted">
           {{ groups.length ? t('templates.count', { shown: count(filtered.length), total: count(groups.length) }) : t('templates.none') }}
+          <UTooltip v-if="templateQuota" :text="t('templateActions.quotaHint')">
+            <span class="ms-1 border-s border-default ps-2 tabular-nums">{{ t('templateActions.quota', { used: count(templateQuota.used), limit: count(templateQuota.limit) }) }}</span>
+          </UTooltip>
         </p>
+        <UButton :label="t('templateActions.help')" :to="docsUrl('templates')" target="_blank" icon="i-lucide-circle-help" color="neutral" variant="link" size="xs" class="-ms-2 mt-0.5" />
       </div>
       <div class="flex flex-wrap gap-2">
+        <UButton :label="t('templateActions.copy')" icon="i-lucide-copy-plus" color="neutral" variant="outline" :disabled="!accountId || accounts.length < 2" @click="copyOpen = true" />
         <UFieldGroup :aria-label="t('templates.view')">
           <UTooltip v-for="item in views" :key="item.value" :text="item.label">
             <UButton
@@ -266,6 +343,17 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
       </div>
       <USelect v-model="category" :items="categoryItems" class="w-36" :aria-label="t('details.category')" />
       <USelect v-model="sort" :items="sortItems" icon="i-lucide-arrow-down-wide-narrow" class="w-44" :aria-label="t('templates.sort')" :disabled="!analytics" />
+    </div>
+
+    <div v-if="selected.length && view === 'table'" class="flex flex-wrap items-center gap-2 border-b border-default bg-elevated/60 px-5 py-2.5">
+      <span class="text-sm font-medium text-highlighted">{{ t('templateActions.selected', { n: count(selectedIds.length) }) }}</span>
+      <UButton :label="t('templateActions.clear')" color="neutral" variant="link" size="sm" @click="selected = []" />
+      <div class="ms-auto flex flex-wrap gap-2">
+        <UButton :label="t('templateActions.archive')" icon="i-lucide-archive" color="neutral" variant="outline" size="sm" :loading="busy" :disabled="selectedIds.length > TEMPLATE_BATCH_MAX" @click="bulkArchive(false)" />
+        <UButton :label="t('templateActions.unarchive')" icon="i-lucide-archive-restore" color="neutral" variant="outline" size="sm" :loading="busy" :disabled="selectedIds.length > TEMPLATE_BATCH_MAX" @click="bulkArchive(true)" />
+        <UButton :label="t('templateActions.copy')" icon="i-lucide-copy-plus" color="neutral" variant="outline" size="sm" :disabled="accounts.length < 2" @click="copyOpen = true" />
+        <UButton :label="t('templateActions.deleteSelected')" icon="i-lucide-trash-2" color="error" variant="soft" size="sm" :loading="busy" :disabled="selectedIds.length > TEMPLATE_BATCH_MAX" @click="bulkDelete" />
+      </div>
     </div>
 
     <UAlert
@@ -309,5 +397,7 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
       :ui="{ th: 'py-2.5 text-xs font-medium text-muted', td: 'py-3.5', tr: 'cursor-pointer hover:bg-muted/50' }"
       @select="(_event: Event, row) => emit('open', row.original.name, 'view')"
     />
+
+    <CopyTemplatesModal v-model:open="copyOpen" :ids="selectedIds" />
   </section>
 </template>
