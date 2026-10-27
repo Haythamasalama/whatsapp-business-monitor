@@ -68,6 +68,12 @@ const draftsTitle = ref('')
 const opened = ref<{ name: string | null, id?: string }>({ name: null })
 const templateMode = ref<'view' | 'edit'>('view')
 const booting = ref(true)
+const { accountTab } = useManager()
+const address = useAddress()
+const accountTabs = computed(() => [
+  { label: t('business.templatesTab'), value: 'templates', icon: 'i-lucide-house' },
+  { label: t('business.tab'), value: 'business', icon: 'i-lucide-settings' },
+])
 
 // Account ids start with a letter or digit, so '*' can stand for the overview in the mobile picker.
 const OVERVIEW = '*'
@@ -118,11 +124,18 @@ function openTemplate(name: string, mode: 'view' | 'edit', id?: string): void {
 
 onMounted(async () => {
   try {
+    const path = address.initialPath()
+
     await loadAccounts()
 
     if (!accounts.value.length) {
       openAccount()
     }
+    else if (path !== '/') {
+      await address.open(path)
+    }
+
+    address.start()
   }
   catch (error) {
     toast.add({ title: t('accounts.loadFailed'), description: (error as Error).message, color: 'error' })
@@ -276,12 +289,16 @@ onMounted(async () => {
         />
 
         <template v-else-if="accountId">
-          <StatsCards />
-          <TemplatesPanel
-            @open="openTemplate"
-            @create="openDrafts([newDraft()], t('templates.new'))"
-            @paste="pasteOpen = true"
-          />
+          <UTabs v-model="accountTab" :items="accountTabs" :content="false" variant="link" />
+          <BusinessPanel v-if="accountTab === 'business'" />
+          <template v-else>
+            <StatsCards />
+            <TemplatesPanel
+              @open="openTemplate"
+              @create="openDrafts([newDraft()], t('templates.new'))"
+              @paste="pasteOpen = true"
+            />
+          </template>
         </template>
       </main>
 

@@ -29,6 +29,7 @@ export function useSiteSeo() {
         'screenshot': SCREENSHOTS.map(file => `${siteUrl}/screenshots/${file}`),
         'featureList': text.value.features.items.map(item => `${item.title}: ${item.text}`),
         'inLanguage': ['en', 'ar'],
+        'keywords': `${content.en.keywords}, ${content.ar.keywords}`,
         'author': { '@type': 'Person', 'name': 'Haytham A. Salama', 'url': 'https://haythamasalama.me' },
         'sameAs': [repo],
       },
@@ -55,6 +56,7 @@ export function useSiteSeo() {
 
   useHead({
     htmlAttrs: { lang, dir: () => (isRtl.value ? 'rtl' : 'ltr') },
+    meta: [{ name: 'keywords', content: () => text.value.keywords }],
     link: [
       { rel: 'icon', type: 'image/svg+xml', href: asset('favicon.svg') },
       { rel: 'canonical', href: pageUrl },

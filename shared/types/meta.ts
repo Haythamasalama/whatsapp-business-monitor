@@ -44,7 +44,9 @@ export interface Phone {
   display_phone_number: string
   verified_name?: string
   quality_rating?: string
+  /** Deprecated by Meta; read only when whatsapp_business_manager_messaging_limit is missing. */
   messaging_limit_tier?: string
+  whatsapp_business_manager_messaging_limit?: string
   status?: string
   name_status?: string
   throughput?: { level?: string }
@@ -161,4 +163,114 @@ export interface SettingsInfo {
   storage: string
   /** WHATSAPP_TEMPLATES_UPDATE_CHECK=false turns the check off whatever the setting says. */
   update_check_forced_off: boolean
+}
+
+export interface HealthError {
+  error_code?: number
+  error_description?: string
+  possible_solution?: string
+}
+
+export interface HealthEntity {
+  entity_type: string
+  id: string
+  can_send_message: string
+  errors?: HealthError[]
+}
+
+export interface HealthStatus {
+  can_send_message: string
+  entities?: HealthEntity[]
+}
+
+export interface PhoneDetails extends Phone {
+  id: string
+  new_display_name?: string
+  new_name_status?: string
+  is_official_business_account?: boolean
+  official_business_account?: { oba_status?: string }
+  health_status?: HealthStatus
+  account_mode?: string
+  code_verification_status?: string
+}
+
+export interface TemplateHealth {
+  id: string
+  name: string
+  language: string
+  health_status: HealthStatus
+}
+
+export interface BusinessDetails {
+  account: {
+    id?: string
+    name?: string
+    account_review_status?: string
+    business_verification_status?: string
+    ownership_type?: string
+    primary_funding_id?: string
+    health_status?: HealthStatus
+    owner_business_info?: { id: string, name?: string }
+    error?: MetaError
+  }
+  phones: { data?: PhoneDetails[], error?: MetaError }
+  templates: { data?: TemplateHealth[], error?: MetaError }
+}
+
+export interface Activity {
+  id: string
+  category?: string
+  event_type?: string
+  timestamp?: string
+  actor_id?: string
+  actor_business_id?: string
+}
+
+export interface AssignedUser {
+  id: string
+  name?: string
+  user_type?: string
+  tasks?: string[]
+}
+
+export interface BusinessProfile {
+  about?: string
+  address?: string
+  description?: string
+  email?: string
+  profile_picture_url?: string
+  websites?: string[]
+  vertical?: string
+}
+
+export interface Automation {
+  enable_welcome_message?: boolean
+  prompts?: string[]
+  commands?: { command_name: string, command_description: string }[]
+}
+
+export interface QrCode {
+  code: string
+  prefilled_message: string
+  deep_link_url: string
+  qr_image_url?: string
+}
+
+export interface BlockedUser {
+  wa_id?: string
+  input?: string
+}
+
+export interface Username {
+  username?: string
+  status?: string
+}
+
+/** One read per feature, each with its own error so one refusal does not hide the rest. */
+export interface PhoneSettings {
+  profile: { data?: BusinessProfile, error?: MetaError }
+  automation: { data?: Automation, error?: MetaError }
+  username: { data?: Username, error?: MetaError }
+  qr: { data?: QrCode[], error?: MetaError }
+  blocked: { data?: BlockedUser[], error?: MetaError, more?: boolean }
 }

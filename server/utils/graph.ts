@@ -4,7 +4,7 @@ export type GraphResponse = { error?: MetaError } & Record<string, any>
 
 export async function graph(
   account: { token: string, version: string },
-  method: 'GET' | 'POST',
+  method: 'GET' | 'POST' | 'DELETE',
   path: string,
   query: Query = {},
   body?: unknown,
@@ -57,4 +57,42 @@ export function orFail(response: GraphResponse, statusCode = 502): GraphResponse
   }
 
   return response
+}
+
+/**
+ * Meta's Resumable Upload API, used for a profile photo: open an upload session on the token's app, send the
+ * bytes, and get back a handle the profile accepts as profile_picture_handle.
+ * https://developers.facebook.com/docs/graph-api/guides/upload
+ */
+export async function uploadHandle(account: { token: string, version: string }, file: { name: string, type: string, data: Uint8Array }): Promise<GraphResponse> {
+  // https://developers.facebook.com/docs/graph-api/reference/debug_token
+  const debug = await graph(account, 'GET', 'debug_token', { input_token: account.token })
+  const appId = debug.data?.app_id
+
+  if (!appId) {
+    return { error: debug.error ?? { message: t('server.uploadFailed') } }
+  }
+
+  // https://developers.facebook.com/docs/graph-api/guides/upload#step-1--create-a-session
+  const session = await graph(account, 'POST', `${appId}/uploads`, { file_name: file.name, file_length: file.data.byteLength, file_type: file.type })
+
+  if (!session.id) {
+    return { error: session.error ?? { message: t('server.uploadFailed') } }
+  }
+
+  try {
+    // https://developers.facebook.com/docs/graph-api/guides/upload#step-2--initiate-upload
+    const response = await fetch(`https://graph.facebook.com/${account.version}/${session.id}`, {
+      method: 'POST',
+      headers: { 'Authorization': `OAuth ${account.token}`, 'file_offset': '0' },
+      body: new Blob([new Uint8Array(file.data)], { type: file.type }),
+      signal: AbortSignal.timeout(60_000),
+    })
+    const json = await response.json().catch(() => null)
+
+    return json?.h ? { handle: String(json.h) } : { error: json?.error ?? { message: t('server.uploadFailed') } }
+  }
+  catch (error) {
+    return { error: { message: t('server.metaUnreachable', { message: (error as Error).message }) } }
+  }
 }

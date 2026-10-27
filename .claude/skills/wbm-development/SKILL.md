@@ -27,9 +27,9 @@ on every push and pull request.
 
 | Path | Holds |
 |---|---|
-| `server/api/` | one route per action: accounts, templates, overview, summary, analytics, settings, setup, auth, version |
+| `server/api/` | one route per action: accounts, templates, overview, summary, analytics, business (account settings and numbers), settings, setup, auth, version |
 | `server/middleware/` | `1.guard`, `2.demo`, `3.auth`, run in that order |
-| `server/utils/` | `graph` (Meta), `db`, `accounts`, `settings`, `auth`, `templates`, `overview`, `transfer` (encrypted export), `version`, `demo`, `locale`, `handler` |
+| `server/utils/` | `graph` (Meta), `db`, `accounts`, `settings`, `auth`, `templates`, `overview`, `transfer` (encrypted export), `version`, `demo`, `demo-business`, `business`, `locale`, `handler` |
 | `shared/` | `types/meta.ts`, `utils/rules.ts` (template checks and Meta error codes), `utils/i18n.ts`, `locales/{ar,en}.ts` |
 | `app/composables/` | `useManager` (state and the API helper), `useSession`, `useConfirm`, `useCopy`, `useStatusAlerts` |
 | `app/utils/` | `labels`, `format`, `locale`, `templateCode` (copy and paste text), `drafts` |

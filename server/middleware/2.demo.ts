@@ -49,6 +49,10 @@ async function demoAnswer(event: H3Event) {
     return demoAnalytics(getQuery(event).account)
   }
 
+  if (path?.startsWith('/api/business')) {
+    return demoBusinessAnswer(event, path)
+  }
+
   if (post && (path === '/api/accounts/export' || path === '/api/accounts/import')) {
     throw apiError(422, t('server.notInDemo'))
   }
@@ -78,6 +82,29 @@ async function demoAnswer(event: H3Event) {
 
   if (post) {
     return { success: true }
+  }
+
+  throw apiError(404, 'Not found')
+}
+
+function demoBusinessAnswer(event: H3Event, path: string) {
+  if (event.method !== 'GET') {
+    return demoBusinessWrite(event, path)
+  }
+
+  switch (path) {
+    case '/api/business':
+      return demoBusiness(getQuery(event).account)
+    case '/api/business/activities':
+      return demoActivities(getQuery(event).after)
+    case '/api/business/users':
+      return demoUsers()
+    case '/api/business/phone':
+      return demoPhoneSettings(event)
+    case '/api/business/username-suggestions':
+      return demoUsernameSuggestions(event)
+    case '/api/business/qr-image':
+      return demoQrImage(event)
   }
 
   throw apiError(404, 'Not found')

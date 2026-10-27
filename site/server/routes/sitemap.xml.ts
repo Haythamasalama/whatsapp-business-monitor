@@ -7,12 +7,17 @@ export default defineEventHandler((event) => {
     .map(([lang, href]) => `    <xhtml:link rel="alternate" hreflang="${lang}" href="${href}"/>`)
     .join('\n')
 
+  const docsAlternates = [['en', `${siteUrl}/docs/accounts-and-numbers/`], ['ar', `${siteUrl}/ar/docs/accounts-and-numbers/`], ['x-default', `${siteUrl}/docs/accounts-and-numbers/`]]
+    .map(([lang, href]) => `    <xhtml:link rel="alternate" hreflang="${lang}" href="${href}"/>`)
+    .join('\n')
+
   setHeader(event, 'content-type', 'application/xml; charset=utf-8')
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
     ...[english, arabic].map(loc => `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${today}</lastmod>\n${alternates}\n  </url>`),
+    ...[`${siteUrl}/docs/accounts-and-numbers/`, `${siteUrl}/ar/docs/accounts-and-numbers/`].map(loc => `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${today}</lastmod>\n${docsAlternates}\n  </url>`),
     '</urlset>',
     '',
   ].join('\n')

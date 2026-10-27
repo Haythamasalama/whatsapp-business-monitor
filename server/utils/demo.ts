@@ -17,7 +17,7 @@ const STORES: DemoStore[] = [
     label: 'متجر الياسمين',
     name: 'Yasmin Store',
     waba: '100000000000001',
-    phone: { display_phone_number: '+1 555-010-0100', verified_name: 'متجر الياسمين', quality_rating: 'GREEN', messaging_limit_tier: 'TIER_10K', status: 'CONNECTED', name_status: 'APPROVED', throughput: { level: 'STANDARD' } },
+    phone: { id: '200000000000001', display_phone_number: '+1 555-010-0100', verified_name: 'متجر الياسمين', quality_rating: 'GREEN', whatsapp_business_manager_messaging_limit: 'TIER_10K', status: 'CONNECTED', name_status: 'APPROVED', throughput: { level: 'STANDARD' } },
     scale: 1,
   },
   {
@@ -25,7 +25,7 @@ const STORES: DemoStore[] = [
     label: 'متجر الياسمين · جدة',
     name: 'Yasmin Store Jeddah',
     waba: '100000000000002',
-    phone: { display_phone_number: '+1 555-010-0142', verified_name: 'متجر الياسمين جدة', quality_rating: 'YELLOW', messaging_limit_tier: 'TIER_1K', status: 'FLAGGED', name_status: 'APPROVED', throughput: { level: 'STANDARD' } },
+    phone: { id: '200000000000002', display_phone_number: '+1 555-010-0142', verified_name: 'متجر الياسمين جدة', quality_rating: 'YELLOW', whatsapp_business_manager_messaging_limit: 'TIER_2K', status: 'FLAGGED', name_status: 'APPROVED', throughput: { level: 'STANDARD' } },
     scale: 0.42,
   },
 ]

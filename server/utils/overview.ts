@@ -8,7 +8,9 @@ export async function accountOverview(account: Account): Promise<Overview> {
   const [waba, phones, pricing] = await Promise.all([
     graphFields(account, account.waba, ['name,currency,timezone_id,account_review_status,owner_business_info', 'name,currency']),
     graphFields(account, `${account.waba}/phone_numbers`, [
-      'display_phone_number,verified_name,quality_rating,messaging_limit_tier,status,name_status,throughput',
+      // messaging_limit_tier is deprecated: https://developers.facebook.com/documentation/business-messaging/whatsapp/messaging-limits
+      'id,display_phone_number,verified_name,quality_rating,whatsapp_business_manager_messaging_limit,status,name_status,throughput',
+      'id,display_phone_number,verified_name,quality_rating,messaging_limit_tier,status,name_status,throughput',
       'display_phone_number,verified_name,quality_rating',
     ]),
     graphFields(account, account.waba, [`${window}.dimensions(["PRICING_CATEGORY"])`, window]),
