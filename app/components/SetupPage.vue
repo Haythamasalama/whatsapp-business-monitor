@@ -36,10 +36,16 @@ async function finish(): Promise<void> {
 <template>
   <AuthLayout :title="t('setup.title')" :subtitle="t('setup.subtitle')">
     <form class="space-y-4" autocomplete="off" @submit.prevent="finish">
-      <UFormField :label="t('settings.name')" :hint="t('common.optional')">
+      <UFormField>
+        <template #label>
+          <FieldLabel :label="t('settings.name')" :hint="t('hints.name')" />
+        </template>
         <UInput v-model="form.instance_name" :placeholder="t('brand.name')" maxlength="60" class="w-full" />
       </UFormField>
-      <UFormField :label="t('settings.url')" :help="t('settings.urlHelp')">
+      <UFormField>
+        <template #label>
+          <FieldLabel :label="t('settings.url')" :hint="t('settings.urlHelp')" />
+        </template>
         <UInput v-model.trim="form.public_url" :dir="form.public_url ? 'ltr' : undefined" placeholder="https://wa.example.com" icon="i-lucide-link" class="w-full" />
       </UFormField>
 
@@ -48,7 +54,10 @@ async function finish(): Promise<void> {
       <UFormField :label="t('auth.username')" required>
         <UInput v-model.trim="form.username" :dir="form.username ? 'ltr' : undefined" autocomplete="username" icon="i-lucide-user" class="w-full" required />
       </UFormField>
-      <UFormField :label="t('auth.password')" :hint="t('transfer.passphraseHint', { n: 8 })" required>
+      <UFormField required>
+        <template #label>
+          <FieldLabel :label="t('auth.password')" :hint="t('transfer.passphraseHint', { n: 8 })" />
+        </template>
         <UInput v-model="form.password" type="password" autocomplete="new-password" icon="i-lucide-key-round" class="w-full" required />
       </UFormField>
       <UFormField :label="t('transfer.confirm')" :error="mismatch ? t('transfer.mismatch') : undefined" required>

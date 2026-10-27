@@ -18,8 +18,16 @@ export interface Account {
 /** The app's data folder: the database, outside the project so tokens never sit next to the code. */
 export const dataDir = () => process.env.WHATSAPP_TEMPLATES_DIR || join(homedir(), '.config', 'whatsapp-templates')
 
-// Paths shown in the page start with ~ so the user name never ends up in a screenshot.
-export const tildePath = (path: string) => (path.startsWith(homedir()) ? `~${path.slice(homedir().length)}` : path)
+// Paths shown in the page start with ~ so the user name never ends up in a screenshot. In Docker the
+// container has no home of its own, so compose passes the computer's home folder in.
+export function tildePath(path: string): string {
+  const home = process.env.WHATSAPP_MANAGER_HOST_HOME || homedir()
+
+  return home && home !== '/' && (path === home || path.startsWith(`${home}/`)) ? `~${path.slice(home.length)}` : path
+}
+
+/** Where the database is as this computer sees it: in Docker, the folder compose mounts, not the container's. */
+export const shownDatabaseFile = () => join(process.env.WHATSAPP_MANAGER_DATA_SHOWN || dataDir(), 'whatsapp-manager.db')
 
 interface AccountRow {
   id: string

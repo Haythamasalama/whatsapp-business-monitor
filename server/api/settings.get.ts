@@ -1,5 +1,5 @@
 export default apiHandler((): SettingsInfo => ({
   ...readSettings(),
-  storage: tildePath(databaseFile()),
+  storage: tildePath(shownDatabaseFile()),
   update_check_forced_off: !updateCheckEnabled(),
 }))

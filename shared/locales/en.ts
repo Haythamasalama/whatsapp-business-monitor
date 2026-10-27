@@ -44,7 +44,6 @@ const en: Dictionary = {
     locked: 'The account is locked by Meta.',
   },
   common: {
-    optional: 'Optional',
     percent: '{n}%',
     listSeparator: ', ',
     copied: 'Copied',
@@ -452,6 +451,9 @@ const en: Dictionary = {
     backup: 'Backup',
     backupHelp: 'Export the accounts to a file encrypted with a passphrase, and import it here or on another computer.',
     storage: 'Database:',
+  },
+  hints: {
+    name: 'Optional. Shown in the sidebar, the page title and the sign-in page.',
   },
 }
 

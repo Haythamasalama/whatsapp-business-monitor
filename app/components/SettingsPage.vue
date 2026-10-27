@@ -80,13 +80,22 @@ onMounted(load)
         <h2 class="font-semibold text-highlighted">
           {{ t('settings.general') }}
         </h2>
-        <UFormField :label="t('settings.name')" :hint="t('common.optional')">
+        <UFormField>
+          <template #label>
+            <FieldLabel :label="t('settings.name')" :hint="t('hints.name')" />
+          </template>
           <UInput v-model="general.instance_name" :placeholder="t('brand.name')" maxlength="60" class="w-full" />
         </UFormField>
-        <UFormField :label="t('settings.url')" :help="t('settings.urlHelp')">
+        <UFormField>
+          <template #label>
+            <FieldLabel :label="t('settings.url')" :hint="t('settings.urlHelp')" />
+          </template>
           <UInput v-model.trim="general.public_url" :dir="general.public_url ? 'ltr' : undefined" placeholder="https://wa.example.com" icon="i-lucide-link" class="w-full" />
         </UFormField>
-        <UFormField :label="t('settings.defaultLanguage')" :help="t('settings.defaultLanguageHelp')">
+        <UFormField>
+          <template #label>
+            <FieldLabel :label="t('settings.defaultLanguage')" :hint="t('settings.defaultLanguageHelp')" />
+          </template>
           <USelect v-model="general.default_locale" :items="localeItems" class="w-full" />
         </UFormField>
         <UAlert v-if="error?.section === 'general'" color="error" variant="subtle" icon="i-lucide-circle-alert" :description="error.message" />
@@ -118,10 +127,12 @@ onMounted(load)
         <USwitch
           :model-value="Boolean(settings?.update_check && !settings?.update_check_forced_off)"
           :disabled="settings?.update_check_forced_off || saving === 'updates'"
-          :label="t('settings.updateCheck')"
-          :description="settings?.update_check_forced_off ? t('settings.updateCheckForced') : t('settings.updateCheckHelp')"
           @update:model-value="(value) => save('updates', { update_check: value })"
-        />
+        >
+          <template #label>
+            <FieldLabel :label="t('settings.updateCheck')" :hint="settings?.update_check_forced_off ? t('settings.updateCheckForced') : t('settings.updateCheckHelp')" />
+          </template>
+        </USwitch>
       </section>
 
       <section class="space-y-4 rounded-xl border border-default bg-default p-5">
@@ -132,7 +143,10 @@ onMounted(load)
           <UFormField :label="t('settings.currentPassword')">
             <UInput v-model="password.current" type="password" autocomplete="current-password" class="w-full" />
           </UFormField>
-          <UFormField :label="t('settings.newPassword')" :hint="t('transfer.passphraseHint', { n: 8 })">
+          <UFormField>
+            <template #label>
+              <FieldLabel :label="t('settings.newPassword')" :hint="t('transfer.passphraseHint', { n: 8 })" />
+            </template>
             <UInput v-model="password.next" type="password" autocomplete="new-password" class="w-full" />
           </UFormField>
           <UFormField :label="t('transfer.confirm')" :error="mismatch ? t('transfer.mismatch') : undefined">

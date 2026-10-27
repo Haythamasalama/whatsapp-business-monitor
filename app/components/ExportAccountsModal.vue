@@ -52,7 +52,10 @@ async function save(): Promise<void> {
     <template #body>
       <form id="export-form" class="space-y-4" autocomplete="off" @submit.prevent="save">
         <UAlert color="info" variant="subtle" icon="i-lucide-shield-check" :description="t('transfer.exportNote', { n: accounts.length })" />
-        <UFormField :label="t('transfer.passphrase')" :hint="t('transfer.passphraseHint', { n: MIN })">
+        <UFormField>
+          <template #label>
+            <FieldLabel :label="t('transfer.passphrase')" :hint="t('transfer.passphraseHint', { n: MIN })" />
+          </template>
           <UInput v-model="passphrase" type="password" icon="i-lucide-key-round" class="w-full" autofocus />
         </UFormField>
         <UFormField :label="t('transfer.confirm')" :error="mismatch ? t('transfer.mismatch') : undefined">

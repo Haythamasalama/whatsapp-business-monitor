@@ -35,5 +35,5 @@ export default apiHandler(async () => {
     }
   }))
 
-  return { data, storage: tildePath(databaseFile()) }
+  return { data, storage: tildePath(shownDatabaseFile()) }
 })
