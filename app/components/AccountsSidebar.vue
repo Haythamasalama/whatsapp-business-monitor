@@ -1,9 +1,14 @@
 <script setup lang="ts">
-const emit = defineEmits<{ add: [], edit: [account: AccountSummary] }>()
+const emit = defineEmits<{ add: [], edit: [account: AccountSummary], export: [], import: [] }>()
 
 const { accounts, accountId, screen, switchAccount } = useManager()
 
 const isOpen = (id: string) => screen.value === 'account' && accountId.value === id
+
+const transferItems = computed(() => [
+  { label: t('transfer.export'), icon: 'i-lucide-download', disabled: !accounts.value.length, onSelect: () => emit('export') },
+  { label: t('transfer.import'), icon: 'i-lucide-upload', onSelect: () => emit('import') },
+])
 </script>
 
 <template>
@@ -12,7 +17,12 @@ const isOpen = (id: string) => screen.value === 'account' && accountId.value ===
       <p class="text-xs font-semibold text-highlighted">
         {{ t('accounts.title') }}
       </p>
-      <UButton :label="t('common.add')" icon="i-lucide-plus" variant="link" size="xs" class="px-0" @click="emit('add')" />
+      <div class="flex items-center gap-1">
+        <UButton :label="t('common.add')" icon="i-lucide-plus" variant="link" size="xs" class="px-0" @click="emit('add')" />
+        <UDropdownMenu :items="transferItems">
+          <UButton icon="i-lucide-ellipsis" color="neutral" variant="ghost" size="xs" :aria-label="t('transfer.menu')" />
+        </UDropdownMenu>
+      </div>
     </div>
 
     <ul class="space-y-1">

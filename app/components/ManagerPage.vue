@@ -50,6 +50,8 @@ onBeforeUnmount(() => {
 })
 
 const accountOpen = ref(false)
+const exportOpen = ref(false)
+const importOpen = ref(false)
 const editingAccount = ref<AccountSummary | null>(null)
 const pasteOpen = ref(false)
 const draftsOpen = ref(false)
@@ -133,7 +135,7 @@ onMounted(async () => {
 
       <USeparator />
 
-      <AccountsSidebar @add="openAccount()" @edit="openAccount" />
+      <AccountsSidebar @add="openAccount()" @edit="openAccount" @export="exportOpen = true" @import="importOpen = true" />
     </aside>
 
     <div class="flex min-w-0 flex-1 flex-col gap-3 p-3 lg:ps-0">
@@ -216,7 +218,10 @@ onMounted(async () => {
           <p class="font-semibold text-highlighted">
             {{ t('accounts.empty') }}
           </p>
-          <UButton :label="t('accounts.add')" icon="i-lucide-plus" @click="openAccount()" />
+          <div class="flex flex-wrap justify-center gap-2">
+            <UButton :label="t('accounts.add')" icon="i-lucide-plus" @click="openAccount()" />
+            <UButton :label="t('transfer.import')" icon="i-lucide-upload" color="neutral" variant="outline" @click="importOpen = true" />
+          </div>
         </div>
 
         <OverviewPage v-else-if="onOverview" @open="switchAccount" />
@@ -235,6 +240,8 @@ onMounted(async () => {
     </div>
 
     <AccountModal v-model:open="accountOpen" :account="editingAccount" />
+    <ExportAccountsModal v-model:open="exportOpen" />
+    <ImportAccountsModal v-model:open="importOpen" />
     <PasteModal v-model:open="pasteOpen" @parsed="(list) => openDrafts(list, list.length > 1 ? t('paste.draftsTitleMany', { n: list.length }) : t('paste.draftsTitle'))" />
     <DraftsModal v-model:open="draftsOpen" v-model:drafts="drafts" :title="draftsTitle" />
     <TemplateModal v-model:open="templateOpen" v-model:mode="templateMode" :name="opened.name" :initial-id="opened.id" />

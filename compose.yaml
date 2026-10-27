@@ -9,7 +9,6 @@ services:
       # Reachable from this computer only, as without Docker.
       - "127.0.0.1:3210:3210"
     environment:
-      WHATSAPP_TEMPLATES_DEMO: ${WHATSAPP_TEMPLATES_DEMO:-false}
       WHATSAPP_TEMPLATES_UPDATE_CHECK: ${WHATSAPP_TEMPLATES_UPDATE_CHECK:-true}
     volumes:
       # The same account files as running it without Docker.

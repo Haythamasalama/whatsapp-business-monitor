@@ -12,7 +12,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 ![Nuxt 4](https://img.shields.io/badge/Nuxt-4-317455?logo=nuxt&logoColor=white)
 ![Node 22.21+ or 24.11+](https://img.shields.io/badge/node-22.21%2B%20%7C%2024.11%2B-317455?logo=node.js&logoColor=white)
 
-[Features](#-features) · [Docker](#-run-with-docker) · [Demo](#-try-the-demo) · [From source](#-run-from-source) · [Contribute](CONTRIBUTING.md)
+[Features](#-features) · [Docker](#-run-with-docker) · [From source](#-run-from-source) · [Contribute](CONTRIBUTING.md)
 
 <img src="docs/screenshots/overview.png" width="860" alt="The overview of two accounts of a fictional store: this month's cost, messages sent, templates that need attention, a daily cost chart, the cost per account and a table of accounts.">
 
@@ -27,6 +27,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 - 📋 **Copy and paste.** Copy any template, change it, paste it back. New ones are created, changed ones updated.
 - 🔔 **Live status.** A notification when a template is approved, rejected or paused.
 - 📱 **Number health.** Status, quality and daily limit of every number.
+- 📦 **Move your accounts.** Export them all to one file encrypted with your passphrase, and import it on another computer.
 - 🌍 **Arabic or English.** Light or dark, and templates in any language.
 - 🔒 **Private.** Runs on your machine. Your tokens never leave it.
 
@@ -57,7 +58,7 @@ Your order {{1}} is confirmed.
 | **Arabic, right to left** | |
 | <img src="docs/screenshots/arabic.png" alt="The overview in Arabic."> | |
 
-All screenshots use the built-in demo data.
+The screenshots show a fictional store.
 
 ## 🐳 Run with Docker
 
@@ -75,15 +76,7 @@ Open <http://127.0.0.1:3210>, choose **Add account** and paste a Meta system use
 docker compose pull && docker compose up -d
 ```
 
-Your accounts stay in `~/.config/whatsapp-templates`. When a new version is out, the page footer says so.
-
-## 🎮 Try the demo
-
-```bash
-WHATSAPP_TEMPLATES_DEMO=true docker compose up -d
-```
-
-Or from source: `bun run demo`, then <http://127.0.0.1:3211>. Nothing is sent to Meta and no file is written.
+Your accounts stay in `~/.config/whatsapp-templates`. When a new version is out, the page footer says so. Open the app at `127.0.0.1` or `localhost`; another computer's name or address is refused.
 
 ## 💻 Run from source
 

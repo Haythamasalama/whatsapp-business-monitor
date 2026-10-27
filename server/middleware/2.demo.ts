@@ -37,6 +37,10 @@ async function demoAnswer(event: H3Event) {
     return demoAnalytics(getQuery(event).account)
   }
 
+  if (post && (path === '/api/accounts/export' || path === '/api/accounts/import')) {
+    throw apiError(422, t('transfer.demo'))
+  }
+
   if (post && path === '/api/accounts/discover') {
     return demoDiscover()
   }

@@ -4,7 +4,7 @@ export default apiHandler(async (event) => {
   const values = readAccountValues(body)
 
   const problems = [
-    ACCOUNT_ID.test(id) && id !== 'discover' ? null : t('server.accountIdFormat'),
+    ACCOUNT_ID.test(id) && !RESERVED_IDS.includes(id) ? null : t('server.accountIdFormat'),
     accountFiles()[id] ? t('server.accountIdTaken') : null,
     ...accountProblems(values),
   ].filter(Boolean)
