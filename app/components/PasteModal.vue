@@ -37,7 +37,7 @@ function parse(): void {
 <template>
   <UModal
     v-model:open="open"
-    title="لصق محتوى قالب"
+    title="إنشاء أو تحديث من محتوى قالب"
     :ui="{ footer: 'justify-end' }"
   >
     <template #body>

@@ -37,7 +37,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 
   {{1}} = 10482
   ```
-- **Paste template content.** Paste one or several templates in that format. A template that doesn't exist yet is created; one that does is updated with the new text, keeping its category and sample values. Unchanged or locked templates (under review, for example) are skipped.
+- **Create or update from template content.** Paste one or several templates in that format. A template that doesn't exist yet is created; one that does is updated with the new text, keeping its category and sample values. Unchanged or locked templates (under review, for example) are skipped.
 - **Any language.** Arabic and English first, plus any language Meta supports.
 - **Always current.** Data refreshes when you come back to the tab, and every minute while a template waits for review. A notification tells you when a template is approved, rejected or paused, including what changed since your last visit.
 - **Several accounts.** Add, edit and switch between WhatsApp Business Accounts, each shown with its WhatsApp profile photo. Paste a token and it finds the accounts and phone numbers it can reach.
