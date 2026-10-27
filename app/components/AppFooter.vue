@@ -3,10 +3,14 @@ const { version } = useRuntimeConfig().public
 const { api } = useManager()
 
 const update = ref<Release | null>(null)
+const autoUpdate = ref(false)
 
 onMounted(async () => {
   try {
-    update.value = (await api<VersionInfo>('/api/version', { scoped: false })).latest
+    const info = await api<VersionInfo>('/api/version', { scoped: false })
+
+    update.value = info.latest
+    autoUpdate.value = info.autoUpdate
   }
   catch {
     // The footer simply shows no update when the check fails.
@@ -37,7 +41,7 @@ onMounted(async () => {
         :title="t('footer.releases')"
       >v{{ version }}</a>
 
-      <UTooltip v-if="update" :text="t('footer.updateHint')">
+      <UTooltip v-if="update" :text="autoUpdate ? t('footer.updateAuto') : t('footer.updateHint')">
         <UButton
           :to="update.url"
           target="_blank"

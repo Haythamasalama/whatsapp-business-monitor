@@ -135,6 +135,7 @@ export default {
   },
   footer: {
     update: 'إصدار جديد v{version}',
+    updateAuto: 'يُثبَّت تلقائياً خلال 6 ساعات، دون أن تفعل شيئاً',
     updateHint: 'للتحديث: docker compose pull && docker compose up -d',
     releases: 'الإصدارات',
     madeBy: 'صُنع بواسطة',

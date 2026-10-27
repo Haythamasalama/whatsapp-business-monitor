@@ -10,6 +10,24 @@ services:
       - "127.0.0.1:3210:3210"
     environment:
       WHATSAPP_TEMPLATES_UPDATE_CHECK: ${WHATSAPP_TEMPLATES_UPDATE_CHECK:-true}
+      # Tells the page that the updater below installs new versions on its own.
+      WHATSAPP_TEMPLATES_AUTO_UPDATE: "true"
     volumes:
       # The same account files as running it without Docker.
       - ${HOME}/.config/whatsapp-templates:/data/accounts
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+
+  # Installs each new release by itself: every 6 hours it pulls the image and, when it changed,
+  # restarts the app on it with the same settings and accounts. Remove this service to update by hand.
+  updater:
+    image: nickfedor/watchtower:latest
+    container_name: whatsapp-manager-monitoring-updater
+    restart: unless-stopped
+    environment:
+      # Only containers with the label above are touched, never the rest of this computer's Docker.
+      WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_POLL_INTERVAL: "21600"
+      WATCHTOWER_CLEANUP: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

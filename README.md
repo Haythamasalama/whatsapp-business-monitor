@@ -70,13 +70,9 @@ curl -fsSLO https://raw.githubusercontent.com/Haythamasalama/whatsapp-manager-mo
 
 Open <http://127.0.0.1:3210>, choose **Add account** and paste a Meta system user token with `whatsapp_business_management`. The app finds the business accounts and numbers it can reach.
 
-**Update to a new version** (from the same folder):
+**Updates install themselves.** A small updater container ([Watchtower](https://github.com/nicholas-fedor/watchtower)) checks every 6 hours and restarts the app on the new version, with the same settings and accounts. It only touches this app's container. To update by hand instead, remove the `updater` service from `compose.yaml` and run `docker compose pull && docker compose up -d`.
 
-```bash
-docker compose pull && docker compose up -d
-```
-
-Your accounts stay in `~/.config/whatsapp-templates`. When a new version is out, the page footer says so. Open the app at `127.0.0.1` or `localhost`; another computer's name or address is refused.
+Your accounts stay in `~/.config/whatsapp-templates`. Open the app at `127.0.0.1` or `localhost`; another computer's name or address is refused.
 
 ## 💻 Run from source
 
