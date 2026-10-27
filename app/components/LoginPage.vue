@@ -30,7 +30,7 @@ async function signIn(): Promise<void> {
   <AuthLayout :title="appName" :subtitle="t('auth.signInTitle')">
     <form class="space-y-4" @submit.prevent="signIn">
       <UFormField :label="t('auth.username')">
-        <UInput v-model.trim="form.username" :dir="form.username ? 'ltr' : undefined" autocomplete="username" icon="i-lucide-user" class="w-full" autofocus required />
+        <UInput v-model.trim="form.username" autocomplete="username" icon="i-lucide-user" class="w-full" autofocus required />
       </UFormField>
       <UFormField :label="t('auth.password')">
         <UInput v-model="form.password" type="password" autocomplete="current-password" icon="i-lucide-key-round" class="w-full" required />

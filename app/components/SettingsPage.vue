@@ -90,7 +90,7 @@ onMounted(load)
           <template #label>
             <FieldLabel :label="t('settings.url')" :hint="t('settings.urlHelp')" />
           </template>
-          <UInput v-model.trim="general.public_url" :dir="general.public_url ? 'ltr' : undefined" placeholder="https://wa.example.com" icon="i-lucide-link" class="w-full" />
+          <UInput v-model.trim="general.public_url" placeholder="https://wa.example.com" icon="i-lucide-link" class="w-full" />
         </UFormField>
         <UFormField>
           <template #label>

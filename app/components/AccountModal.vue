@@ -134,11 +134,11 @@ async function remove(): Promise<void> {
             <UInput v-model="form.label" :placeholder="t('accountForm.labelPlaceholder')" class="w-full" />
           </UFormField>
           <UFormField :label="t('accountForm.id')" :required="!editing">
-            <UInput v-if="editing" :model-value="form.id" dir="ltr" class="w-full" disabled />
+            <UInput v-if="editing" :model-value="form.id" class="w-full" disabled />
             <UInput
               v-else
               v-model.trim="form.id"
-              :dir="form.id ? 'ltr' : undefined"
+             
               :placeholder="t('accountForm.idPlaceholder')"
               class="w-full"
               required
@@ -150,7 +150,7 @@ async function remove(): Promise<void> {
           <UInput
             v-model.trim="form.token"
             type="password"
-            :dir="form.token ? 'ltr' : undefined"
+           
             :placeholder="editing ? t('accountForm.tokenKeep') : 'System user token'"
             icon="i-lucide-key-round"
             class="w-full"
@@ -187,10 +187,10 @@ async function remove(): Promise<void> {
 
         <div class="grid gap-4 sm:grid-cols-2">
           <UFormField :label="t('accountForm.waba')" :required="!editing">
-            <UInput v-model.trim="form.waba_id" :dir="form.waba_id ? 'ltr' : undefined" inputmode="numeric" placeholder="WABA ID" class="w-full" :required="!editing" />
+            <UInput v-model.trim="form.waba_id" inputmode="numeric" placeholder="WABA ID" class="w-full" :required="!editing" />
           </UFormField>
           <UFormField :label="t('accountForm.version')">
-            <UInput v-model.trim="form.version" :dir="form.version ? 'ltr' : undefined" placeholder="v23.0" class="w-full" />
+            <UInput v-model.trim="form.version" placeholder="v23.0" class="w-full" />
           </UFormField>
         </div>
 

@@ -46,13 +46,13 @@ async function finish(): Promise<void> {
         <template #label>
           <FieldLabel :label="t('settings.url')" :hint="t('settings.urlHelp')" />
         </template>
-        <UInput v-model.trim="form.public_url" :dir="form.public_url ? 'ltr' : undefined" placeholder="https://wa.example.com" icon="i-lucide-link" class="w-full" />
+        <UInput v-model.trim="form.public_url" placeholder="https://wa.example.com" icon="i-lucide-link" class="w-full" />
       </UFormField>
 
       <USeparator :label="t('setup.admin')" />
 
       <UFormField :label="t('auth.username')" required>
-        <UInput v-model.trim="form.username" :dir="form.username ? 'ltr' : undefined" autocomplete="username" icon="i-lucide-user" class="w-full" required />
+        <UInput v-model.trim="form.username" autocomplete="username" icon="i-lucide-user" class="w-full" required />
       </UFormField>
       <UFormField required>
         <template #label>

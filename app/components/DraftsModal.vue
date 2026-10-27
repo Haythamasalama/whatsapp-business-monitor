@@ -232,7 +232,7 @@ async function submit(): Promise<void> {
               <UFormField :label="t('drafts.name')" :error="nameError(draft)">
                 <UInput
                   v-model.trim="draft.name"
-                  :dir="draft.name ? 'ltr' : undefined"
+                 
                   placeholder="order_confirmation"
                   class="w-full"
                   :ui="{ base: 'font-mono' }"
