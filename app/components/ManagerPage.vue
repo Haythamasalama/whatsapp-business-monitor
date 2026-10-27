@@ -71,7 +71,8 @@ const booting = ref(true)
 const { accountTab } = useManager()
 const address = useAddress()
 const accountTabs = computed(() => [
-  { label: t('business.templatesTab'), value: 'templates', icon: 'i-lucide-house' },
+  { label: t('business.templatesTab'), value: 'home', icon: 'i-lucide-house' },
+  { label: t('home.templatesTab'), value: 'templates', icon: 'i-lucide-file-text' },
   { label: t('reports.tab'), value: 'reports', icon: 'i-lucide-chart-column' },
   { label: t('business.tab'), value: 'business', icon: 'i-lucide-settings' },
 ])
@@ -293,8 +294,11 @@ onMounted(async () => {
           <UTabs v-model="accountTab" :items="accountTabs" :content="false" variant="link" />
           <BusinessPanel v-if="accountTab === 'business'" />
           <ReportsPanel v-else-if="accountTab === 'reports'" />
-          <template v-else>
+          <template v-else-if="accountTab === 'home'">
             <StatsCards />
+            <AccountAttention @open="(name, id) => openTemplate(name, 'view', id)" />
+          </template>
+          <template v-else>
             <TemplatesPanel
               @open="openTemplate"
               @create="openDrafts([newDraft()], t('templates.new'))"

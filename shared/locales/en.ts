@@ -271,6 +271,7 @@ const en: Dictionary = {
     open: 'Open',
   },
   templates: {
+    range: '{from}–{to} of {total}',
     title: 'Message templates',
     count: '{shown} of {total} templates',
     none: 'No templates yet',
@@ -827,6 +828,20 @@ const en: Dictionary = {
       notPaused: 'This template is not paused',
       disabled: 'Disabled templates can\'t be deleted',
     },
+  },
+  home: {
+    templatesTab: 'Templates',
+    attention: 'Needs your attention',
+    allGood: 'Nothing needs you right now.',
+    phoneStatus: 'Number: {status}',
+    phoneQuality: 'Number quality: {quality}',
+    templateQuality: 'Quality: {quality}. Customers are blocking or reporting it.',
+    more: '{n} more',
+    topTemplates: 'Most sent in 30 days',
+    allTemplates: 'All templates',
+    readRate: '{rate} read',
+    noSends: 'No template was sent in the last 30 days.',
+    noAnalytics: 'Template numbers show once analytics are on.',
   },
   reports: {
     tab: 'Reports',

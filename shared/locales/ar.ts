@@ -271,6 +271,7 @@ export default {
     open: 'فتح',
   },
   templates: {
+    range: '{from}–{to} من {total}',
     title: 'قوالب الرسائل',
     count: '{shown} من {total} قالب',
     none: 'لا توجد قوالب بعد',
@@ -827,6 +828,20 @@ export default {
       notPaused: 'هذا القالب غير موقوف',
       disabled: 'القالب المعطّل لا يُحذف',
     },
+  },
+  home: {
+    templatesTab: 'القوالب',
+    attention: 'يحتاج انتباهك',
+    allGood: 'لا شيء يحتاجك الآن.',
+    phoneStatus: 'الرقم: {status}',
+    phoneQuality: 'جودة الرقم: {quality}',
+    templateQuality: 'الجودة: {quality}. العملاء يحظرونه أو يبلّغون عنه.',
+    more: '{n} أخرى',
+    topTemplates: 'الأكثر إرسالًا خلال 30 يومًا',
+    allTemplates: 'كل القوالب',
+    readRate: 'قُرئ {rate}',
+    noSends: 'لم يُرسل أي قالب خلال آخر 30 يومًا.',
+    noAnalytics: 'تظهر أرقام القوالب بعد تفعيل التحليلات.',
   },
   reports: {
     tab: 'التقارير',

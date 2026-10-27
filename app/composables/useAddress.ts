@@ -1,6 +1,6 @@
 /**
  * Keeps the address bar in step with what the page shows, so a screen can be bookmarked, shared and reached
- * with back and forward: / (overview), /accounts, /settings, /{WABA id}, /{WABA id}/reports and /{WABA id}/settings.
+ * with back and forward: / (overview), /accounts, /settings, /{WABA id}, /{WABA id}/templates, /{WABA id}/reports and /{WABA id}/settings.
  * WABA ids are digits only, so they never clash with the named screens.
  */
 export function useAddress() {
@@ -12,7 +12,7 @@ export function useAddress() {
     }
 
     if (screen.value === 'account' && current.value) {
-      return `/${current.value.waba_id}${{ templates: '', reports: '/reports', business: '/settings' }[accountTab.value]}`
+      return `/${current.value.waba_id}${{ home: '', templates: '/templates', reports: '/reports', business: '/settings' }[accountTab.value]}`
     }
 
     return '/'
@@ -31,7 +31,7 @@ export function useAddress() {
     const account = first ? accounts.value.find(entry => entry.waba_id === first) : undefined
 
     if (account) {
-      accountTab.value = second === 'settings' ? 'business' : second === 'reports' ? 'reports' : 'templates'
+      accountTab.value = second === 'settings' ? 'business' : second === 'reports' || second === 'templates' ? second : 'home'
       await switchAccount(account.id)
 
       return
