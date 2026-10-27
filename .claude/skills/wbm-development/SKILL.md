@@ -128,7 +128,10 @@ analytics, no fonts or scripts from a CDN, no error reporting service. Keep it t
 - `Dockerfile`: builds with Bun on `node:24-slim`, runs on `node:24-alpine` as the `node` user, data in
   `/data/accounts`, with a healthcheck.
 - `compose.yaml`: the app published on `127.0.0.1` by default, plus a `nickfedor/watchtower` updater that only
-  touches containers labelled `com.centurylinklabs.watchtower.enable`, checking every 6 hours.
+  touches containers labelled `com.centurylinklabs.watchtower.enable`, checking every 6 hours. Its HTTP API
+  (`/v1/update`, not published, `WHATSAPP_MANAGER_UPDATE_TOKEN` from `.env`) backs the page's "Update now":
+  `POST /api/version/update` → `startUpdate()` in `server/utils/version.ts`; the page waits for the new version
+  and reloads (`useAppUpdate`). install.sh creates the token and makes `.env` `600`.
 - `install.sh`: one command for a first install or an update. `--server` publishes on `0.0.0.0`. It writes `.env`
   next to the compose file with `WHATSAPP_MANAGER_BIND`, `PORT`, `DATA`, `UID`, `GID` and optionally `VERSION`,
   keeps any value already there, and creates the data folder owned by the user that runs the container.

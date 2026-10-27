@@ -138,6 +138,8 @@ export interface VersionInfo {
   latest: Release | null
   /** An updater container installs new releases by itself (compose.yaml). */
   autoUpdate: boolean
+  /** The updater can be asked to install a new release now ("Update now"). */
+  canUpdateNow: boolean
 }
 
 export interface ImportResult {

@@ -39,6 +39,10 @@ set_default() {
 set_default WHATSAPP_MANAGER_BIND "$BIND"
 set_default WHATSAPP_MANAGER_PORT "$PORT"
 
+# The secret the app's "Update now" button sends to the updater. Only this computer's Docker sees it.
+set_default WHATSAPP_MANAGER_UPDATE_TOKEN "$(od -An -tx1 -N32 /dev/urandom | tr -d ' \n')"
+chmod 600 .env
+
 # The database lives next to this file.
 set_default WHATSAPP_MANAGER_DATA "$DIR/data"
 DATA="$(sed -n 's/^WHATSAPP_MANAGER_DATA=//p' .env | tail -n 1)"
@@ -77,4 +81,4 @@ if grep -q '^WHATSAPP_MANAGER_BIND=0.0.0.0' .env; then
 else
   echo "Open http://localhost:$PORT_IN_USE to finish the setup."
 fi
-echo "Files: $DIR · updates install themselves · run this again any time to update now."
+echo "Files: $DIR · updates install themselves · or press \"Update now\" in the app."

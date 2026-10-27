@@ -15,6 +15,9 @@ services:
       WHATSAPP_TEMPLATES_UPDATE_CHECK: ${WHATSAPP_TEMPLATES_UPDATE_CHECK:-true}
       # Tells the page that the updater below installs new versions on its own.
       WHATSAPP_TEMPLATES_AUTO_UPDATE: "true"
+      # Lets the "Update now" button ask the updater below to install a new version right away.
+      WHATSAPP_MANAGER_UPDATE_URL: http://updater:8080/v1/update
+      WHATSAPP_MANAGER_UPDATE_TOKEN: ${WHATSAPP_MANAGER_UPDATE_TOKEN:-}
       # Lets the settings page show where the database is on this computer.
       WHATSAPP_MANAGER_DATA_SHOWN: ${WHATSAPP_MANAGER_DATA:-${HOME}/.config/whatsapp-templates}
       WHATSAPP_MANAGER_HOST_HOME: ${HOME}
@@ -26,6 +29,8 @@ services:
 
   # Installs each new release by itself: every 6 hours it pulls the image and, when it changed,
   # restarts the app on it with the same settings and data. A pinned WHATSAPP_MANAGER_VERSION stays put.
+  # The app's "Update now" button asks it to do the same at once, through its API on this compose network
+  # only (no port is published), with the secret install.sh writes to .env.
   updater:
     image: nickfedor/watchtower:latest
     container_name: whatsapp-business-monitor-updater
@@ -35,5 +40,8 @@ services:
       WATCHTOWER_LABEL_ENABLE: "true"
       WATCHTOWER_POLL_INTERVAL: "21600"
       WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_HTTP_API_ENDPOINTS: update
+      WATCHTOWER_HTTP_API_TOKEN: ${WHATSAPP_MANAGER_UPDATE_TOKEN:?run install.sh to create WHATSAPP_MANAGER_UPDATE_TOKEN}
+      WATCHTOWER_HTTP_API_PERIODIC_POLLS: "true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
