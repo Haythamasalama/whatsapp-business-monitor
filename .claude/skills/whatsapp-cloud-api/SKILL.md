@@ -49,6 +49,11 @@ It does not send messages.
 | Edit a template | `GET {template_id}?fields=id,name,language,status,parameter_format,components`, then `POST {template_id}` with `{ components }` | media headers and buttons are sent back exactly as they came |
 | Template analytics | `GET {waba}/template_analytics?start&end&granularity=DAILY&metric_types=sent,delivered,read,cost,clicked&template_ids=[…]&limit=1000` | **at most 10 ids** per request, so the route batches them |
 | Turn analytics on | `POST {waba}?is_enabled_for_insights=true` | **cannot be undone**; the page asks first |
+| Template quota | `GET {waba}/message_templates?fields=id&limit=1&summary=total_count,message_template_count,message_template_limit` | 250 unverified, 6,000 verified; hidden when Meta leaves `summary` out |
+| Delete templates | `DELETE {waba}/message_templates?name=` (all languages), `?name=&hsm_id=` (one), `?hsm_ids=[…]` (≤ 100, not with `name`) | **irreversible**; name blocked 30 days; DISABLED can't be deleted and one in `hsm_ids` fails the whole call |
+| Archive / unarchive | `POST {waba}/message_templates/archive` or `/unarchive` with `{ hsm_ids }` (≤ 100) | answers `archived_templates`/`unarchived_templates` and `failed_templates` `{ id: reason }`; APPROVED or REJECTED only; auto-archived after 12 months unused, deleted 28 days later |
+| Unpause | `POST {template_id}/unpause` | quality pauses: 3 h, then 6 h, the third disables; pacing pauses stay until unpaused |
+| Copy to another account | `POST {dest_waba}/migrate_message_templates` with `{ source_waba_id, template_ids }` (≤ 500), using the destination's token | same business; APPROVED with GREEN/UNKNOWN quality; answers `migrated_templates` and `failed_templates` `{ id: reason }` |
 
 Components the app builds (`textComponents()` in `server/utils/templates.ts`):
 
@@ -77,7 +82,8 @@ The page and the server check the same rules (`templateProblems()` and `template
   rejects some.
 - Editing: only `APPROVED`, `REJECTED` or `PAUSED` templates, and only positional ones (named variables are
   edited in WhatsApp Manager). An approved template can be edited once every 24 hours and 10 times in 30 days.
-- A deleted template's name can't be used again for 30 days. The app never deletes templates.
+- A deleted template's name can't be used again for 30 days. Delete, archive, unpause and copy only run after
+  the page confirms them with Meta's rule (`useTemplateAction`).
 
 ## Analytics and spend
 
@@ -147,7 +153,7 @@ otherwise.
 
 - Never change a profile, name, username, badge, chat start, QR code or block list against a real account
   while developing; the demo answers every `/api/business` write after the same checks.
-- Never create or edit a template, and never turn analytics on, against a real account while developing or
+- Never create, edit, delete, archive, unpause or copy a template, and never turn analytics on, against a real account while developing or
   testing. Use `bun run demo`, which answers every call itself, or an account made for testing.
 - Never print, log, paste or commit a token. Ask the person to enter it in the app, which keeps it on the server.
 - Sample values and screenshots use made-up names and numbers only.

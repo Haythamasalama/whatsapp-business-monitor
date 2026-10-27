@@ -1,3 +1,5 @@
+import type { H3Event } from 'h3'
+
 // A fictional store, so the project can be tried and screenshotted without a Meta account.
 export const isDemo = () => ['1', 'true'].includes(String(process.env.WHATSAPP_TEMPLATES_DEMO ?? '').toLowerCase())
 
@@ -98,6 +100,7 @@ const TEMPLATES: DemoTemplate[] = [
   demoTemplate('weekend_offer', 'ar', 'MARKETING', 'PENDING', 'عرض نهاية الأسبوع: خصم {{1}} على كل العطور حتى {{2}}.', ['20٪', 'السبت']),
   demoTemplate('weekend_offer', 'en', 'MARKETING', 'PENDING', 'Weekend offer: {{1}} off every perfume until {{2}}.', ['20%', 'Saturday']),
   demoTemplate('review_request', 'en', 'MARKETING', 'PAUSED', 'How was your order {{1}}? Tell us in one tap.', ['10482'], { daily: 4, readRate: 0.52 }),
+  demoTemplate('ramadan_hours', 'ar', 'UTILITY', 'ARCHIVED', 'مواعيد العمل في رمضان: من {{1}} حتى {{2}}.', ['8 م', '2 ص']),
 ]
 
 // Deterministic "noise", so every reload and every screenshot shows the same numbers.
@@ -135,8 +138,112 @@ export function demoDiscover() {
   return { data: [{ waba_id: store.waba, name: store.name, phones: [store.phone] }] }
 }
 
+// The demo account is on a verified business, so it may have up to 6,000 templates.
 export function demoTemplates() {
-  return { data: TEMPLATES.map(entry => entry.template) }
+  return { data: TEMPLATES.map(entry => entry.template), quota: { used: TEMPLATES.length, limit: 6_000 } }
+}
+
+// What each archived demo template was before, so unarchiving puts it back.
+const archivedFrom = new Map<string, string>()
+
+/** The demo's answer for a template write, after the same checks the real route runs. Nothing reaches Meta. */
+export async function demoTemplateWrite(event: H3Event, path: string): Promise<unknown> {
+  if (event.method === 'DELETE' && path === '/api/templates') {
+    const query = getQuery(event)
+    const ids = readTemplateIds(String(query.ids ?? '').split(','))
+    const name = String(query.name ?? '')
+    const id = String(query.id ?? '')
+
+    if (ids.length) {
+      failOn(templateIdProblems(ids, TEMPLATE_BATCH_MAX))
+    }
+    else if (!TEMPLATE_NAME.test(name) || (id && !TEMPLATE_ID.test(id))) {
+      throw apiError(400, t('templateActions.errors.badName'))
+    }
+
+    const matches = (entry: DemoTemplate) => (ids.length ? ids.includes(entry.template.id) : entry.template.name === name && (!id || entry.template.id === id))
+
+    // Meta refuses the whole request when one of the templates is disabled.
+    if (TEMPLATES.some(entry => matches(entry) && entry.template.status === 'DISABLED')) {
+      throw apiError(422, t('templateActions.errors.disabled'))
+    }
+
+    for (let index = TEMPLATES.length - 1; index >= 0; index--) {
+      if (matches(TEMPLATES[index]!)) {
+        TEMPLATES.splice(index, 1)
+      }
+    }
+
+    return { success: true }
+  }
+
+  const body = (await readBody<Record<string, unknown>>(event)) ?? {}
+  const ids = readTemplateIds(body.ids)
+  const byId = (value: string) => TEMPLATES.find(entry => entry.template.id === value)?.template
+
+  if (path === '/api/templates/archive') {
+    failOn(templateIdProblems(ids, TEMPLATE_BATCH_MAX))
+    const unarchive = body.action === 'unarchive'
+    const result: TemplateActionResult = { done: [], failed: [] }
+
+    for (const value of ids) {
+      const template = byId(value)
+
+      if (unarchive && template?.status === 'ARCHIVED') {
+        template.status = archivedFrom.get(value) ?? 'APPROVED'
+        result.done.push(value)
+      }
+      else if (!unarchive && template && ARCHIVABLE_STATUSES.includes(template.status)) {
+        archivedFrom.set(value, template.status)
+        template.status = 'ARCHIVED'
+        result.done.push(value)
+      }
+      else {
+        result.failed.push({ id: value, reason: unarchive ? 'Template is not archived' : 'Only approved or rejected templates can be archived' })
+      }
+    }
+
+    return result
+  }
+
+  if (path === '/api/templates/copy') {
+    failOn(templateIdProblems(ids, TEMPLATE_COPY_MAX))
+
+    if (!String(body.to ?? '') || body.to === getQuery(event).account) {
+      throw apiError(422, t('templateActions.errors.sameAccount'))
+    }
+
+    const result: TemplateActionResult = { done: [], failed: [] }
+
+    for (const value of ids) {
+      const template = byId(value)
+
+      if (template && canCopyTemplate(template)) {
+        result.done.push(value)
+      }
+      else {
+        result.failed.push({ id: value, reason: 'Only approved templates with green or unknown quality can be migrated' })
+      }
+    }
+
+    return result
+  }
+
+  const unpause = /^\/api\/templates\/(\d+)\/unpause$/.exec(path)
+
+  if (unpause) {
+    const template = byId(unpause[1]!)
+
+    if (template?.status !== 'PAUSED') {
+      throw apiError(422, t('templateActions.errors.notPaused'))
+    }
+
+    template.status = 'APPROVED'
+
+    return { success: true }
+  }
+
+  return null
 }
 
 export function demoSummary(): { data: AccountStats[] } {

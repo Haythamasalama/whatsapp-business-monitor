@@ -41,12 +41,20 @@ async function demoAnswer(event: H3Event) {
     return demoOverview(getQuery(event).account)
   }
 
-  if (!post && path === '/api/templates') {
+  if (event.method === 'GET' && path === '/api/templates') {
     return demoTemplates()
   }
 
   if (!post && path === '/api/analytics') {
     return demoAnalytics(getQuery(event).account)
+  }
+
+  if (path?.startsWith('/api/templates') && (event.method === 'DELETE' || path !== '/api/templates')) {
+    const answer = await demoTemplateWrite(event, path)
+
+    if (answer) {
+      return answer
+    }
   }
 
   if (path?.startsWith('/api/business')) {

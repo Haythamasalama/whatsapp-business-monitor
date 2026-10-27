@@ -1,3 +1,3 @@
 <template>
-  <DocsAccounts />
+  <DocsPage guide="accounts" />
 </template>
