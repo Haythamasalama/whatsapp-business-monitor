@@ -62,17 +62,27 @@ The screenshots show a fictional store.
 
 ## 🐳 Run with Docker
 
-One command, no Node.js needed:
+One command, no Node.js needed. It keeps the compose file in its own `~/whatsapp-manager` folder:
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/Haythamasalama/whatsapp-manager-monitoring/main/compose.yaml && docker compose up -d
+mkdir -p ~/whatsapp-manager && cd ~/whatsapp-manager && curl -fsSLO https://raw.githubusercontent.com/Haythamasalama/whatsapp-manager-monitoring/main/compose.yaml && docker compose up -d
 ```
 
 Open <http://127.0.0.1:3210>, choose **Add account** and paste a Meta system user token with `whatsapp_business_management`. The app finds the business accounts and numbers it can reach.
 
 **Updates install themselves.** A small updater container ([Watchtower](https://github.com/nicholas-fedor/watchtower)) checks every 6 hours and restarts the app on the new version, with the same settings and accounts. It only touches this app's container. To update by hand instead, remove the `updater` service from `compose.yaml` and run `docker compose pull && docker compose up -d`.
 
-Your accounts stay in `~/.config/whatsapp-templates`. Open the app at `127.0.0.1` or `localhost`; another computer's name or address is refused.
+Your accounts stay in `~/.config/whatsapp-templates`.
+
+### 🔒 A nicer address with HTTPS
+
+With [Laravel Herd](https://herd.laravel.com), one command serves it at <https://whatsapp.test> with a trusted certificate:
+
+```bash
+cd ~/whatsapp-manager && echo "WHATSAPP_TEMPLATES_HOSTS=whatsapp.test" >> .env && docker compose up -d && herd proxy whatsapp http://127.0.0.1:3210 --secure
+```
+
+Without Herd, <http://whatsapp.localhost:3210> works with no setup in Chrome, Edge and Firefox. The app answers on `127.0.0.1`, `localhost`, any `*.localhost` name and the names in `WHATSAPP_TEMPLATES_HOSTS`; any other name is refused.
 
 ## 💻 Run from source
 
