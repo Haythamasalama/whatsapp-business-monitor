@@ -27,7 +27,7 @@ function remembered(): string | null {
 
 export function useManager() {
   const accounts = useState<AccountSummary[]>('accounts', () => [])
-  const accountsDir = useState('accountsDir', () => '')
+  const storage = useState('storage', () => '')
   const accountId = useState<string | null>('accountId', () => null)
   const templates = useState<MetaTemplate[]>('templates', () => [])
   const templatesError = useState<string | null>('templatesError', () => null)
@@ -39,7 +39,7 @@ export function useManager() {
   const analyticsLoading = useState('analyticsLoading', () => false)
   const templatesFor = useState<string | null>('templatesFor', () => null)
   const lastLoadedAt = useState('lastLoadedAt', () => 0)
-  const screen = useState<'overview' | 'account' | 'accounts'>('screen', () => 'overview')
+  const screen = useState<'overview' | 'account' | 'accounts' | 'settings'>('screen', () => 'overview')
   const summary = useState<AccountStats[] | null>('summary', () => null)
   const summaryError = useState<string | null>('summaryError', () => null)
   const summaryLoading = useState('summaryLoading', () => false)
@@ -81,6 +81,11 @@ export function useManager() {
     }
     catch (error) {
       const failure = error as { data?: { data?: { error?: MetaError }, error?: MetaError }, statusCode?: number }
+
+      if (failure.statusCode === 401) {
+        useSession().signedOut()
+      }
+
       const reason = errorText(failure.data?.data?.error ?? failure.data?.error)
 
       throw new Error(reason || (failure.statusCode
@@ -90,10 +95,10 @@ export function useManager() {
   }
 
   async function loadAccounts(select?: string): Promise<void> {
-    const response = await api<{ data: AccountSummary[], dir: string }>('/api/accounts', { scoped: false })
+    const response = await api<{ data: AccountSummary[], storage: string }>('/api/accounts', { scoped: false })
 
     accounts.value = response.data
-    accountsDir.value = response.dir
+    storage.value = response.storage
 
     if (!response.data.length) {
       accountId.value = null
@@ -110,7 +115,7 @@ export function useManager() {
       screen.value = 'account'
     }
 
-    if (screen.value !== 'accounts') {
+    if (screen.value === 'overview' || screen.value === 'account') {
       await (screen.value === 'account' ? loadAccountData() : loadSummary())
     }
   }
@@ -289,7 +294,7 @@ export function useManager() {
 
   return {
     accounts,
-    accountsDir,
+    storage,
     accountId,
     current,
     templates,

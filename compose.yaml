@@ -1,27 +1,31 @@
 name: whatsapp-manager-monitoring
 
+# Written by install.sh; the settings it asks for live in .env next to this file.
 services:
   whatsapp-manager:
-    image: ghcr.io/haythamasalama/whatsapp-manager-monitoring:latest
+    image: ghcr.io/haythamasalama/whatsapp-manager-monitoring:${WHATSAPP_MANAGER_VERSION:-latest}
     container_name: whatsapp-manager-monitoring
     restart: unless-stopped
+    # The owner of the data folder, so the database can be written; install.sh sets it.
+    user: "${WHATSAPP_MANAGER_UID:-1000}:${WHATSAPP_MANAGER_GID:-1000}"
     ports:
-      # Reachable from this computer only, as without Docker.
-      - "127.0.0.1:3210:3210"
+      # 127.0.0.1 keeps it on this computer; install.sh --server sets 0.0.0.0 for other computers.
+      - "${WHATSAPP_MANAGER_BIND:-127.0.0.1}:${WHATSAPP_MANAGER_PORT:-3210}:3210"
     environment:
       WHATSAPP_TEMPLATES_UPDATE_CHECK: ${WHATSAPP_TEMPLATES_UPDATE_CHECK:-true}
-      # Extra names to open the app with, such as a Herd proxy (whatsapp.test). Set them in .env.
-      WHATSAPP_TEMPLATES_HOSTS: ${WHATSAPP_TEMPLATES_HOSTS:-}
       # Tells the page that the updater below installs new versions on its own.
       WHATSAPP_TEMPLATES_AUTO_UPDATE: "true"
+      # Lets the settings page show where the database is on this computer.
+      WHATSAPP_MANAGER_DATA_SHOWN: ${WHATSAPP_MANAGER_DATA:-${HOME}/.config/whatsapp-templates}
+      WHATSAPP_MANAGER_HOST_HOME: ${HOME}
     volumes:
-      # The same account files as running it without Docker.
-      - ${HOME}/.config/whatsapp-templates:/data/accounts
+      # The database: accounts, settings and users. Kept on this computer across updates.
+      - ${WHATSAPP_MANAGER_DATA:-${HOME}/.config/whatsapp-templates}:/data/accounts
     labels:
       com.centurylinklabs.watchtower.enable: "true"
 
   # Installs each new release by itself: every 6 hours it pulls the image and, when it changed,
-  # restarts the app on it with the same settings and accounts. Remove this service to update by hand.
+  # restarts the app on it with the same settings and data. A pinned WHATSAPP_MANAGER_VERSION stays put.
   updater:
     image: nickfedor/watchtower:latest
     container_name: whatsapp-manager-monitoring-updater

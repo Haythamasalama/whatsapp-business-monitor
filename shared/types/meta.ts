@@ -53,7 +53,6 @@ export interface Phone {
 export interface AccountSummary {
   id: string
   label: string
-  file: string
   waba_id: string
   version: string
   name: string | null
@@ -143,4 +142,23 @@ export interface ImportResult {
   added: string[]
   replaced: string[]
   skipped: { id: string, reason: 'exists' | 'invalid' }[]
+}
+
+export interface AppInfo {
+  setup_required: boolean
+  user: { username: string } | null
+  instance_name: string
+  public_url: string
+  default_locale: 'ar' | 'en'
+}
+
+export interface SettingsInfo {
+  instance_name: string
+  public_url: string
+  default_locale: 'ar' | 'en'
+  update_check: boolean
+  /** Where the database file is, with ~ for the home folder. */
+  storage: string
+  /** WHATSAPP_TEMPLATES_UPDATE_CHECK=false turns the check off whatever the setting says. */
+  update_check_forced_off: boolean
 }

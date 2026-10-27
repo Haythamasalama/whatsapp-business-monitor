@@ -4,10 +4,10 @@ import type { TableColumn } from '@nuxt/ui'
 
 const emit = defineEmits<{ add: [], edit: [account: AccountSummary], open: [id: string], export: [], import: [] }>()
 
-const { accounts, accountsDir } = useManager()
+const { accounts, storage } = useManager()
 
 // Isolated as left to right, so the path reads the same inside an Arabic sentence.
-const storedIn = computed(() => t('manage.storedIn', { dir: `\u2066${accountsDir.value}\u2069` }))
+const storedIn = computed(() => t('manage.storedIn', { dir: `\u2066${storage.value}\u2069` }))
 const deleteAccount = useDeleteAccount()
 
 const columns = computed<TableColumn<AccountSummary>[]>(() => [

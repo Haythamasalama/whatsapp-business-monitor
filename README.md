@@ -12,7 +12,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 ![Nuxt 4](https://img.shields.io/badge/Nuxt-4-317455?logo=nuxt&logoColor=white)
 ![Node 22.21+ or 24.11+](https://img.shields.io/badge/node-22.21%2B%20%7C%2024.11%2B-317455?logo=node.js&logoColor=white)
 
-[Features](#-features) · [Docker](#-run-with-docker) · [From source](#-run-from-source) · [Contribute](CONTRIBUTING.md)
+[Features](#-features) · [Install](#-install) · [Updates](#-updates) · [From source](#-run-from-source) · [Contribute](CONTRIBUTING.md)
 
 <img src="docs/screenshots/overview.png" width="860" alt="The overview of two accounts of a fictional store: this month's cost, messages sent, templates that need attention, a daily cost chart, the cost per account and a table of accounts.">
 
@@ -29,7 +29,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 - 📱 **Number health.** Status, quality and daily limit of every number.
 - 👥 **Manage accounts.** Add, edit and delete accounts in one place, export them all to one file encrypted with your passphrase, and import it on another computer.
 - 🌍 **Arabic or English.** Light or dark, and templates in any language.
-- 🔒 **Private.** Runs on your machine. Your tokens never leave it.
+- 🔒 **Yours.** Runs on your computer or your server, behind your own sign-in, with a setup page on the first visit.
 
 <details>
 <summary>The copy and paste format</summary>
@@ -60,29 +60,39 @@ Your order {{1}} is confirmed.
 
 The screenshots show a fictional store.
 
-## 🐳 Run with Docker
+## 🚀 Install
 
-One command, no Node.js needed. It keeps the compose file in its own `~/whatsapp-manager` folder:
-
-```bash
-mkdir -p ~/whatsapp-manager && cd ~/whatsapp-manager && curl -fsSLO https://raw.githubusercontent.com/Haythamasalama/whatsapp-manager-monitoring/main/compose.yaml && docker compose up -d
-```
-
-Open <http://127.0.0.1:3210>, choose **Add account** and paste a Meta system user token with `whatsapp_business_management`. The app finds the business accounts and numbers it can reach.
-
-**Updates install themselves.** A small updater container ([Watchtower](https://github.com/nicholas-fedor/watchtower)) checks every 6 hours and restarts the app on the new version, with the same settings and accounts. It only touches this app's container. To update by hand instead, remove the `updater` service from `compose.yaml` and run `docker compose pull && docker compose up -d`.
-
-Your accounts stay in `~/.config/whatsapp-templates`.
-
-### 🔒 A nicer address with HTTPS
-
-With [Laravel Herd](https://herd.laravel.com), one command serves it at <https://whatsapp.test> with a trusted certificate:
+One command installs it with Docker, on your computer or on a server, and starts it:
 
 ```bash
-cd ~/whatsapp-manager && echo "WHATSAPP_TEMPLATES_HOSTS=whatsapp.test" >> .env && docker compose up -d && herd proxy whatsapp http://127.0.0.1:3210 --secure
+curl -fsSL https://raw.githubusercontent.com/Haythamasalama/whatsapp-manager-monitoring/main/install.sh | sh
 ```
 
-Without Herd, <http://whatsapp.localhost:3210> works with no setup in Chrome, Edge and Firefox. The app answers on `127.0.0.1`, `localhost`, any `*.localhost` name and the names in `WHATSAPP_TEMPLATES_HOSTS`; any other name is refused.
+On a server, so other computers can open it:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Haythamasalama/whatsapp-manager-monitoring/main/install.sh | sh -s -- --server
+```
+
+Then open the address it prints. The first visit shows the setup: the app's name, its address, the language and an admin account. After that, add a WhatsApp account (a Meta system user token with `whatsapp_business_management`) or import the ones you exported elsewhere.
+
+Everything lives in `~/whatsapp-manager`: the settings in `.env`, and the database (accounts, settings, users) in `data/`.
+
+### 🔄 Updates
+
+- **They install themselves.** An updater container ([Watchtower](https://github.com/nicholas-fedor/watchtower)) checks every 6 hours and restarts the app on the new version, with the same settings and data. It only touches this app's containers.
+- **Update now:** run the install command again.
+- **Stay on a version:** `WHATSAPP_MANAGER_VERSION=0.2.2` in `.env` (or before the install command), then run it again. Remove the line to follow new releases again.
+
+### 🌐 On a server
+
+Put it behind a reverse proxy with HTTPS (Caddy, nginx, Traefik…) that forwards to port `3210`, and set the same address in **Settings**. With Caddy that is two lines:
+
+```
+wa.example.com {
+  reverse_proxy 127.0.0.1:3210
+}
+```
 
 ## 💻 Run from source
 
@@ -95,14 +105,16 @@ bun install
 bun run dev
 ```
 
-Then open <http://127.0.0.1:3210>. To update: `git pull && bun install`.
+Then open <http://127.0.0.1:3210>. To update: `git pull && bun install`. The database is in `~/.config/whatsapp-templates` (or `WHATSAPP_TEMPLATES_DIR`).
 
-## 🔐 Accounts and security
+## 🔐 Security
 
-- Each account is one file in `~/.config/whatsapp-templates/` (or `WHATSAPP_TEMPLATES_DIR`), written with `600` permissions.
-- The server listens on `127.0.0.1` only. No response contains a token, and `/api` refuses other hosts and requests without its `X-Requested-With` header.
-- Besides Meta, the server only asks GitHub once a day whether a new version is out. Set `WHATSAPP_TEMPLATES_UPDATE_CHECK=false` to turn that off.
-- There is no login, so don't deploy it to a public server. Found a vulnerability? See the [security policy](SECURITY.md).
+- Sign-in is required for everything but the setup and the sign-in page. Passwords are hashed with scrypt, sessions are random tokens in an `httpOnly` cookie, and wrong passwords are slowed down.
+- No response contains an access token. Exports are encrypted with a passphrase you choose.
+- `/api` refuses requests without its `X-Requested-With` header, so a page elsewhere cannot call it with your session.
+- The database folder is private (`700`) and the database file `600`.
+- Besides Meta, the server only asks GitHub once a day whether a new version is out. Turn it off in **Settings**.
+- Found a vulnerability? See the [security policy](SECURITY.md).
 
 ## ⚠️ Limits from Meta
 

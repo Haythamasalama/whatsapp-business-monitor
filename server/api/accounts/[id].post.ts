@@ -1,13 +1,12 @@
 export default apiHandler(async (event) => {
-  const id = getRouterParam(event, 'id') ?? ''
-  const file = accountFiles()[id]
+  const current = findAccount(getRouterParam(event, 'id') ?? '')
 
-  if (!file) {
+  if (!current) {
     throw apiError(404, t('server.accountMissing'))
   }
 
   // An empty token field keeps the stored one, so editing the name never needs the token again.
-  const values = readAccountValues(await readBody<Record<string, unknown>>(event), loadAccount(id))
+  const values = readAccountValues(await readBody<Record<string, unknown>>(event), current)
   const problems = accountProblems(values)
 
   if (problems.length) {
@@ -16,7 +15,7 @@ export default apiHandler(async (event) => {
 
   const check = orFail(await graph(values, 'GET', values.waba, { fields: 'name' }), 422)
 
-  writeAccount(file, values)
+  saveAccount(current.id, values)
 
-  return { id, name: check.name ?? null }
+  return { id: current.id, name: check.name ?? null }
 })

@@ -17,7 +17,8 @@ Include the affected version or commit, steps to reproduce and the impact you ex
 The app handles Meta access tokens, so these are in scope:
 
 - a token reaching the browser, a log, an API response or the repository;
-- another website, or another device on the network, calling the local `/api`;
-- account files written with permissions wider than `600`, or outside the accounts folder.
+- calling `/api` without signing in, or from another website with someone's session;
+- getting past the sign-in: guessing passwords faster than the limit allows, reusing a session after signing out or changing the password, finishing the setup again;
+- the database or its folder readable by other users of the computer (wider than `600` / `700`).
 
 Never include a real token, phone number or customer data in a report. Use `bun run demo` to reproduce a problem with fictional data.

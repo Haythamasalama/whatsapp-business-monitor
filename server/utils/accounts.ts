@@ -1,6 +1,5 @@
-import { chmodSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { basename, join } from 'node:path'
+import { join } from 'node:path'
 import type { H3Event } from 'h3'
 
 export const DEFAULT_VERSION = 'v23.0'
@@ -11,66 +10,72 @@ export const RESERVED_IDS = ['discover', 'export', 'import']
 export interface Account {
   id: string
   label: string
-  file: string
   token: string
   waba: string
   version: string
 }
 
-/** One `{id}.env` file per WhatsApp account, outside the project so tokens never sit next to the code. */
-export const accountsDir = () => process.env.WHATSAPP_TEMPLATES_DIR || join(homedir(), '.config', 'whatsapp-templates')
+/** The app's data folder: the database, outside the project so tokens never sit next to the code. */
+export const dataDir = () => process.env.WHATSAPP_TEMPLATES_DIR || join(homedir(), '.config', 'whatsapp-templates')
 
-// Paths shown in the page start with ~ so the user name never ends up in a screenshot.
-export const tildePath = (path: string) => (path.startsWith(homedir()) ? `~${path.slice(homedir().length)}` : path)
+// Paths shown in the page start with ~ so the user name never ends up in a screenshot. In Docker the
+// container has no home of its own, so compose passes the computer's home folder in.
+export function tildePath(path: string): string {
+  const home = process.env.WHATSAPP_MANAGER_HOST_HOME || homedir()
 
-export function accountFiles(): Record<string, string> {
-  const files: Record<string, string> = {}
+  return home && home !== '/' && (path === home || path.startsWith(`${home}/`)) ? `~${path.slice(home.length)}` : path
+}
 
-  if (existsSync(accountsDir())) {
-    for (const name of readdirSync(accountsDir()).filter(name => name.endsWith('.env')).sort()) {
-      files[basename(name, '.env')] = join(accountsDir(), name)
-    }
-  }
+/** Where the database is as this computer sees it: in Docker, the folder compose mounts, not the container's. */
+export const shownDatabaseFile = () => join(process.env.WHATSAPP_MANAGER_DATA_SHOWN || dataDir(), 'whatsapp-manager.db')
 
-  return files
+interface AccountRow {
+  id: string
+  label: string
+  token: string
+  waba_id: string
+  version: string
+}
+
+const toAccount = (row: AccountRow): Account => ({ id: row.id, label: row.label || row.id, token: row.token, waba: row.waba_id, version: row.version || DEFAULT_VERSION })
+
+export function accountIds(): string[] {
+  return (useDb().prepare('SELECT id FROM accounts ORDER BY id').all() as { id: string }[]).map(row => row.id)
+}
+
+export function findAccount(id: string): Account | null {
+  const row = useDb().prepare('SELECT id, label, token, waba_id, version FROM accounts WHERE id = ?').get(id) as AccountRow | undefined
+
+  return row ? toAccount(row) : null
 }
 
 export function loadAccount(id: string): Account {
-  const file = accountFiles()[id]!
-  const values: Record<string, string> = {}
+  const account = findAccount(id)
 
-  for (const raw of readFileSync(file, 'utf8').split('\n')) {
-    const line = raw.trim()
-    const at = line.indexOf('=')
-
-    if (!line || line.startsWith('#') || at === -1) {
-      continue
-    }
-
-    values[line.slice(0, at).trim()] = line.slice(at + 1).trim().replace(/^['"]|['"]$/g, '')
-  }
-
-  return {
-    id,
-    label: values.WHATSAPP_LABEL || id,
-    file,
-    token: values.WHATSAPP_TOKEN ?? '',
-    waba: values.WHATSAPP_WABA_ID ?? '',
-    version: values.WHATSAPP_VERSION || DEFAULT_VERSION,
-  }
-}
-
-export function requireAccount(event: H3Event): Account {
-  const id = String(getQuery(event).account ?? '')
-
-  if (!accountFiles()[id]) {
+  if (!account) {
     throw apiError(404, t('server.accountNotFound', { id }))
   }
 
-  const account = loadAccount(id)
+  return account
+}
+
+export function saveAccount(id: string, values: AccountValues): void {
+  useDb().prepare(`
+    INSERT INTO accounts (id, label, token, waba_id, version) VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT (id) DO UPDATE SET label = excluded.label, token = excluded.token, waba_id = excluded.waba_id,
+      version = excluded.version, updated_at = CURRENT_TIMESTAMP
+  `).run(id, values.label, values.token, values.waba, values.version)
+}
+
+export function deleteAccount(id: string): boolean {
+  return Number(useDb().prepare('DELETE FROM accounts WHERE id = ?').run(id).changes) > 0
+}
+
+export function requireAccount(event: H3Event): Account {
+  const account = loadAccount(String(getQuery(event).account ?? ''))
 
   if (!account.token || !account.waba) {
-    throw apiError(400, t('server.accountIncompleteIn', { file: tildePath(account.file) }))
+    throw apiError(400, t('server.accountIncomplete'))
   }
 
   return account
@@ -95,28 +100,11 @@ export function readAccountValues(body: Record<string, unknown>, fallback?: Acco
   const field = (key: string) => String(body[key] ?? '').trim()
 
   return {
-    label: String(body.label ?? '').replace(/['\r\n]/g, '').trim(),
+    label: String(body.label ?? '').replace(/[\r\n]/g, '').trim(),
     token: field('token') || fallback?.token || '',
     waba: field('waba_id') || fallback?.waba || '',
     version: field('version') || fallback?.version || DEFAULT_VERSION,
   }
-}
-
-export const newAccountFile = (id: string) => join(accountsDir(), `${id}.env`)
-
-export function writeAccount(file: string, values: AccountValues): void {
-  mkdirSync(accountsDir(), { recursive: true, mode: 0o700 })
-
-  // Single quotes keep the label literal if a shell script sources this file.
-  const lines = [
-    ...(values.label ? [`WHATSAPP_LABEL='${values.label}'`] : []),
-    `WHATSAPP_TOKEN=${values.token}`,
-    `WHATSAPP_WABA_ID=${values.waba}`,
-    `WHATSAPP_VERSION=${values.version}`,
-  ]
-
-  writeFileSync(file, `${lines.join('\n')}\n`, { mode: 0o600 })
-  chmodSync(file, 0o600)
 }
 
 export function apiError(statusCode: number, message: string) {

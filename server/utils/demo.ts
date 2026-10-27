@@ -113,12 +113,11 @@ function sendsOn(entry: DemoTemplate, index: number, date: Date, store: DemoStor
   return Math.round(entry.daily * store.scale * wave(index * 31 + date.getUTCDate() + date.getUTCMonth() * 7 + store.waba.length * store.scale) * (date.getUTCDay() === 5 ? 0.55 : 1))
 }
 
-export function demoAccounts(): { data: AccountSummary[], dir: string } {
+export function demoAccounts(): { data: AccountSummary[], storage: string } {
   return {
     data: stores().map(store => ({
       id: store.id,
       label: store.label,
-      file: `~/.config/whatsapp-templates/${store.id}.env`,
       waba_id: store.waba,
       version: 'v23.0',
       name: store.name,
@@ -126,7 +125,7 @@ export function demoAccounts(): { data: AccountSummary[], dir: string } {
       photo: null,
       error: null,
     })),
-    dir: '~/.config/whatsapp-templates',
+    storage: '~/.config/whatsapp-templates/whatsapp-manager.db',
   }
 }
 

@@ -22,13 +22,13 @@ bun run dev         # your real accounts on http://127.0.0.1:3210
 bun run typecheck
 ```
 
-Work with `bun run demo` whenever you can: it never calls Meta and never writes an account file.
+Work with `bun run demo` whenever you can: it never calls Meta, never asks to sign in and never writes to the database.
 
 ## How the code is organized
 
 - **`server/api/`** holds one Nitro route per action: accounts, templates, overview (spend), analytics. Every Graph API call goes through `server/utils/graph.ts`.
-- **`server/middleware/1.guard.ts`** refuses other hosts and requests without the `X-Requested-With` header. **`2.demo.ts`** answers every `/api` call with the fixtures in `server/utils/demo.ts` when demo mode is on.
-- **`server/utils/accounts.ts`** reads and writes the account files. Tokens never leave the server.
+- **`server/middleware/1.guard.ts`** refuses requests without the `X-Requested-With` header. **`2.demo.ts`** answers every `/api` call with the fixtures in `server/utils/demo.ts` when demo mode is on. **`3.auth.ts`** requires a session for everything but setup and sign-in.
+- **`server/utils/db.ts`** opens the SQLite database (`node:sqlite`) and runs its migrations; add a new entry to `MIGRATIONS` for every schema change. **`accounts.ts`**, **`settings.ts`** and **`auth.ts`** read and write it. Tokens never leave the server.
 - **`shared/`** is used by both sides: types for Meta's payloads, the template rules (`templateProblems()`), so the page and the server check a template the same way, and the translations: `t()` in `shared/utils/i18n.ts` with the dictionaries in `shared/locales/`.
 - **`app/composables/useManager.ts`** holds the page state and the API helper. Components read from it.
 - **`app/components/`** is the interface, built with [Nuxt UI](https://ui.nuxt.com) components.
@@ -56,7 +56,7 @@ Titles follow [Conventional Commits](https://www.conventionalcommits.org): `type
 ```
 feat(analytics): show button clicks per template
 fix(templates): keep media headers when editing
-docs: explain where account files live
+docs: explain where the database lives
 ```
 
 Types: `feat`, `fix`, `perf`, `refactor`, `i18n`, `docs`, `test`, `build`, `ci`, `chore`. Scopes are optional: `dashboard`, `templates`, `analytics`, `accounts`, `server`, `docker`, `demo`, `docs`.
