@@ -251,7 +251,7 @@ async function submit(): Promise<void> {
             <div v-for="lang in langsOf(draft)" :key="lang" class="space-y-3 rounded-lg border border-default bg-default p-4">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <h4 class="font-medium text-highlighted">
-                  {{ languageName(lang) }} <code class="text-xs text-muted">{{ lang }}</code>
+                  {{ languageName(lang) }} <code class="text-xs text-muted">{{ languageCode(lang) }}</code>
                 </h4>
                 <div class="flex items-center gap-1">
                   <UBadge

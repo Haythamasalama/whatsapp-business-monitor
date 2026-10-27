@@ -18,6 +18,11 @@ export const META_LANGUAGES = [
   'sk', 'sl', 'es', 'es_AR', 'es_ES', 'es_MX', 'sw', 'sv', 'ta', 'te', 'th', 'tr', 'uk', 'ur', 'uz', 'vi', 'zu',
 ]
 
+/** How a language code is shown on badges: EN, AR, PT-BR. */
+export function languageCode(code: string): string {
+  return code.replace('_', '-').toUpperCase()
+}
+
 export function sortLanguages(codes: string[]): string[] {
   const rank = (code: string) => (LANGS.includes(code) ? LANGS.indexOf(code) : LANGS.length)
 

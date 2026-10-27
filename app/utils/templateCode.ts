@@ -38,7 +38,9 @@ function normalizeLanguage(value: string): string {
     return code
   }
 
-  return META_LANGUAGES.find(code => languageName(code) === value) ?? value
+  const loose = code.replace('-', '_').toLowerCase()
+
+  return META_LANGUAGES.find(meta => meta.toLowerCase() === loose || languageName(meta) === value) ?? value
 }
 
 /** The text a template is copied as: labelled lines in Arabic, the body as it is, then `{{n}} = value`. */

@@ -200,7 +200,7 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
             ? h('div', { class: 'flex flex-wrap gap-1' }, others.map((t) => {
                 const { tone, icon } = statusOf(t.status)
 
-                return h(UBadge, { color: tone, variant: 'subtle', icon, label: t.language, class: 'rounded-full font-mono' })
+                return h(UBadge, { color: tone, variant: 'subtle', icon, label: languageCode(t.language), class: 'rounded-full font-mono' })
               }))
             : h('span', { class: 'text-dimmed' }, '—')
         },

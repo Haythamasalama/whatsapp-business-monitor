@@ -7,10 +7,7 @@ withDefaults(defineProps<{ compact?: boolean }>(), { compact: false })
     <img src="/logo.svg" alt="" class="size-9 shrink-0 rounded-[10px]">
     <div v-if="!compact" class="min-w-0 leading-tight">
       <p class="truncate font-semibold text-highlighted">
-        مراقبة واتساب
-      </p>
-      <p class="text-xs text-muted">
-        للأعمال
+        مراقبة واتساب الأعمال
       </p>
     </div>
   </div>

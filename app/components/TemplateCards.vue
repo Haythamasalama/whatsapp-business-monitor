@@ -58,7 +58,7 @@ const sent = (group: TemplateGroup) => statsFor(group.items.map(t => t.id))?.sen
             :key="template.id"
             :color="statusOf(template.status).tone"
             :icon="statusOf(template.status).icon"
-            :label="template.language"
+            :label="languageCode(template.language)"
             variant="subtle"
             class="rounded-full font-mono"
           />

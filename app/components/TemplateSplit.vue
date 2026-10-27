@@ -47,7 +47,7 @@ watch(() => group.value?.name, () => {
                 v-for="t in item.items"
                 :key="t.id"
                 :color="statusOf(t.status).tone"
-                :label="t.language"
+                :label="languageCode(t.language)"
                 variant="subtle"
                 size="sm"
                 class="rounded-full font-mono"
