@@ -36,11 +36,9 @@ jobs:
       - name: Install
         run: bun install --frozen-lockfile
 
+      # The site lives at the root of its own domain (wbm.haythamasalama.me), set in the repository's Pages settings.
       - name: Build
         run: bun run site:generate
-        env:
-          # GitHub Pages serves the site under the repository's name.
-          NUXT_APP_BASE_URL: /whatsapp-business-monitor/
 
       - uses: actions/upload-pages-artifact@v3
         with:
