@@ -141,6 +141,7 @@ const en: Dictionary = {
     github: 'The project on GitHub',
   },
   nav: {
+    accounts: 'Manage accounts',
     overview: 'Overview',
   },
   header: {
@@ -174,6 +175,7 @@ const en: Dictionary = {
     loadFailed: 'Could not load the accounts',
   },
   accountForm: {
+    deleteFailed: 'Could not delete the account',
     delete: 'Delete account',
     deleteTitle: 'Delete «{name}»?',
     deleteNote: 'The account file is removed from this computer, and this cannot be undone. Its templates and numbers on Meta are not affected.',
@@ -371,7 +373,6 @@ const en: Dictionary = {
     another: 'Another template',
   },
   transfer: {
-    menu: 'Account options',
     export: 'Export accounts',
     import: 'Import accounts',
     exportTitle: 'Export accounts',
@@ -397,6 +398,10 @@ const en: Dictionary = {
     wrongPassphrase: 'Wrong passphrase, or the file is damaged.',
     passphraseShort: 'The passphrase needs at least {n} characters.',
     nothingToExport: 'There are no accounts to export.',
+  },
+  manage: {
+    connected: 'Working',
+    unreachable: 'Unreachable',
   },
 }
 

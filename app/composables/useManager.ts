@@ -39,7 +39,7 @@ export function useManager() {
   const analyticsLoading = useState('analyticsLoading', () => false)
   const templatesFor = useState<string | null>('templatesFor', () => null)
   const lastLoadedAt = useState('lastLoadedAt', () => 0)
-  const screen = useState<'overview' | 'account'>('screen', () => 'overview')
+  const screen = useState<'overview' | 'account' | 'accounts'>('screen', () => 'overview')
   const summary = useState<AccountStats[] | null>('summary', () => null)
   const summaryError = useState<string | null>('summaryError', () => null)
   const summaryLoading = useState('summaryLoading', () => false)
@@ -110,7 +110,9 @@ export function useManager() {
       screen.value = 'account'
     }
 
-    await (screen.value === 'account' ? loadAccountData() : loadSummary())
+    if (screen.value !== 'accounts') {
+      await (screen.value === 'account' ? loadAccountData() : loadSummary())
+    }
   }
 
   async function loadSummary({ silent = false } = {}): Promise<void> {

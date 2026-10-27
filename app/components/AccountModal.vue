@@ -5,7 +5,7 @@ const open = defineModel<boolean>('open', { default: false })
 
 const { api, loadAccounts, accountsDir, screen } = useManager()
 const toast = useToast()
-const confirm = useConfirm()
+const deleteAccount = useDeleteAccount()
 
 const blank = () => ({ label: '', id: '', token: '', waba_id: '', version: 'v23.0' })
 const form = reactive(blank())
@@ -100,7 +100,7 @@ async function save(): Promise<void> {
 
     open.value = false
     toast.add({ title: editing.value ? t('accountForm.saved') : t('accountForm.added'), color: 'success', icon: 'i-lucide-check' })
-    await loadAccounts(id)
+    await loadAccounts(screen.value === 'accounts' ? undefined : id)
   }
   catch (e) {
     error.value = (e as Error).message
@@ -111,35 +111,13 @@ async function save(): Promise<void> {
 }
 
 async function remove(): Promise<void> {
-  const account = props.account!
-  const confirmed = await confirm({
-    title: t('accountForm.deleteTitle', { name: accountTitle(account) }),
-    description: t('accountForm.deleteNote'),
-    confirmLabel: t('accountForm.delete'),
-    danger: true,
-  })
-
-  if (!confirmed) {
-    return
-  }
-
   deleting.value = true
-  error.value = null
 
-  try {
-    await api(`/api/accounts/${account.id}`, { method: 'DELETE', scoped: false })
-    forgetAccount(account.id)
+  if (await deleteAccount(props.account!)) {
     open.value = false
-    toast.add({ title: t('accountForm.deleted'), color: 'success', icon: 'i-lucide-check' })
-    screen.value = 'overview'
-    await loadAccounts()
   }
-  catch (e) {
-    error.value = (e as Error).message
-  }
-  finally {
-    deleting.value = false
-  }
+
+  deleting.value = false
 }
 </script>
 

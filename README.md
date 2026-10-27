@@ -27,7 +27,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 - 📋 **Copy and paste.** Copy any template, change it, paste it back. New ones are created, changed ones updated.
 - 🔔 **Live status.** A notification when a template is approved, rejected or paused.
 - 📱 **Number health.** Status, quality and daily limit of every number.
-- 📦 **Move your accounts.** Export them all to one file encrypted with your passphrase, and import it on another computer.
+- 👥 **Manage accounts.** Add, edit and delete accounts in one place, export them all to one file encrypted with your passphrase, and import it on another computer.
 - 🌍 **Arabic or English.** Light or dark, and templates in any language.
 - 🔒 **Private.** Runs on your machine. Your tokens never leave it.
 

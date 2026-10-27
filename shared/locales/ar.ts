@@ -141,6 +141,7 @@ export default {
     github: 'المشروع على GitHub',
   },
   nav: {
+    accounts: 'إدارة الحسابات',
     overview: 'نظرة عامة',
   },
   header: {
@@ -174,6 +175,7 @@ export default {
     loadFailed: 'تعذّر تحميل الحسابات',
   },
   accountForm: {
+    deleteFailed: 'تعذّر حذف الحساب',
     delete: 'حذف الحساب',
     deleteTitle: 'حذف «{name}»؟',
     deleteNote: 'يُحذف ملف الحساب من هذا الجهاز ولا يمكن التراجع. قوالبه وأرقامه على Meta لا تتأثر.',
@@ -371,7 +373,6 @@ export default {
     another: 'قالب آخر',
   },
   transfer: {
-    menu: 'خيارات الحسابات',
     export: 'تصدير الحسابات',
     import: 'استيراد حسابات',
     exportTitle: 'تصدير الحسابات',
@@ -397,5 +398,9 @@ export default {
     wrongPassphrase: 'كلمة المرور غير صحيحة أو الملف تالف.',
     passphraseShort: 'كلمة المرور {n} أحرف على الأقل.',
     nothingToExport: 'لا توجد حسابات لتصديرها.',
+  },
+  manage: {
+    connected: 'يعمل',
+    unreachable: 'تعذّر الوصول',
   },
 }
