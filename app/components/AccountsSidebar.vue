@@ -52,7 +52,7 @@ const isOpen = (id: string) => screen.value === 'account' && accountId.value ===
             variant="ghost"
             size="xs"
             :aria-label="t('accounts.edit')"
-            class="opacity-60 group-hover:opacity-100 focus-visible:opacity-100"
+            class="opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
             @click="emit('edit', account)"
           />
         </UTooltip>
