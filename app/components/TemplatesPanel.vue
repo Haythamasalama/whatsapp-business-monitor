@@ -189,7 +189,7 @@ const columns: TableColumn<TemplateGroup>[] = [
         </p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <UButton label="إنشاء من نص" icon="i-lucide-clipboard-paste" color="neutral" variant="outline" :disabled="!accountId" @click="emit('paste')" />
+        <UButton label="إنشاء أو تحديث من نص" icon="i-lucide-clipboard-paste" color="neutral" variant="outline" :disabled="!accountId" @click="emit('paste')" />
         <UButton label="قالب جديد" icon="i-lucide-plus" :disabled="!accountId" @click="emit('create')" />
       </div>
     </div>

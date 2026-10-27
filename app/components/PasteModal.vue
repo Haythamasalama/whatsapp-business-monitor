@@ -36,7 +36,7 @@ function parse(): void {
 <template>
   <UModal
     v-model:open="open"
-    title="إنشاء من نص"
+    title="إنشاء أو تحديث من نص"
     :ui="{ footer: 'justify-end' }"
   >
     <template #body>

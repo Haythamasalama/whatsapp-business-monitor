@@ -25,7 +25,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 - **What you spend.** This month's cost and message count, per day and per message type (marketing, utility, authentication, service).
 - **Preview like the customer.** The message rendered as a WhatsApp bubble, with the sample values filled in, line by line in the right direction for Arabic and English.
 - **Create and edit.** Header, body, footer and a sample value for every `{{n}}` variable. Meta's rules are checked before anything is sent; buttons and media headers are kept as they are when you edit.
-- **Create from text.** Paste a name, the Arabic body and the English body, split by lines of dashes, and they become drafts. Several templates at once.
+- **Create or update from text.** Paste a name, the Arabic body and the English body, split by lines of dashes. A template that doesn't exist yet is created; one that does is updated with the new text, keeping its category and sample values. Unchanged or locked templates (under review, for example) are skipped. Several templates at once.
 - **Several accounts.** Add, edit and switch between WhatsApp Business Accounts. Paste a token and it finds the accounts and phone numbers it can reach.
 - **Private.** No account, no cloud, no tracking. The server only listens on your machine.
 
@@ -36,7 +36,7 @@ The interface is in Arabic, right to left, in light and dark mode.
 | Template preview and numbers | Editing a template |
 |:--:|:--:|
 | <img src="docs/screenshots/template-preview.png" alt="A template preview with its status, category, variables and 30-day sends, deliveries, reads and cost."> | <img src="docs/screenshots/template-edit.png" alt="Editing a template: the body, header and footer fields, sample values per variable and a live WhatsApp preview."> |
-| **Create from pasted text** | **Dark mode** |
+| **Create or update from pasted text** | **Dark mode** |
 | <img src="docs/screenshots/create-from-text.png" alt="Pasted text turned into a draft with Arabic and English bodies, sample values and previews."> | <img src="docs/screenshots/dashboard-dark.png" alt="The dashboard in dark mode."> |
 
 Every screenshot uses the built-in demo data: a fictional store with made-up numbers.
