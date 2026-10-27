@@ -19,56 +19,56 @@ export function templateProblems(values: TemplateText): string[] {
   const examples = values.examples ?? []
 
   if (!body.trim()) {
-    problems.push('نص الرسالة فارغ')
+    problems.push(t('rules.bodyEmpty'))
   }
 
   if ([...body].length > 1024) {
-    problems.push('نص الرسالة أطول من 1024 حرفاً')
+    problems.push(t('rules.bodyTooLong'))
   }
 
   if (/\{\{\s*[^}\d\s][^}]*\}\}/.test(body)) {
-    problems.push('المتغيرات بالأرقام فقط: {{1}}، {{2}}…')
+    problems.push(t('rules.variablesNumeric'))
   }
 
   if (vars.some((n, i) => n !== i + 1)) {
-    problems.push('المتغيرات يجب أن تتسلسل من {{1}} دون فجوات')
+    problems.push(t('rules.variablesSequence'))
   }
 
   if (examples.length !== vars.length || examples.some(example => !String(example).trim())) {
-    problems.push('أدخل مثالاً لكل متغير')
+    problems.push(t('rules.examplesMissing'))
   }
 
-  for (const [label, text] of [['الترويسة', values.header ?? ''], ['التذييل', values.footer ?? '']] as const) {
+  for (const [part, text] of [[t('rules.header'), values.header ?? ''], [t('rules.footer'), values.footer ?? '']] as const) {
     if ([...text].length > 60) {
-      problems.push(`${label} أطول من 60 حرفاً`)
+      problems.push(t('rules.partTooLong', { part }))
     }
 
     if (text.includes('{{')) {
-      problems.push(`${label} لا تقبل متغيرات`)
+      problems.push(t('rules.partNoVariables', { part }))
     }
   }
 
   return problems
 }
 
-// Meta's own wording is English; the codes that mean the same thing every time get an Arabic sentence instead.
-const META_ERRORS: Record<number, string> = {
-  190: 'انتهت صلاحية رمز الوصول أو أنه غير صالح.',
-  200: 'رمز الوصول لا يملك الصلاحية اللازمة لهذه البيانات.',
-  10: 'رمز الوصول لا يملك الصلاحية اللازمة لهذه البيانات.',
-  3: 'التطبيق المرتبط بالرمز لا يملك هذه الصلاحية.',
-  4: 'تجاوزت عدد الطلبات المسموح، حاول بعد قليل.',
-  17: 'تجاوزت عدد الطلبات المسموح، حاول بعد قليل.',
-  32: 'تجاوزت عدد الطلبات المسموح، حاول بعد قليل.',
-  613: 'تجاوزت عدد الطلبات المسموح، حاول بعد قليل.',
-  80008: 'تجاوزت عدد الطلبات المسموح، حاول بعد قليل.',
-  368: 'قيّدت Meta الحساب مؤقتاً بسبب مخالفة السياسات.',
-  131031: 'الحساب مقفل لدى Meta.',
+// Meta's own wording is terse; the codes that mean the same thing every time get a plain sentence instead.
+const META_ERRORS: Record<number, MessageKey> = {
+  190: 'metaErrors.tokenExpired',
+  200: 'metaErrors.permission',
+  10: 'metaErrors.permission',
+  3: 'metaErrors.appPermission',
+  4: 'metaErrors.rateLimit',
+  17: 'metaErrors.rateLimit',
+  32: 'metaErrors.rateLimit',
+  613: 'metaErrors.rateLimit',
+  80008: 'metaErrors.rateLimit',
+  368: 'metaErrors.restricted',
+  131031: 'metaErrors.locked',
 }
 
 // Meta used to reject a body that starts or ends with a variable and still approves some that do, so it only warns.
 export function templateWarnings(values: TemplateText): string[] {
-  return /^\s*\{\{|\}\}\s*$/.test(values.body ?? '') ? ['قد ترفض Meta نصاً يبدأ بمتغير أو ينتهي به'] : []
+  return /^\s*\{\{|\}\}\s*$/.test(values.body ?? '') ? [t('rules.edgeVariable')] : []
 }
 
 export function errorText(error: MetaError | null | undefined): string {
@@ -79,7 +79,7 @@ export function errorText(error: MetaError | null | undefined): string {
   const known = error.code ? META_ERRORS[error.code] : undefined
 
   if (known) {
-    return known
+    return t(known)
   }
 
   return [error.error_user_title, error.error_user_msg || error.message].filter(Boolean).join(' — ')

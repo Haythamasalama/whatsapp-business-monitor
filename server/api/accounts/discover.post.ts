@@ -4,7 +4,7 @@ export default apiHandler(async (event) => {
   const account = { token, version: String(body.version ?? '').trim() || DEFAULT_VERSION }
 
   if (!/^[A-Za-z0-9]{20,}$/.test(token)) {
-    throw apiError(422, 'الـ token غير صالح')
+    throw apiError(422, t('server.tokenInvalid'))
   }
 
   const debug = orFail(await graph(account, 'GET', 'debug_token', { input_token: token }), 422)

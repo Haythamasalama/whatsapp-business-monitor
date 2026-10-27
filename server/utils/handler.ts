@@ -5,7 +5,7 @@ import type { EventHandler, EventHandlerRequest, H3Event } from 'h3'
  * this wrapper instead, so the page shows what actually failed and the terminal logs the stack.
  */
 export function apiHandler<T>(handler: (event: H3Event) => T | Promise<T>): EventHandler<EventHandlerRequest, Promise<T>> {
-  return defineEventHandler(async (event) => {
+  return defineEventHandler(event => withLocale(event, async () => {
     try {
       return await handler(event)
     }
@@ -16,7 +16,7 @@ export function apiHandler<T>(handler: (event: H3Event) => T | Promise<T>): Even
 
       console.error(`[api] ${event.method} ${event.path}`, error)
 
-      throw apiError(500, `خطأ غير متوقع في الخادم: ${(error as Error)?.message ?? String(error)}`)
+      throw apiError(500, t('server.unexpected', { message: (error as Error)?.message ?? String(error) }))
     }
-  })
+  }))
 }

@@ -4,8 +4,8 @@ export default apiHandler(async (event) => {
   const values = readAccountValues(body)
 
   const problems = [
-    ACCOUNT_ID.test(id) && id !== 'discover' ? null : 'الاسم المختصر: أحرف إنجليزية صغيرة وأرقام و - و _ فقط',
-    accountFiles()[id] ? 'يوجد حساب بهذا الاسم المختصر' : null,
+    ACCOUNT_ID.test(id) && id !== 'discover' ? null : t('server.accountIdFormat'),
+    accountFiles()[id] ? t('server.accountIdTaken') : null,
     ...accountProblems(values),
   ].filter(Boolean)
 

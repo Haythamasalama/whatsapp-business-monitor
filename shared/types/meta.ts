@@ -46,6 +46,8 @@ export interface Phone {
   quality_rating?: string
   messaging_limit_tier?: string
   status?: string
+  name_status?: string
+  throughput?: { level?: string }
 }
 
 export interface AccountSummary {
@@ -107,4 +109,30 @@ export interface Overview {
   phones: { data?: Phone[], error?: MetaError }
   spend: Spend | { error: MetaError }
   credit: { data?: CreditLine[], error?: MetaError } | null
+}
+
+export interface TemplateCounts {
+  /** Templates by name, whatever their languages. */
+  total: number
+  statuses: Record<string, number>
+}
+
+export interface AccountStats {
+  id: string
+  spend: Spend | null
+  spendError: string | null
+  phones: Phone[]
+  templates: TemplateCounts | null
+  error: string | null
+}
+
+export interface Release {
+  version: string
+  url: string
+}
+
+export interface VersionInfo {
+  current: string
+  /** A newer release than the one running, or null. */
+  latest: Release | null
 }

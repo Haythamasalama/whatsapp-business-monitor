@@ -97,7 +97,7 @@ async function save(): Promise<void> {
     })
 
     open.value = false
-    toast.add({ title: editing.value ? 'حُفظ الحساب' : 'أُضيف الحساب', color: 'success', icon: 'i-lucide-check' })
+    toast.add({ title: editing.value ? t('accountForm.saved') : t('accountForm.added'), color: 'success', icon: 'i-lucide-check' })
     await loadAccounts(id)
   }
   catch (e) {
@@ -112,34 +112,34 @@ async function save(): Promise<void> {
 <template>
   <UModal
     v-model:open="open"
-    :title="editing ? 'تعديل الحساب' : 'إضافة حساب واتساب'"
+    :title="editing ? t('accounts.edit') : t('accountForm.addTitle')"
     :ui="{ footer: 'justify-end' }"
   >
     <template #body>
       <form id="account-form" class="space-y-4" autocomplete="off" @submit.prevent="save">
         <div class="grid gap-4 sm:grid-cols-2">
-          <UFormField label="اسم الحساب">
-            <UInput v-model="form.label" placeholder="مثل: متجري" class="w-full" />
+          <UFormField :label="t('accountForm.label')">
+            <UInput v-model="form.label" :placeholder="t('accountForm.labelPlaceholder')" class="w-full" />
           </UFormField>
-          <UFormField label="الاسم المختصر" :required="!editing">
+          <UFormField :label="t('accountForm.id')" :required="!editing">
             <UInput v-if="editing" :model-value="form.id" dir="ltr" class="w-full" disabled />
             <UInput
               v-else
               v-model.trim="form.id"
               :dir="form.id ? 'ltr' : undefined"
-              placeholder="بالإنجليزية، مثل: main"
+              :placeholder="t('accountForm.idPlaceholder')"
               class="w-full"
               required
             />
           </UFormField>
         </div>
 
-        <UFormField label="رمز الوصول" :required="!editing">
+        <UFormField :label="t('accountForm.token')" :required="!editing">
           <UInput
             v-model.trim="form.token"
             type="password"
             :dir="form.token ? 'ltr' : undefined"
-            :placeholder="editing ? 'اتركه فارغاً لإبقاء الرمز الحالي' : 'System user token'"
+            :placeholder="editing ? t('accountForm.tokenKeep') : 'System user token'"
             icon="i-lucide-key-round"
             class="w-full"
             :required="!editing"
@@ -147,7 +147,7 @@ async function save(): Promise<void> {
           >
             <template #trailing>
               <UButton
-                label="جلب الحسابات"
+                :label="t('accountForm.discover')"
                 icon="i-lucide-refresh-cw"
                 color="neutral"
                 variant="soft"
@@ -162,27 +162,27 @@ async function save(): Promise<void> {
 
         <div v-if="discovering || found" class="space-y-2">
           <p class="text-sm font-medium text-highlighted">
-            الحسابات المرتبطة بالرمز
+            {{ t('accountForm.found') }}
           </p>
           <div v-if="discovering" class="space-y-2">
             <USkeleton class="h-14 w-full rounded-lg" />
           </div>
           <URadioGroup v-else-if="foundItems.length" v-model="form.waba_id" :items="foundItems" variant="card" />
           <p v-else class="rounded-lg bg-muted px-3 py-2.5 text-sm text-muted">
-            لا توجد حسابات لهذا الرمز.
+            {{ t('accountForm.noneFound') }}
           </p>
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2">
-          <UFormField label="معرّف حساب الأعمال" :required="!editing">
+          <UFormField :label="t('accountForm.waba')" :required="!editing">
             <UInput v-model.trim="form.waba_id" :dir="form.waba_id ? 'ltr' : undefined" inputmode="numeric" placeholder="WABA ID" class="w-full" :required="!editing" />
           </UFormField>
-          <UFormField label="إصدار واجهة Meta">
+          <UFormField :label="t('accountForm.version')">
             <UInput v-model.trim="form.version" :dir="form.version ? 'ltr' : undefined" placeholder="v23.0" class="w-full" />
           </UFormField>
         </div>
 
-        <UTooltip text="يُحفظ على جهازك فقط">
+        <UTooltip :text="t('accountForm.storedLocally')">
           <p class="flex min-w-0 items-center gap-2 text-xs text-muted">
             <UIcon name="i-lucide-lock" class="size-3.5 shrink-0" />
             <code dir="ltr" class="truncate font-mono text-[11px]">{{ file }}</code>
@@ -194,7 +194,7 @@ async function save(): Promise<void> {
     </template>
 
     <template #footer>
-      <UButton type="submit" form="account-form" :label="editing ? 'حفظ' : 'إضافة'" :loading="saving" />
+      <UButton type="submit" form="account-form" :label="editing ? t('common.save') : t('common.add')" :loading="saving" />
     </template>
   </UModal>
 </template>

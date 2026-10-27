@@ -22,11 +22,11 @@ const figures = computed(() => {
   }
 
   return [
-    { label: 'أُرسل', value: count(stats.sent), note: '' },
-    { label: 'سُلّم', value: count(stats.delivered), note: rate(stats.delivered, stats.sent) },
-    { label: 'قُرئ', value: count(stats.read), note: rate(stats.read, stats.delivered) },
-    { label: 'التكلفة', value: money(stats.cost, props.currency), note: '' },
-    ...(stats.clicked ? [{ label: 'نقرات الأزرار', value: count(stats.clicked), note: '' }] : []),
+    { label: t('templateStats.sent'), value: count(stats.sent), note: '' },
+    { label: t('templateStats.delivered'), value: count(stats.delivered), note: rate(stats.delivered, stats.sent) },
+    { label: t('templateStats.read'), value: count(stats.read), note: rate(stats.read, stats.delivered) },
+    { label: t('templateStats.cost'), value: money(stats.cost, props.currency), note: '' },
+    ...(stats.clicked ? [{ label: t('templateStats.clicks'), value: count(stats.clicked), note: '' }] : []),
   ]
 })
 </script>
@@ -35,9 +35,9 @@ const figures = computed(() => {
   <div class="rounded-xl border border-default p-4">
     <div class="flex flex-wrap items-baseline justify-between gap-2">
       <h4 class="text-sm font-semibold text-highlighted">
-        أداء القالب · آخر {{ days }} يوماً
+        {{ t('templateStats.title', { days }) }}
       </h4>
-      <UTooltip text="تُحسب القراءة والنقر خلال 7 أيام من الإرسال.">
+      <UTooltip :text="t('templateStats.window')">
         <span class="flex items-center gap-1 text-xs text-muted"><UIcon name="i-lucide-info" class="size-3.5" /></span>
       </UTooltip>
     </div>
@@ -64,7 +64,7 @@ const figures = computed(() => {
       </dl>
 
       <div v-if="max" class="mt-4 flex h-16 items-end gap-0.5" aria-hidden="true">
-        <UTooltip v-for="day in series" :key="day.date" :text="`${shortDay(day.date)} · ${count(day.sent)} رسالة`" :delay-duration="0">
+        <UTooltip v-for="day in series" :key="day.date" :text="`${shortDay(day.date)} · ${t('chart.messageCount', { n: count(day.sent) })}`" :delay-duration="0">
           <div class="flex h-full flex-1 items-end">
             <div
               class="w-full rounded-t-[3px] bg-(--chart-bar)"
@@ -74,12 +74,12 @@ const figures = computed(() => {
         </UTooltip>
       </div>
       <p v-else class="mt-3 text-sm text-muted">
-        لا إرسال خلال الفترة
+        {{ t('templateStats.noneSent') }}
       </p>
     </template>
 
     <p v-else class="mt-3 text-sm text-muted">
-      لا توجد بيانات
+      {{ t('templateStats.noData') }}
     </p>
   </div>
 </template>

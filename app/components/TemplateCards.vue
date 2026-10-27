@@ -6,13 +6,13 @@ const emit = defineEmits<{ open: [name: string, mode: 'view' | 'edit', id?: stri
 const { statsFor, analytics, analyticsLoading } = useManager()
 
 const preview = (group: TemplateGroup): TemplateText => {
-  const text = templateText(group.items[0]!)
+  const text = templateText(previewItem(group))
 
   return { header: text.header, body: text.body, footer: text.footer, examples: text.examples }
 }
 
-const editableIn = (group: TemplateGroup) => group.items.find(t => EDITABLE_STATUSES.includes(t.status) && (t.parameter_format ?? 'POSITIONAL') === 'POSITIONAL')
-const sent = (group: TemplateGroup) => statsFor(group.items.map(t => t.id))?.sent ?? 0
+const editableIn = (group: TemplateGroup) => group.items.find(entry => EDITABLE_STATUSES.includes(entry.status) && (entry.parameter_format ?? 'POSITIONAL') === 'POSITIONAL')
+const sent = (group: TemplateGroup) => statsFor(group.items.map(entry => entry.id))?.sent ?? 0
 </script>
 
 <template>
@@ -29,7 +29,7 @@ const sent = (group: TemplateGroup) => statsFor(group.items.map(t => t.id))?.sen
               <bdi dir="ltr">{{ group.name }}</bdi>
             </p>
             <p class="mt-0.5 text-xs text-muted">
-              {{ CATEGORY[group.category] ?? group.category }}
+              {{ categoryLabel(group.category) }}
             </p>
           </div>
           <div class="shrink-0 text-end">
@@ -39,7 +39,7 @@ const sent = (group: TemplateGroup) => statsFor(group.items.map(t => t.id))?.sen
                 {{ count(sent(group)) }}
               </p>
               <p class="text-[11px] text-muted">
-                إرسال
+                {{ t('templates.sent') }}
               </p>
             </template>
           </div>
@@ -64,16 +64,16 @@ const sent = (group: TemplateGroup) => statsFor(group.items.map(t => t.id))?.sen
           />
         </div>
         <div class="flex shrink-0 items-center gap-0.5">
-          <UTooltip text="معاينة">
-            <UButton icon="i-lucide-eye" color="neutral" variant="ghost" size="sm" aria-label="معاينة" @click="emit('open', group.name, 'view')" />
+          <UTooltip :text="t('common.preview')">
+            <UButton icon="i-lucide-eye" color="neutral" variant="ghost" size="sm" :aria-label="t('common.preview')" @click="emit('open', group.name, 'view')" />
           </UTooltip>
-          <UTooltip :text="editableIn(group) ? 'تعديل' : 'لا تقبل Meta تعديله الآن'">
+          <UTooltip :text="editableIn(group) ? t('common.edit') : t('templates.locked')">
             <UButton
               icon="i-lucide-pencil"
               color="neutral"
               variant="ghost"
               size="sm"
-              aria-label="تعديل"
+              :aria-label="t('common.edit')"
               :disabled="!editableIn(group)"
               @click="emit('open', group.name, 'edit', editableIn(group)?.id)"
             />

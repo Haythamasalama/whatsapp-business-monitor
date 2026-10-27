@@ -62,13 +62,13 @@ export function requireAccount(event: H3Event): Account {
   const id = String(getQuery(event).account ?? '')
 
   if (!accountFiles()[id]) {
-    throw apiError(404, `الحساب ${id} غير موجود`)
+    throw apiError(404, t('server.accountNotFound', { id }))
   }
 
   const account = loadAccount(id)
 
   if (!account.token || !account.waba) {
-    throw apiError(400, `WHATSAPP_TOKEN أو WHATSAPP_WABA_ID غير موجود في ${tildePath(account.file)}`)
+    throw apiError(400, t('server.accountIncompleteIn', { file: tildePath(account.file) }))
   }
 
   return account
@@ -83,9 +83,9 @@ export interface AccountValues {
 
 export function accountProblems(values: AccountValues): string[] {
   return [
-    /^[A-Za-z0-9]{20,}$/.test(values.token) ? null : 'رمز الوصول غير صالح',
-    /^\d+$/.test(values.waba) ? null : 'معرّف حساب الأعمال أرقام فقط',
-    /^v\d+\.\d+$/.test(values.version) ? null : 'الإصدار بالشكل v23.0',
+    /^[A-Za-z0-9]{20,}$/.test(values.token) ? null : t('server.tokenFormat'),
+    /^\d+$/.test(values.waba) ? null : t('server.wabaDigits'),
+    /^v\d+\.\d+$/.test(values.version) ? null : t('server.versionFormat'),
   ].filter((problem): problem is string => problem !== null)
 }
 

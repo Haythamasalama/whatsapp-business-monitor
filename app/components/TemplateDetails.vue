@@ -10,12 +10,12 @@ const details = computed(() => {
   const reason = template.rejected_reason
 
   return [
-    { label: 'الفئة', value: CATEGORY[template.category] ?? template.category },
-    { label: 'اللغة', value: languageName(template.language) },
-    { label: 'المتغيرات', value: variables ? `${variables} متغير` : 'لا يوجد' },
-    ...(score && score !== 'UNKNOWN' && QUALITY[score] ? [{ label: 'الجودة', value: QUALITY[score].label }] : []),
-    ...(reason && reason !== 'NONE' ? [{ label: 'سبب الرفض', value: REJECTIONS[reason] ?? reason }] : []),
-    { label: 'المعرّف', value: template.id, mono: true },
+    { label: t('details.category'), value: categoryLabel(template.category) },
+    { label: t('details.language'), value: languageName(template.language) },
+    { label: t('details.variables'), value: variables ? t('details.variableCount', { n: variables }) : t('common.none') },
+    ...(score && score !== 'UNKNOWN' && qualityOf(score) ? [{ label: t('details.quality'), value: qualityOf(score)!.label }] : []),
+    ...(reason && reason !== 'NONE' ? [{ label: t('details.rejection'), value: rejectionLabel(reason) }] : []),
+    { label: t('details.id'), value: template.id, mono: true },
   ]
 })
 </script>
@@ -24,7 +24,7 @@ const details = computed(() => {
   <dl class="h-fit divide-y divide-default rounded-xl border border-default text-sm">
     <div class="flex items-center justify-between gap-3 px-4 py-2.5">
       <dt class="text-muted">
-        الحالة
+        {{ t('details.status') }}
       </dt>
       <dd><UBadge :color="status.tone" :icon="status.icon" :label="status.label" variant="subtle" class="rounded-full" /></dd>
     </div>

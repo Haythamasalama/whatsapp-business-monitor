@@ -69,57 +69,57 @@ function removeFooter(): void {
 <template>
   <div class="grid gap-5 md:grid-cols-[minmax(0,1.2fr)_minmax(0,.8fr)]">
     <fieldset :disabled="disabled" class="grid min-w-0 content-start gap-4">
-      <UFormField v-if="media" label="العنوان">
+      <UFormField v-if="media" :label="t('form.header')">
         <p class="text-sm text-muted">
           {{ media }}
         </p>
       </UFormField>
-      <UFormField v-else-if="showHeader" label="العنوان">
+      <UFormField v-else-if="showHeader" :label="t('form.header')">
         <template #hint>
-          <UButton label="حذف" icon="i-lucide-x" color="neutral" variant="link" size="xs" class="p-0" @click="removeHeader" />
+          <UButton :label="t('common.remove')" icon="i-lucide-x" color="neutral" variant="link" size="xs" class="p-0" @click="removeHeader" />
         </template>
-        <UInput v-model="model.header" :dir="model.header ? 'auto' : undefined" maxlength="60" placeholder="حتى 60 حرفاً" class="w-full" />
+        <UInput v-model="model.header" :dir="model.header ? 'auto' : undefined" maxlength="60" :placeholder="t('form.upTo60')" class="w-full" />
       </UFormField>
 
-      <UFormField label="نص الرسالة">
+      <UFormField :label="t('form.body')">
         <UTextarea
           ref="bodyInput"
           v-model="model.body"
           dir="auto"
           :rows="6"
           autoresize
-          :placeholder="optional ? 'اتركه فارغاً لتخطّي هذه اللغة' : 'نص الرسالة'"
+          :placeholder="optional ? t('form.skipLanguage') : t('form.body')"
           class="w-full"
           :ui="{ base: '[unicode-bidi:plaintext] leading-7' }"
           @blur="(event: FocusEvent) => (caret = (event.target as HTMLTextAreaElement).selectionStart)"
         />
       </UFormField>
 
-      <UFormField v-if="showFooter" label="التذييل">
+      <UFormField v-if="showFooter" :label="t('form.footer')">
         <template #hint>
-          <UButton label="حذف" icon="i-lucide-x" color="neutral" variant="link" size="xs" class="p-0" @click="removeFooter" />
+          <UButton :label="t('common.remove')" icon="i-lucide-x" color="neutral" variant="link" size="xs" class="p-0" @click="removeFooter" />
         </template>
-        <UInput v-model="model.footer" :dir="model.footer ? 'auto' : undefined" maxlength="60" placeholder="حتى 60 حرفاً" class="w-full" />
+        <UInput v-model="model.footer" :dir="model.footer ? 'auto' : undefined" maxlength="60" :placeholder="t('form.upTo60')" class="w-full" />
       </UFormField>
 
       <div class="flex flex-wrap gap-2">
-        <UButton label="متغير" icon="i-lucide-braces" color="neutral" variant="soft" size="xs" @click="addVariable" />
-        <UButton v-if="!media && !showHeader" label="عنوان" icon="i-lucide-plus" color="neutral" variant="soft" size="xs" @click="showHeader = true" />
-        <UButton v-if="!showFooter" label="تذييل" icon="i-lucide-plus" color="neutral" variant="soft" size="xs" @click="showFooter = true" />
+        <UButton :label="t('form.variable')" icon="i-lucide-braces" color="neutral" variant="soft" size="xs" @click="addVariable" />
+        <UButton v-if="!media && !showHeader" :label="t('form.addHeader')" icon="i-lucide-plus" color="neutral" variant="soft" size="xs" @click="showHeader = true" />
+        <UButton v-if="!showFooter" :label="t('form.addFooter')" icon="i-lucide-plus" color="neutral" variant="soft" size="xs" @click="showFooter = true" />
       </div>
 
-      <UFormField v-if="vars.length" label="قيم تجريبية">
+      <UFormField v-if="vars.length" :label="t('form.samples')">
         <div class="grid gap-2 sm:grid-cols-2">
           <div v-for="(n, i) in vars" :key="n" class="flex min-w-0 items-center gap-1.5">
             <span dir="ltr" class="w-11 shrink-0 rounded-md bg-elevated py-1.5 text-center font-mono text-xs text-toned">{{ varLabel(n) }}</span>
-            <UInput v-model="model.examples[i]" :dir="model.examples[i] ? 'auto' : undefined" placeholder="قيمة مثال" class="min-w-0 flex-1" :aria-label="`قيمة ${varLabel(n)}`" />
-            <UButton icon="i-lucide-x" color="neutral" variant="ghost" size="xs" :aria-label="`حذف ${varLabel(n)}`" @click="removeVariable(n)" />
+            <UInput v-model="model.examples[i]" :dir="model.examples[i] ? 'auto' : undefined" :placeholder="t('form.sample')" class="min-w-0 flex-1" :aria-label="t('form.sampleFor', { variable: varLabel(n) })" />
+            <UButton icon="i-lucide-x" color="neutral" variant="ghost" size="xs" :aria-label="t('form.removeVariable', { variable: varLabel(n) })" @click="removeVariable(n)" />
           </div>
         </div>
       </UFormField>
 
       <p v-if="buttons?.length" class="text-sm text-muted">
-        الأزرار ({{ buttons.length }}) تبقى كما هي.
+        {{ t('form.buttonsKept', { n: buttons.length }) }}
       </p>
 
       <UAlert v-if="problems.length" color="error" variant="subtle" icon="i-lucide-circle-alert">
@@ -136,7 +136,7 @@ function removeFooter(): void {
 
     <div class="min-w-0">
       <p class="mb-2 text-xs font-medium text-muted">
-        المعاينة
+        {{ t('form.preview') }}
       </p>
       <WhatsAppPreview :values="model" :media="media" :buttons="buttons" />
     </div>

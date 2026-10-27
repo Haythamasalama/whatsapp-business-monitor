@@ -35,7 +35,7 @@ function applyCode(doc: TemplateDoc): void {
 }
 
 const group = computed(() => groups.value.find(g => g.name === props.name) ?? null)
-const template = computed(() => group.value?.items.find(t => t.id === activeId.value) ?? group.value?.items[0] ?? null)
+const template = computed(() => group.value?.items.find(entry => entry.id === activeId.value) ?? group.value?.items[0] ?? null)
 const parts = computed(() => (template.value ? templateText(template.value) : null))
 const positional = computed(() => (template.value?.parameter_format ?? 'POSITIONAL') === 'POSITIONAL')
 const editable = computed(() => Boolean(template.value && EDITABLE_STATUSES.includes(template.value.status) && positional.value))
@@ -43,18 +43,18 @@ const status = computed(() => statusOf(template.value?.status ?? ''))
 
 const lockedReason = computed(() => {
   if (!positional.value) {
-    return 'متغيراته مسمّاة، ويُعدَّل من Meta.'
+    return t('template.lockedNamed')
   }
 
   return template.value?.status === 'PENDING'
-    ? 'قيد المراجعة، يُعدَّل بعد صدور النتيجة.'
-    : `لا يُعدَّل وهو «${status.value.label}».`
+    ? t('template.lockedPending')
+    : t('template.lockedStatus', { status: status.value.label })
 })
 
-const tabs = computed(() => (group.value?.items ?? []).map(t => ({
-  value: t.id,
-  label: languageName(t.language),
-  badge: { label: statusOf(t.status).label, color: statusOf(t.status).tone, variant: 'subtle' as const },
+const tabs = computed(() => (group.value?.items ?? []).map(entry => ({
+  value: entry.id,
+  label: languageName(entry.language),
+  badge: { label: statusOf(entry.status).label, color: statusOf(entry.status).tone, variant: 'subtle' as const },
 })))
 
 // Every language of the template as text, so it can be copied and reused for a new one.
@@ -90,7 +90,7 @@ async function save(): Promise<void> {
     return
   }
 
-  const confirmed = await confirm({ title: 'إرسال التعديل للمراجعة؟', confirmLabel: 'إرسال' })
+  const confirmed = await confirm({ title: t('template.submitTitle'), confirmLabel: t('template.submitConfirm') })
 
   if (!confirmed || !template.value) {
     return
@@ -100,7 +100,7 @@ async function save(): Promise<void> {
 
   try {
     await api(`/api/templates/${template.value.id}`, { method: 'POST', body: { ...values.value } })
-    toast.add({ title: 'أُرسل التعديل للمراجعة', color: 'success', icon: 'i-lucide-check' })
+    toast.add({ title: t('template.submitted'), color: 'success', icon: 'i-lucide-check' })
     await reloadTemplates()
     mode.value = 'view'
   }
@@ -138,14 +138,14 @@ async function save(): Promise<void> {
             :days="analytics?.days ?? 30"
             :currency="currency"
             :loading="analyticsLoading"
-            :error="analyticsError ? 'غير متاحة' : null"
+            :error="analyticsError ? t('common.unavailable') : null"
           />
         </template>
 
         <template v-else>
           <UAlert v-if="!editable" color="warning" variant="subtle" icon="i-lucide-lock" :description="lockedReason" />
 
-          <UTabs v-model="editTab" :items="EDIT_TABS" :content="false" size="sm" />
+          <UTabs v-model="editTab" :items="editTabs()" :content="false" size="sm" />
 
           <TemplateCodeEditor
             v-if="editTab === 'code'"
@@ -165,25 +165,25 @@ async function save(): Promise<void> {
           :to="managerUrl()"
           target="_blank"
           external
-          label="فتح في Meta"
+          :label="t('template.openInMeta')"
           trailing-icon="i-lucide-external-link"
           color="neutral"
           variant="ghost"
         />
         <div v-if="mode === 'view'" class="flex gap-2">
-          <UTooltip text="نسخ محتوى القالب كاملاً بكل لغاته ومتغيراته، لتلصقه في قالب جديد">
-            <UButton label="نسخ المحتوى" icon="i-lucide-copy" color="neutral" variant="outline" @click="copy(asText)" />
+          <UTooltip :text="t('template.copyHint')">
+            <UButton :label="t('template.copy')" icon="i-lucide-copy" color="neutral" variant="outline" @click="copy(asText)" />
           </UTooltip>
           <UTooltip :text="editable ? '' : lockedReason" :disabled="editable">
-            <UButton label="تعديل" icon="i-lucide-pencil" :disabled="!editable" @click="mode = 'edit'" />
+            <UButton :label="t('common.edit')" icon="i-lucide-pencil" :disabled="!editable" @click="mode = 'edit'" />
           </UTooltip>
         </div>
         <div v-else class="flex items-center gap-2">
-          <UTooltip text="تقبل Meta تعديل القالب المُعتمد مرة كل 24 ساعة، وحتى 10 مرات في 30 يوماً.">
+          <UTooltip :text="t('template.editLimits')">
             <UIcon name="i-lucide-info" class="size-4 text-dimmed" />
           </UTooltip>
-          <UButton label="إلغاء" color="neutral" variant="outline" :disabled="saving" @click="mode = 'view'" />
-          <UButton label="إرسال للمراجعة" icon="i-lucide-send" :loading="saving" :disabled="!editable" @click="save" />
+          <UButton :label="t('common.cancel')" color="neutral" variant="outline" :disabled="saving" @click="mode = 'view'" />
+          <UButton :label="t('template.submit')" icon="i-lucide-send" :loading="saving" :disabled="!editable" @click="save" />
         </div>
       </div>
     </template>

@@ -29,10 +29,10 @@ export async function graph(
     })
     const json = await response.json().catch(() => null)
 
-    return json && typeof json === 'object' ? json : { error: { message: `ردّ غير متوقع من Meta (${response.status})` } }
+    return json && typeof json === 'object' ? json : { error: { message: t('server.metaUnexpected', { status: response.status }) } }
   }
   catch (error) {
-    return { error: { message: `تعذّر الاتصال بـ Meta: ${(error as Error).message}` } }
+    return { error: { message: t('server.metaUnreachable', { message: (error as Error).message }) } }
   }
 }
 

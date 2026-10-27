@@ -39,6 +39,11 @@ export function useManager() {
   const analyticsLoading = useState('analyticsLoading', () => false)
   const templatesFor = useState<string | null>('templatesFor', () => null)
   const lastLoadedAt = useState('lastLoadedAt', () => 0)
+  const screen = useState<'overview' | 'account'>('screen', () => 'overview')
+  const summary = useState<AccountStats[] | null>('summary', () => null)
+  const summaryError = useState<string | null>('summaryError', () => null)
+  const summaryLoading = useState('summaryLoading', () => false)
+  const summaryLoadedAt = useState('summaryLoadedAt', () => 0)
 
   const current = computed(() => accounts.value.find(account => account.id === accountId.value) ?? null)
 
@@ -70,7 +75,7 @@ export function useManager() {
       return await $fetch(path, {
         method,
         body,
-        headers: { 'X-Requested-With': 'whatsapp-manager' },
+        headers: { 'X-Requested-With': 'whatsapp-manager', 'X-Locale': locale.value },
         query: scoped ? { account: accountId.value } : undefined,
       }) as T
     }
@@ -79,8 +84,8 @@ export function useManager() {
       const reason = errorText(failure.data?.data?.error ?? failure.data?.error)
 
       throw new Error(reason || (failure.statusCode
-        ? `ردّ الخادم المحلي بالرمز ${failure.statusCode} دون سبب. راجع سجل الخادم.`
-        : 'تعذّر الوصول إلى الخادم المحلي. تأكد أنه يعمل.'))
+        ? t('errors.serverStatus', { status: failure.statusCode })
+        : t('errors.serverUnreachable')))
     }
   }
 
@@ -101,7 +106,40 @@ export function useManager() {
     const wanted = select ?? remembered()
     accountId.value = response.data.some(account => account.id === wanted) ? wanted : response.data[0]!.id
 
-    await loadAccountData()
+    if (select) {
+      screen.value = 'account'
+    }
+
+    await (screen.value === 'account' ? loadAccountData() : loadSummary())
+  }
+
+  async function loadSummary({ silent = false } = {}): Promise<void> {
+    if (!silent) {
+      summaryLoading.value = true
+    }
+
+    try {
+      summary.value = (await api<{ data: AccountStats[] }>('/api/summary', { scoped: false })).data
+      summaryError.value = null
+    }
+    catch (error) {
+      if (!silent) {
+        summary.value = null
+        summaryError.value = (error as Error).message
+      }
+    }
+    finally {
+      summaryLoading.value = false
+      summaryLoadedAt.value = Date.now()
+    }
+  }
+
+  async function showOverview(): Promise<void> {
+    screen.value = 'overview'
+
+    if (!summary.value) {
+      await loadSummary()
+    }
   }
 
   // `silent` refreshes in place (focus, polling): no skeletons, and a failed refresh keeps what is on screen.
@@ -156,7 +194,7 @@ export function useManager() {
     analyticsLoading.value = !silent
 
     try {
-      const result = await api<Analytics>(`/api/analytics?ids=${templates.value.map(t => t.id).join(',')}`)
+      const result = await api<Analytics>(`/api/analytics?ids=${templates.value.map(entry => entry.id).join(',')}`)
 
       if (mine === ticket) {
         analytics.value = result
@@ -228,11 +266,17 @@ export function useManager() {
   }
 
   async function switchAccount(id: string): Promise<void> {
+    const same = screen.value === 'account' && accountId.value === id && templatesFor.value === id
+
+    screen.value = 'account'
     accountId.value = id
-    await loadAccountData()
+
+    if (!same) {
+      await loadAccountData()
+    }
   }
 
-  const findTemplate = (name: string, language: string) => templates.value.find(t => t.name === name && t.language === language)
+  const findTemplate = (name: string, language: string) => templates.value.find(entry => entry.name === name && entry.language === language)
 
   function managerUrl(): string {
     const business = overview.value?.account?.owner_business_info?.id
@@ -253,6 +297,13 @@ export function useManager() {
     loading,
     templatesFor,
     lastLoadedAt,
+    screen,
+    summary,
+    summaryError,
+    summaryLoading,
+    summaryLoadedAt,
+    loadSummary,
+    showOverview,
     analytics,
     analyticsError,
     analyticsLoading,

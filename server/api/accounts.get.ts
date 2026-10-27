@@ -20,7 +20,7 @@ export default apiHandler(async () => {
     const account = loadAccount(id)
     const meta = account.token && account.waba
       ? await graphFields(account, account.waba, ['name,phone_numbers{id,display_phone_number,verified_name}', 'name'])
-      : { error: { message: 'WHATSAPP_TOKEN أو WHATSAPP_WABA_ID غير موجود' } }
+      : { error: { message: t('server.accountIncomplete') } }
     const phones: Phone[] = meta.phone_numbers?.data ?? []
 
     return {

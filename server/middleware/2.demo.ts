@@ -1,9 +1,15 @@
+import type { H3Event } from 'h3'
+
 // In demo mode every /api call is answered here, so nothing reaches Meta and no account file is written.
-export default defineEventHandler(async (event) => {
+export default defineEventHandler((event) => {
   if (!isDemo() || !event.path.startsWith('/api/')) {
     return
   }
 
+  return withLocale(event, () => demoAnswer(event))
+})
+
+async function demoAnswer(event: H3Event) {
   const path = event.path.split('?')[0]
   const post = event.method === 'POST'
 
@@ -11,8 +17,16 @@ export default defineEventHandler(async (event) => {
     return demoAccounts()
   }
 
+  if (!post && path === '/api/version') {
+    return { current: String(useRuntimeConfig().public.version), latest: null }
+  }
+
+  if (!post && path === '/api/summary') {
+    return demoSummary()
+  }
+
   if (!post && path === '/api/overview') {
-    return demoOverview()
+    return demoOverview(getQuery(event).account)
   }
 
   if (!post && path === '/api/templates') {
@@ -20,7 +34,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (!post && path === '/api/analytics') {
-    return demoAnalytics()
+    return demoAnalytics(getQuery(event).account)
   }
 
   if (post && path === '/api/accounts/discover') {
@@ -47,4 +61,4 @@ export default defineEventHandler(async (event) => {
   }
 
   throw apiError(404, 'Not found')
-})
+}

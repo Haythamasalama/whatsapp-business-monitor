@@ -10,18 +10,18 @@ const selectedName = ref<string | null>(null)
 const activeId = ref<string>()
 
 const group = computed(() => props.groups.find(g => g.name === selectedName.value) ?? props.groups[0] ?? null)
-const template = computed(() => group.value?.items.find(t => t.id === activeId.value) ?? group.value?.items[0] ?? null)
+const template = computed(() => group.value?.items.find(entry => entry.id === activeId.value) ?? group.value?.items[0] ?? null)
 const parts = computed(() => (template.value ? templateText(template.value) : null))
 const editable = computed(() => Boolean(template.value && EDITABLE_STATUSES.includes(template.value.status) && (template.value.parameter_format ?? 'POSITIONAL') === 'POSITIONAL'))
 
-const tabs = computed(() => (group.value?.items ?? []).map(t => ({
-  value: t.id,
-  label: languageName(t.language),
-  badge: { label: statusOf(t.status).label, color: statusOf(t.status).tone, variant: 'subtle' as const },
+const tabs = computed(() => (group.value?.items ?? []).map(entry => ({
+  value: entry.id,
+  label: languageName(entry.language),
+  badge: { label: statusOf(entry.status).label, color: statusOf(entry.status).tone, variant: 'subtle' as const },
 })))
 
-const sent = (item: TemplateGroup) => statsFor(item.items.map(t => t.id))?.sent ?? 0
-const firstLine = (item: TemplateGroup) => templateText(item.items[0]!).body.split('\n').find(line => line.trim()) ?? ''
+const sent = (item: TemplateGroup) => statsFor(item.items.map(entry => entry.id))?.sent ?? 0
+const firstLine = (item: TemplateGroup) => templateText(previewItem(item)).body.split('\n').find(line => line.trim()) ?? ''
 
 watch(() => group.value?.name, () => {
   activeId.value = group.value?.items[0]?.id
@@ -44,10 +44,10 @@ watch(() => group.value?.name, () => {
             <span class="mt-0.5 block truncate text-xs text-muted" dir="auto">{{ firstLine(item) }}</span>
             <span class="mt-1.5 flex flex-wrap gap-1">
               <UBadge
-                v-for="t in item.items"
-                :key="t.id"
-                :color="statusOf(t.status).tone"
-                :label="languageCode(t.language)"
+                v-for="entry in item.items"
+                :key="entry.id"
+                :color="statusOf(entry.status).tone"
+                :label="languageCode(entry.language)"
                 variant="subtle"
                 size="sm"
                 class="rounded-full font-mono"
@@ -66,15 +66,15 @@ watch(() => group.value?.name, () => {
             <bdi dir="ltr">{{ group.name }}</bdi>
           </h3>
           <p class="mt-0.5 text-xs text-muted">
-            {{ CATEGORY[group.category] ?? group.category }}
+            {{ categoryLabel(group.category) }}
           </p>
         </div>
         <div class="flex gap-2">
-          <UTooltip text="نسخ محتوى القالب كاملاً بكل لغاته ومتغيراته، لتلصقه في قالب جديد">
-            <UButton label="نسخ المحتوى" icon="i-lucide-copy" color="neutral" variant="outline" size="sm" @click="copy(toText([templateDoc(group)]))" />
+          <UTooltip :text="t('template.copyHint')">
+            <UButton :label="t('template.copy')" icon="i-lucide-copy" color="neutral" variant="outline" size="sm" @click="copy(toText([templateDoc(group)]))" />
           </UTooltip>
           <UButton
-            label="تعديل"
+            :label="t('common.edit')"
             icon="i-lucide-pencil"
             size="sm"
             :disabled="!editable"
@@ -95,7 +95,7 @@ watch(() => group.value?.name, () => {
         :days="analytics?.days ?? 30"
         :currency="overview?.account?.currency ?? null"
         :loading="analyticsLoading"
-        :error="analyticsError ? 'غير متاحة' : null"
+        :error="analyticsError ? t('common.unavailable') : null"
       />
     </section>
   </div>

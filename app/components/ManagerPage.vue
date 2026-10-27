@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { accounts, accountId, current, loading, templates, lastLoadedAt, loadAccounts, loadAccountData, switchAccount } = useManager()
+const { accounts, accountId, current, loading, templates, lastLoadedAt, screen, summaryLoading, summaryLoadedAt, loadAccounts, loadAccountData, loadSummary, switchAccount, showOverview } = useManager()
 const toast = useToast()
 
 useStatusAlerts()
@@ -10,21 +10,34 @@ const STALE_MS = 30_000
 const POLL_MS = 60_000
 let poll: ReturnType<typeof setInterval> | undefined
 
+const onOverview = computed(() => screen.value === 'overview')
+const refreshing = computed(() => (onOverview.value ? summaryLoading.value : loading.value))
+const loadedAt = computed(() => (onOverview.value ? summaryLoadedAt.value : lastLoadedAt.value))
+
+function refresh(silent = false): Promise<void> {
+  return onOverview.value ? loadSummary({ silent }) : loadAccountData({ silent })
+}
+
 function refreshIfStale(): void {
-  if (document.visibilityState === 'visible' && accountId.value && !loading.value && Date.now() - lastLoadedAt.value > STALE_MS) {
-    void loadAccountData({ silent: true })
+  if (document.visibilityState === 'visible' && accounts.value.length && !refreshing.value && Date.now() - loadedAt.value > STALE_MS) {
+    void refresh(true)
   }
 }
 
-const lastLoaded = computed(() => (lastLoadedAt.value
-  ? new Intl.DateTimeFormat('ar-u-nu-latn', { hour: 'numeric', minute: '2-digit' }).format(lastLoadedAt.value)
-  : ''))
+const lastLoaded = computed(() => (loadedAt.value ? timeOfDay(loadedAt.value) : ''))
+
+// Errors and sample names come back from the server in the request's language, so a switch asks again.
+watch(locale, () => {
+  if (accounts.value.length) {
+    void refresh(true)
+  }
+})
 
 onMounted(() => {
   window.addEventListener('focus', refreshIfStale)
   document.addEventListener('visibilitychange', refreshIfStale)
   poll = setInterval(() => {
-    if (templates.value.some(template => ['PENDING', 'IN_APPEAL'].includes(template.status))) {
+    if (!onOverview.value && templates.value.some(template => ['PENDING', 'IN_APPEAL'].includes(template.status))) {
       refreshIfStale()
     }
   }, POLL_MS)
@@ -47,17 +60,24 @@ const opened = ref<{ name: string | null, id?: string }>({ name: null })
 const templateMode = ref<'view' | 'edit'>('view')
 const booting = ref(true)
 
-const accountItems = computed(() => accounts.value.map(account => ({
-  value: account.id,
-  label: accountTitle(account),
-})))
+// Account ids start with a letter or digit, so '*' can stand for the overview in the mobile picker.
+const OVERVIEW = '*'
+
+const accountItems = computed(() => [
+  { value: OVERVIEW, label: t('nav.overview') },
+  ...accounts.value.map(account => ({ value: account.id, label: accountTitle(account) })),
+])
+
+function pick(value: string): void {
+  void (value === OVERVIEW ? showOverview() : switchAccount(value))
+}
 
 const subtitle = computed(() => {
   if (!current.value) {
     return ''
   }
 
-  return current.value.phones.map(phone => phone.display_phone_number).join('، ')
+  return current.value.phones.map(phone => phone.display_phone_number).join(t('common.listSeparator'))
 })
 
 function openAccount(account: AccountSummary | null = null): void {
@@ -86,7 +106,7 @@ onMounted(async () => {
     }
   }
   catch (error) {
-    toast.add({ title: 'تعذّر تحميل الحسابات', description: (error as Error).message, color: 'error' })
+    toast.add({ title: t('accounts.loadFailed'), description: (error as Error).message, color: 'error' })
   }
   finally {
     booting.value = false
@@ -100,9 +120,15 @@ onMounted(async () => {
       <AppBrand class="px-2" />
 
       <nav>
-        <span class="flex items-center gap-2.5 rounded-lg bg-elevated px-3 py-2 text-sm font-medium text-highlighted">
-          <UIcon name="i-lucide-layout-dashboard" class="size-4.5" /> لوحة المراقبة
-        </span>
+        <button
+          type="button"
+          class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+          :class="onOverview ? 'bg-elevated text-highlighted' : 'text-toned hover:bg-elevated/70'"
+          :aria-current="onOverview ? 'page' : undefined"
+          @click="showOverview()"
+        >
+          <UIcon name="i-lucide-layout-dashboard" class="size-4.5" /> {{ t('nav.overview') }}
+        </button>
       </nav>
 
       <USeparator />
@@ -116,30 +142,41 @@ onMounted(async () => {
           <AppBrand compact />
           <USelect
             v-if="accounts.length"
-            :model-value="accountId ?? undefined"
+            :model-value="onOverview ? OVERVIEW : accountId ?? undefined"
             :items="accountItems"
             class="w-52 max-w-full"
-            aria-label="الحساب"
-            @update:model-value="(id) => switchAccount(String(id))"
+            :aria-label="t('accounts.picker')"
+            @update:model-value="(id) => pick(String(id))"
           />
         </div>
         <span class="hidden lg:block" />
 
         <div class="flex items-center gap-1 rounded-lg border border-default bg-default p-1">
-          <UTooltip :text="lastLoaded ? `تحديث البيانات · آخر تحديث ${lastLoaded}` : 'تحديث البيانات'">
-            <UButton icon="i-lucide-refresh-cw" color="neutral" variant="ghost" size="sm" aria-label="تحديث البيانات" :loading="loading" :disabled="!accountId" @click="loadAccountData()" />
+          <UTooltip :text="lastLoaded ? t('header.refreshedAt', { time: lastLoaded }) : t('header.refresh')">
+            <UButton icon="i-lucide-refresh-cw" color="neutral" variant="ghost" size="sm" :aria-label="t('header.refresh')" :loading="refreshing" :disabled="!accounts.length" @click="refresh()" />
           </UTooltip>
-          <UTooltip text="إضافة حساب">
-            <UButton icon="i-lucide-user-plus" color="neutral" variant="ghost" size="sm" aria-label="إضافة حساب" class="lg:hidden" @click="openAccount()" />
+          <UTooltip :text="t('accounts.add')">
+            <UButton icon="i-lucide-user-plus" color="neutral" variant="ghost" size="sm" :aria-label="t('accounts.add')" class="lg:hidden" @click="openAccount()" />
           </UTooltip>
-          <UTooltip text="الوضع الفاتح أو الداكن">
+          <UTooltip :text="t('header.language')">
+            <UButton
+              :label="locale === 'ar' ? 'EN' : 'AR'"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              class="font-mono font-semibold"
+              :aria-label="t('header.language')"
+              @click="setLocale(locale === 'ar' ? 'en' : 'ar')"
+            />
+          </UTooltip>
+          <UTooltip :text="t('header.colorMode')">
             <UColorModeButton size="sm" />
           </UTooltip>
         </div>
       </header>
 
       <main class="flex-1 space-y-6 rounded-2xl border border-default bg-default p-4 sm:p-6 lg:p-8">
-        <div v-if="current" class="flex flex-wrap items-start justify-between gap-3">
+        <div v-if="current && !onOverview" class="flex flex-wrap items-start justify-between gap-3">
           <div class="min-w-0">
             <h1 class="text-2xl font-bold text-highlighted">
               {{ accountTitle(current) }}
@@ -151,19 +188,19 @@ onMounted(async () => {
               </span>
               <span class="inline-flex items-center gap-1.5">
                 <UIcon name="i-lucide-building-2" class="size-3.5 text-dimmed" />
-                حساب الأعمال <bdi dir="ltr" class="font-mono text-xs">{{ current.waba_id }}</bdi>
+                {{ t('accounts.business') }} <bdi dir="ltr" class="font-mono text-xs">{{ current.waba_id }}</bdi>
               </span>
             </p>
           </div>
-          <UButton label="تعديل الحساب" icon="i-lucide-pencil" color="neutral" variant="outline" size="sm" @click="openAccount(current)" />
+          <UButton :label="t('accounts.edit')" icon="i-lucide-pencil" color="neutral" variant="outline" size="sm" @click="openAccount(current)" />
         </div>
 
         <UAlert
-          v-if="current?.error"
+          v-if="current?.error && !onOverview"
           color="error"
           variant="subtle"
           icon="i-lucide-circle-alert"
-          title="تعذّر الوصول إلى الحساب"
+          :title="t('accounts.unreachable')"
           :description="current.error"
         />
 
@@ -177,16 +214,18 @@ onMounted(async () => {
             <UIcon name="i-lucide-message-circle-plus" class="size-6" />
           </span>
           <p class="font-semibold text-highlighted">
-            لا يوجد حساب بعد
+            {{ t('accounts.empty') }}
           </p>
-          <UButton label="إضافة حساب" icon="i-lucide-plus" @click="openAccount()" />
+          <UButton :label="t('accounts.add')" icon="i-lucide-plus" @click="openAccount()" />
         </div>
+
+        <OverviewPage v-else-if="onOverview" @open="switchAccount" />
 
         <template v-else-if="accountId">
           <StatsCards />
           <TemplatesPanel
             @open="openTemplate"
-            @create="openDrafts([newDraft()], 'قالب جديد')"
+            @create="openDrafts([newDraft()], t('templates.new'))"
             @paste="pasteOpen = true"
           />
         </template>
@@ -196,7 +235,7 @@ onMounted(async () => {
     </div>
 
     <AccountModal v-model:open="accountOpen" :account="editingAccount" />
-    <PasteModal v-model:open="pasteOpen" @parsed="(list) => openDrafts(list, list.length > 1 ? `محتوى ملصوق (${list.length} قوالب)` : 'محتوى ملصوق')" />
+    <PasteModal v-model:open="pasteOpen" @parsed="(list) => openDrafts(list, list.length > 1 ? t('paste.draftsTitleMany', { n: list.length }) : t('paste.draftsTitle'))" />
     <DraftsModal v-model:open="draftsOpen" v-model:drafts="drafts" :title="draftsTitle" />
     <TemplateModal v-model:open="templateOpen" v-model:mode="templateMode" :name="opened.name" :initial-id="opened.id" />
   </div>

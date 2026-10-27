@@ -1,3 +1,7 @@
+import { readFileSync } from 'node:fs'
+
+const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'))
+
 export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
 
@@ -33,6 +37,10 @@ export default defineNuxtConfig({
 
   icon: {
     serverBundle: 'local',
+  },
+
+  runtimeConfig: {
+    public: { version },
   },
 
   devtools: { enabled: false },

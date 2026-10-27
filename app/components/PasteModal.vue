@@ -6,24 +6,20 @@ const emit = defineEmits<{ parsed: [drafts: Draft[]] }>()
 const toast = useToast()
 const text = ref('')
 
-const placeholder = [
-  'الاسم: order_confirmation',
-  'الفئة: إشعارات',
-  '----------------',
-  'اللغة: ar',
-  'تم تأكيد طلبك رقم {{1}}.',
-  '',
-  '{{1}} = 10482',
-  '----------------',
-  'اللغة: en (اختياري)',
-  'Your order {{1}} is confirmed.',
-].join('\n')
+const placeholder = computed(() => toText([{
+  name: 'order_confirmation',
+  category: 'UTILITY',
+  languages: {
+    ar: { header: '', body: 'تم تأكيد طلبك رقم {{1}}.', footer: '', examples: ['10482'] },
+    en: { header: '', body: 'Your order {{1}} is confirmed.', footer: '', examples: ['10482'] },
+  },
+}]))
 
 function parse(): void {
   const drafts = parseDrafts(text.value)
 
   if (!drafts.length) {
-    toast.add({ title: 'لم يُعثر على قالب في النص', color: 'warning' })
+    toast.add({ title: t('paste.nothingFound'), color: 'warning' })
 
     return
   }
@@ -37,7 +33,7 @@ function parse(): void {
 <template>
   <UModal
     v-model:open="open"
-    title="إنشاء أو تحديث من محتوى قالب"
+    :title="t('templates.paste')"
     :ui="{ footer: 'justify-end' }"
   >
     <template #body>
@@ -45,7 +41,7 @@ function parse(): void {
     </template>
 
     <template #footer>
-      <UButton label="متابعة" :disabled="!text.trim()" @click="parse" />
+      <UButton :label="t('common.continue')" :disabled="!text.trim()" @click="parse" />
     </template>
   </UModal>
 </template>

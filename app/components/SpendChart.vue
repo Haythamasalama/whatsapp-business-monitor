@@ -2,7 +2,7 @@
 const props = defineProps<{ daily: Spend['daily'], currency: string | null }>()
 
 const metric = ref<'cost' | 'messages'>('cost')
-const metricItems = [{ label: 'التكلفة', value: 'cost' }, { label: 'الرسائل', value: 'messages' }]
+const metricItems = computed(() => [{ label: t('chart.cost'), value: 'cost' }, { label: t('chart.messages'), value: 'messages' }])
 
 const values = computed(() => props.daily.map(day => day[metric.value]))
 const max = computed(() => Math.max(...values.value, 0))
@@ -22,7 +22,7 @@ const top = computed(() => {
 const ticks = computed(() => [top.value, top.value / 2, 0])
 
 const format = (value: number) => (metric.value === 'cost' ? compactMoney(value, props.currency) : count(Math.round(value)))
-const tooltip = (day: Spend['daily'][number]) => `${shortDay(day.date)} · ${money(day.cost, props.currency)} · ${count(day.messages)} رسالة`
+const tooltip = (day: Spend['daily'][number]) => `${shortDay(day.date)} · ${money(day.cost, props.currency)} · ${t('chart.messageCount', { n: count(day.messages) })}`
 // The first day and today always; every fifth day only where the chart is wide enough, never right next to today.
 function labelClass(index: number): string | null {
   const last = props.daily.length - 1
@@ -36,16 +36,16 @@ function labelClass(index: number): string | null {
 </script>
 
 <template>
-  <div class="rounded-xl border border-default bg-default p-5">
+  <div class="relative overflow-hidden rounded-xl border border-default bg-default p-5">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <h3 class="font-semibold text-highlighted">
-        {{ metric === 'cost' ? 'التكلفة اليومية' : 'الرسائل اليومية' }}
+        {{ metric === 'cost' ? t('chart.dailyCost') : t('chart.dailyMessages') }}
       </h3>
       <UTabs v-model="metric" :items="metricItems" :content="false" size="xs" />
     </div>
 
     <div v-if="empty" class="grid h-48 place-items-center text-sm text-muted">
-      لا توجد رسائل هذا الشهر
+      {{ t('chart.empty') }}
     </div>
 
     <div v-else class="mt-5 flex gap-3">
@@ -83,7 +83,7 @@ function labelClass(index: number): string | null {
     </div>
 
     <table class="sr-only">
-      <caption>{{ metric === 'cost' ? 'التكلفة اليومية' : 'الرسائل اليومية' }}</caption>
+      <caption>{{ metric === 'cost' ? t('chart.dailyCost') : t('chart.dailyMessages') }}</caption>
       <tr v-for="day in daily" :key="day.date">
         <th>{{ shortDay(day.date) }}</th>
         <td>{{ money(day.cost, currency) }}</td>

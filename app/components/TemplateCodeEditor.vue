@@ -21,9 +21,9 @@ watch(text, (value) => {
     <div class="min-w-0 space-y-2">
       <div class="flex items-center justify-between gap-2">
         <p class="text-xs text-muted">
-          الصق محتوى قالب أو عدّله هنا
+          {{ t('content.hint') }}
         </p>
-        <UButton label="نسخ المحتوى" icon="i-lucide-copy" color="neutral" variant="ghost" size="xs" @click="copy(text)" />
+        <UButton :label="t('template.copy')" icon="i-lucide-copy" color="neutral" variant="ghost" size="xs" @click="copy(text)" />
       </div>
       <UTextarea
         v-model="text"
@@ -38,7 +38,7 @@ watch(text, (value) => {
 
     <div class="min-w-0 space-y-3">
       <p class="text-xs font-medium text-muted">
-        المعاينة
+        {{ t('form.preview') }}
       </p>
       <div v-for="code in languages" :key="code" class="space-y-1">
         <p class="text-xs text-muted">
@@ -47,7 +47,7 @@ watch(text, (value) => {
         <WhatsAppPreview :values="doc.languages[code]!" />
       </div>
       <p v-if="!languages.length" class="text-sm text-muted">
-        لا يوجد نص بعد
+        {{ t('content.empty') }}
       </p>
     </div>
   </div>

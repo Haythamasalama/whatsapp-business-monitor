@@ -14,10 +14,10 @@ export const amount = (value?: CurrencyAmount) => (value ? money(value.amount, v
 export const count = (value?: number) => new Intl.NumberFormat('en-US').format(value ?? 0)
 
 // A message sent before the window can be delivered or read inside it, so a rate may pass 100 without the cap.
-export const rate = (part: number, whole: number) => (whole ? `${Math.min(100, Math.round((part / whole) * 100))}٪` : '—')
+export const rate = (part: number, whole: number) => (whole ? t('common.percent', { n: Math.min(100, Math.round((part / whole) * 100)) }) : '—')
 
 export function monthDay(isoDate: string): string {
-  return new Intl.DateTimeFormat('ar-u-ca-gregory-nu-latn', { day: 'numeric', month: 'long' }).format(new Date(`${isoDate}T00:00:00`))
+  return new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'long' }).format(new Date(`${isoDate}T00:00:00`))
 }
 
 export function accountTitle(account: AccountSummary): string {
@@ -38,7 +38,7 @@ export function compactMoney(value: number, currency?: string | null): string {
 }
 
 export function shortDay(isoDate: string): string {
-  return new Intl.DateTimeFormat('ar-u-ca-gregory-nu-latn', { day: 'numeric', month: 'short' }).format(new Date(`${isoDate}T00:00:00`))
+  return new Intl.DateTimeFormat(intlLocale(), { day: 'numeric', month: 'short' }).format(new Date(`${isoDate}T00:00:00`))
 }
 
 export function templateText(template: MetaTemplate) {
@@ -56,3 +56,8 @@ export function templateText(template: MetaTemplate) {
     buttons: components.find(c => c.type === 'BUTTONS')?.buttons ?? [],
   }
 }
+
+export const timeOfDay = (date: Date | number) => new Intl.DateTimeFormat(intlLocale(), { hour: 'numeric', minute: '2-digit' }).format(date)
+
+/** The language of a template that previews show: the interface language when it has it. */
+export const previewItem = (group: TemplateGroup): MetaTemplate => group.items.find(item => item.language.split('_')[0] === locale.value) ?? group.items[0]!
