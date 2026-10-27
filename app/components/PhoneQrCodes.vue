@@ -64,28 +64,37 @@ async function download(code: string, format: 'PNG' | 'SVG'): Promise<void> {
     <p v-if="!data.error && !data.data?.length" class="text-sm text-muted">
       {{ t('business.qr.empty') }}
     </p>
-    <ul v-else class="divide-y divide-default rounded-xl border border-default">
-      <li v-for="qr in data.data" :key="qr.code" class="space-y-2 p-3">
-        <div v-if="editing === qr.code" class="flex flex-wrap gap-2">
-          <UInput v-model="editText" :maxlength="QR_MESSAGE_MAX" class="min-w-0 flex-1" dir="auto" />
-          <UButton :label="t('business.qr.save')" size="sm" :loading="busy" :disabled="qrProblems(editText).length > 0" @click="saveEdit(qr.code)" />
-          <UButton :label="t('common.cancel')" color="neutral" variant="ghost" size="sm" @click="editing = null" />
+    <ul v-else class="space-y-2">
+      <li v-for="qr in data.data" :key="qr.code" class="flex items-start gap-3 rounded-xl border border-default p-3">
+        <div class="grid size-10 shrink-0 place-items-center rounded-lg border border-default bg-muted text-toned">
+          <UIcon name="i-lucide-qr-code" class="size-5" />
         </div>
-        <p v-else class="text-sm text-highlighted" dir="auto">
-          {{ qr.prefilled_message }}
-        </p>
-        <div class="flex flex-wrap items-center gap-1">
-          <bdi dir="ltr" class="me-auto font-mono text-xs text-muted">{{ qr.deep_link_url }}</bdi>
-          <UTooltip :text="t('business.qr.copyLink')">
-            <UButton icon="i-lucide-copy" color="neutral" variant="ghost" size="xs" :aria-label="t('business.qr.copyLink')" @click="copy(qr.deep_link_url)" />
-          </UTooltip>
-          <UButton :label="t('business.qr.png')" icon="i-lucide-download" color="neutral" variant="ghost" size="xs" @click="download(qr.code, 'PNG')" />
-          <UButton :label="t('business.qr.svg')" icon="i-lucide-download" color="neutral" variant="ghost" size="xs" @click="download(qr.code, 'SVG')" />
+
+        <div class="min-w-0 flex-1 space-y-1">
+          <div v-if="editing === qr.code" class="flex flex-wrap gap-2">
+            <UInput v-model="editText" :maxlength="QR_MESSAGE_MAX" class="min-w-0 flex-1" dir="auto" />
+            <UButton :label="t('business.qr.save')" size="sm" :loading="busy" :disabled="qrProblems(editText).length > 0" @click="saveEdit(qr.code)" />
+            <UButton :label="t('common.cancel')" color="neutral" variant="ghost" size="sm" @click="editing = null" />
+          </div>
+          <p v-else class="text-sm font-medium text-highlighted" dir="auto">
+            {{ qr.prefilled_message }}
+          </p>
+          <button type="button" class="flex max-w-full items-center gap-1.5 text-xs text-muted hover:text-toned" :aria-label="t('business.qr.copyLink')" @click="copy(qr.deep_link_url)">
+            <UIcon name="i-lucide-link" class="size-3.5 shrink-0" />
+            <bdi dir="ltr" class="truncate font-mono">{{ qr.deep_link_url.replace('https://', '') }}</bdi>
+            <UIcon name="i-lucide-copy" class="size-3.5 shrink-0" />
+          </button>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-0.5">
+          <UDropdownMenu :items="[[{ label: t('business.qr.png'), icon: 'i-lucide-image', onSelect: () => download(qr.code, 'PNG') }, { label: t('business.qr.svg'), icon: 'i-lucide-file-code', onSelect: () => download(qr.code, 'SVG') }]]">
+            <UButton :label="t('business.qr.download')" icon="i-lucide-download" color="neutral" variant="outline" size="xs" />
+          </UDropdownMenu>
           <UTooltip :text="t('business.qr.edit')">
             <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" size="xs" :aria-label="t('business.qr.edit')" @click="editing = qr.code; editText = qr.prefilled_message" />
           </UTooltip>
           <UTooltip :text="t('business.qr.delete')">
-            <UButton icon="i-lucide-trash-2" color="error" variant="ghost" size="xs" :aria-label="t('business.qr.delete')" @click="remove(qr.code)" />
+            <UButton icon="i-lucide-trash-2" color="neutral" variant="ghost" size="xs" :aria-label="t('business.qr.delete')" @click="remove(qr.code)" />
           </UTooltip>
         </div>
       </li>

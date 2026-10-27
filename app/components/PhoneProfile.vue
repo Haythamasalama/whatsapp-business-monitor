@@ -89,7 +89,7 @@ async function upload(event: Event): Promise<void> {
 
     <div class="flex items-center gap-4">
       <UAvatar :src="data.data?.profile_picture_url" icon="i-lucide-store" size="3xl" />
-      <div class="space-y-1">
+      <div class="flex flex-col items-start gap-2">
         <FieldLabel :label="t('business.profile.photo')" :hint="t('business.profile.photoHint')" class="text-sm font-medium text-default" />
         <UButton :label="t('business.profile.photoChange')" icon="i-lucide-image-up" color="neutral" variant="outline" size="sm" :loading="uploading" @click="picker?.click()" />
         <input ref="picker" type="file" accept="image/jpeg,image/png" class="hidden" @change="upload">
