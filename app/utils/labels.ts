@@ -92,9 +92,16 @@ export const nameStatusOf = (status?: string) => (status ? { label: tOr(`nameSta
 
 const TIERS: Record<string, number> = { TIER_50: 50, TIER_250: 250, TIER_1K: 1_000, TIER_2K: 2_000, TIER_10K: 10_000, TIER_100K: 100_000 }
 
+/** Meta's current limit field, or the deprecated one on accounts and API versions that lack it. */
+export const phoneLimit = (phone: Pick<Phone, 'whatsapp_business_manager_messaging_limit' | 'messaging_limit_tier'>) => messagingLimit(phone.whatsapp_business_manager_messaging_limit ?? phone.messaging_limit_tier)
+
 export function messagingLimit(tier?: string): string {
   if (!tier) {
     return ''
+  }
+
+  if (tier === 'UNTIERED') {
+    return t('phone.untiered')
   }
 
   if (tier === 'TIER_UNLIMITED') {
@@ -112,3 +119,16 @@ export function languageName(code: string, inLocale: Locale = locale.value): str
     return code
   }
 }
+
+const HEALTH_TONES: Record<string, Tone> = { AVAILABLE: 'success', LIMITED: 'warning', BLOCKED: 'error' }
+
+/** health_status.can_send_message: whether messages can go out now. */
+export const healthOf = (value?: string) => (value ? { label: tOr(`business.health.${value}`, value), tone: HEALTH_TONES[value] ?? 'neutral' as Tone } : null)
+
+const VERIFICATION_TONES: Record<string, Tone> = { VERIFIED: 'success', PENDING: 'warning', PENDING_NEED_MORE_INFO: 'warning', PENDING_SUBMISSION: 'warning', NOT_VERIFIED: 'neutral', REJECTED: 'error', REVOKED: 'error', EXPIRED: 'error', FAILED: 'error' }
+
+export const verificationOf = (value?: string) => (value ? { label: tOr(`business.verification.${value}`, value), tone: VERIFICATION_TONES[value] ?? 'neutral' as Tone } : null)
+
+const OBA_TONES: Record<string, Tone> = { APPROVED: 'success', PENDING: 'warning', REJECTED: 'error', NOT_STARTED: 'neutral' }
+
+export const obaOf = (value?: string) => (value ? { label: tOr(`business.oba.status.${value}`, value), tone: OBA_TONES[value] ?? 'neutral' as Tone } : null)

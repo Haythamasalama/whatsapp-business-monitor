@@ -6,7 +6,7 @@ const rows = computed(() => props.phones.map(phone => ({
   status: phoneStatusOf(phone.status),
   quality: qualityOf(phone.quality_rating) ?? qualityOf('UNKNOWN')!,
   name: nameStatusOf(phone.name_status),
-  limit: messagingLimit(phone.messaging_limit_tier) || '—',
+  limit: phoneLimit(phone) || '—',
 })))
 </script>
 

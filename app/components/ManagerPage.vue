@@ -68,6 +68,11 @@ const draftsTitle = ref('')
 const opened = ref<{ name: string | null, id?: string }>({ name: null })
 const templateMode = ref<'view' | 'edit'>('view')
 const booting = ref(true)
+const accountTab = ref('templates')
+const accountTabs = computed(() => [
+  { label: t('business.templatesTab'), value: 'templates', icon: 'i-lucide-layout-template' },
+  { label: t('business.tab'), value: 'business', icon: 'i-lucide-building-2' },
+])
 
 // Account ids start with a letter or digit, so '*' can stand for the overview in the mobile picker.
 const OVERVIEW = '*'
@@ -276,12 +281,16 @@ onMounted(async () => {
         />
 
         <template v-else-if="accountId">
-          <StatsCards />
-          <TemplatesPanel
-            @open="openTemplate"
-            @create="openDrafts([newDraft()], t('templates.new'))"
-            @paste="pasteOpen = true"
-          />
+          <UTabs v-model="accountTab" :items="accountTabs" :content="false" variant="link" />
+          <BusinessPanel v-if="accountTab === 'business'" />
+          <template v-else>
+            <StatsCards />
+            <TemplatesPanel
+              @open="openTemplate"
+              @create="openDrafts([newDraft()], t('templates.new'))"
+              @paste="pasteOpen = true"
+            />
+          </template>
         </template>
       </main>
 

@@ -98,7 +98,7 @@ const quality = computed(() => qualityOf(phone.value?.quality_rating) ?? quality
           </p>
           <div class="mt-2 flex flex-wrap items-center gap-1.5">
             <UBadge :color="quality.tone" variant="subtle" size="sm" :label="t('stats.quality', { quality: quality.label })" />
-            <UBadge v-if="phone.messaging_limit_tier" color="neutral" variant="subtle" size="sm" :label="messagingLimit(phone.messaging_limit_tier)" />
+            <UBadge v-if="phoneLimit(phone)" color="neutral" variant="subtle" size="sm" :label="phoneLimit(phone)" />
             <span v-if="otherPhones > 0" class="text-xs text-muted">{{ t('stats.otherPhones', { n: otherPhones }) }}</span>
           </div>
         </template>

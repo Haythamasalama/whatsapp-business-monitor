@@ -34,6 +34,7 @@ const columns = computed<TableColumn<AccountSummary>[]>(() => [
         </p>
       </div>
       <div class="flex flex-wrap gap-2">
+        <UButton :label="t('business.help')" :to="docsUrl('accounts-and-numbers')" target="_blank" icon="i-lucide-circle-help" color="neutral" variant="ghost" />
         <UButton :label="t('transfer.import')" icon="i-lucide-upload" color="neutral" variant="outline" @click="emit('import')" />
         <UButton :label="t('transfer.export')" icon="i-lucide-download" color="neutral" variant="outline" :disabled="!accounts.length" @click="emit('export')" />
         <UButton :label="t('accounts.add')" icon="i-lucide-plus" @click="emit('add')" />

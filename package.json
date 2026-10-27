@@ -40,6 +40,7 @@
     "build": "nuxt build",
     "preview": "nuxt preview",
     "typecheck": "nuxt typecheck",
+    "test": "bun test tests",
     "site": "nuxt dev site --port 3214",
     "site:generate": "nuxt generate site",
     "site:typecheck": "nuxt typecheck site",
