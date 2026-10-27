@@ -12,34 +12,40 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 ![Nuxt 4](https://img.shields.io/badge/Nuxt-4-317455?logo=nuxt&logoColor=white)
 ![Node 22.21+ or 24.11+](https://img.shields.io/badge/node-22.21%2B%20%7C%2024.11%2B-317455?logo=node.js&logoColor=white)
 
-[Features](#features) · [Get started](#get-started) · [Demo](#try-the-demo) · [Contribute](CONTRIBUTING.md)
+[Features](#-features) · [Get started](#-get-started) · [Demo](#-try-the-demo) · [Contribute](CONTRIBUTING.md)
 
 <img src="docs/screenshots/overview.png" width="860" alt="The overview of two accounts of a fictional store: this month's cost, messages sent, templates that need attention, a daily cost chart, the cost per account and a table of accounts.">
 
 </div>
 
-## Features
+## ✨ Features
 
-- **Every account on one page.** Cost, messages, templates waiting for review and each number's quality, added up across accounts.
-- **Templates per account.** Review status per language, category, quality, and sent, delivered, read and cost over 30 days. Table, list or card view.
-- **Spend.** This month's cost per day and per message type.
-- **Create and edit.** Fill in the fields or paste the whole template as text, with a live WhatsApp preview. Meta's rules are checked before anything is sent.
-- **Create or update from pasted content.** New templates are created, changed ones updated, unchanged ones skipped. Any template can be copied in the same format:
+- 📊 **All accounts in one place.** Cost, messages and templates for every account.
+- 📝 **Every template's numbers.** Status, sends, deliveries and reads. Table, list or cards.
+- 💰 **What you spend.** This month's cost per day and per message type.
+- ✏️ **Create and edit.** Fill in the fields or paste the full template, with a live WhatsApp preview.
+- 📋 **Copy and paste.** Copy any template, change it, paste it back. New ones are created, changed ones updated.
+- 🔔 **Live status.** A notification when a template is approved, rejected or paused.
+- 📱 **Number health.** Status, quality and daily limit of every number.
+- 🌍 **Arabic or English.** Light or dark, and templates in any language.
+- 🔒 **Private.** Runs on your machine. Your tokens never leave it.
 
-  ```
-  Name: order_confirmation
-  Category: Utility
-  ----------------
-  Language: en
-  Your order {{1}} is confirmed.
+<details>
+<summary>The copy and paste format</summary>
 
-  {{1}} = 10482
-  ```
-- **Always current.** Data refreshes when you come back to the tab, and a notification tells you when a template is approved, rejected or paused.
-- **Number health.** Status, quality, daily limit and display-name review for every number.
-- **Several accounts, any language.** Arabic or English interface, light or dark, and templates in any language Meta supports.
+```
+Name: order_confirmation
+Category: Utility
+----------------
+Language: en
+Your order {{1}} is confirmed.
 
-## Screenshots
+{{1}} = 10482
+```
+
+</details>
+
+## 📸 Screenshots
 
 | Account | Template |
 |:--:|:--:|
@@ -53,7 +59,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 
 All screenshots use the built-in demo data.
 
-## Get started
+## 🚀 Get started
 
 You need Node.js 22.21+ or 24.11+ and [Bun](https://bun.sh) or npm.
 
@@ -66,7 +72,7 @@ bun run dev
 
 Open <http://127.0.0.1:3210>, choose **Add account** and paste a Meta system user token with `whatsapp_business_management`. The app finds the business accounts and numbers it can reach.
 
-## Try the demo
+## 🎮 Try the demo
 
 ```bash
 bun run demo
@@ -74,20 +80,20 @@ bun run demo
 
 Open <http://127.0.0.1:3211>. Nothing is sent to Meta and no file is written.
 
-## Accounts and security
+## 🔐 Accounts and security
 
 - Each account is one file in `~/.config/whatsapp-templates/` (or `WHATSAPP_TEMPLATES_DIR`), written with `600` permissions.
 - The server listens on `127.0.0.1` only. No response contains a token, and `/api` refuses other hosts and requests without its `X-Requested-With` header.
 - There is no login, so don't deploy it to a public server. Found a vulnerability? See the [security policy](SECURITY.md).
 
-## Limits from Meta
+## ⚠️ Limits from Meta
 
 - There is no balance API for accounts paid by card.
 - Template analytics must be turned on once per account (the app has a button), and can't be turned off.
 - Reads and clicks are counted for 7 days after sending.
 - An approved template can be edited once every 24 hours, up to 10 times in 30 days.
 
-## License
+## 📄 License
 
 [MIT](LICENSE) · Made by [Haytham A. Salama](https://haythamasalama.me) · Built with [Nuxt](https://nuxt.com) and [Nuxt UI](https://ui.nuxt.com).
 
