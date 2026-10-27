@@ -11,8 +11,12 @@ export default defineEventHandler(async (event) => {
     return demoAccounts()
   }
 
+  if (!post && path === '/api/summary') {
+    return demoSummary()
+  }
+
   if (!post && path === '/api/overview') {
-    return demoOverview()
+    return demoOverview(getQuery(event).account)
   }
 
   if (!post && path === '/api/templates') {
@@ -20,7 +24,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (!post && path === '/api/analytics') {
-    return demoAnalytics()
+    return demoAnalytics(getQuery(event).account)
   }
 
   if (post && path === '/api/accounts/discover') {

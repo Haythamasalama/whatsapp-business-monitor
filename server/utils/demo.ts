@@ -1,9 +1,36 @@
 // A fictional store, so the project can be tried and screenshotted without a Meta account.
 export const isDemo = () => ['1', 'true'].includes(String(process.env.WHATSAPP_TEMPLATES_DEMO ?? '').toLowerCase())
 
-const DEMO_ID = 'demo'
-const WABA_ID = '100000000000001'
-const PHONE: Phone = { display_phone_number: '+1 555-010-0100', verified_name: 'متجر الياسمين', quality_rating: 'GREEN', messaging_limit_tier: 'TIER_10K' }
+interface DemoStore {
+  id: string
+  label: string
+  name: string
+  waba: string
+  phone: Phone
+  /** How busy this store is next to the first one. */
+  scale: number
+}
+
+const STORES: DemoStore[] = [
+  {
+    id: 'demo',
+    label: 'متجر الياسمين',
+    name: 'Yasmin Store',
+    waba: '100000000000001',
+    phone: { display_phone_number: '+1 555-010-0100', verified_name: 'متجر الياسمين', quality_rating: 'GREEN', messaging_limit_tier: 'TIER_10K' },
+    scale: 1,
+  },
+  {
+    id: 'demo-jeddah',
+    label: 'متجر الياسمين · جدة',
+    name: 'Yasmin Store Jeddah',
+    waba: '100000000000002',
+    phone: { display_phone_number: '+1 555-010-0142', verified_name: 'متجر الياسمين جدة', quality_rating: 'YELLOW', messaging_limit_tier: 'TIER_1K' },
+    scale: 0.42,
+  },
+]
+
+const storeFor = (id?: unknown) => STORES.find(store => store.id === id) ?? STORES[0]!
 const COST: Record<string, number> = { UTILITY: 0.0107, MARKETING: 0.0436, AUTHENTICATION: 0.0102 }
 
 interface DemoTemplate {
@@ -76,33 +103,61 @@ const dayStart = (offset: number) => {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + offset))
 }
 
-function sendsOn(entry: DemoTemplate, index: number, date: Date): number {
-  return Math.round(entry.daily * wave(index * 31 + date.getUTCDate() + date.getUTCMonth() * 7) * (date.getUTCDay() === 5 ? 0.55 : 1))
+function sendsOn(entry: DemoTemplate, index: number, date: Date, store: DemoStore): number {
+  return Math.round(entry.daily * store.scale * wave(index * 31 + date.getUTCDate() + date.getUTCMonth() * 7 + store.waba.length * store.scale) * (date.getUTCDay() === 5 ? 0.55 : 1))
 }
 
-export function demoAccounts() {
+export function demoAccounts(): { data: AccountSummary[], dir: string } {
   return {
-    data: [{ id: DEMO_ID, label: 'متجر الياسمين', file: '~/.config/whatsapp-templates/demo.env', waba_id: WABA_ID, version: 'v23.0', name: 'Yasmin Store', phones: [PHONE], photo: null, error: null }],
+    data: STORES.map(store => ({
+      id: store.id,
+      label: store.label,
+      file: `~/.config/whatsapp-templates/${store.id}.env`,
+      waba_id: store.waba,
+      version: 'v23.0',
+      name: store.name,
+      phones: [store.phone],
+      photo: null,
+      error: null,
+    })),
     dir: '~/.config/whatsapp-templates',
   }
 }
 
 export function demoDiscover() {
-  return { data: [{ waba_id: WABA_ID, name: 'Yasmin Store', phones: [PHONE] }] }
+  return { data: [{ waba_id: STORES[0]!.waba, name: STORES[0]!.name, phones: [STORES[0]!.phone] }] }
 }
 
 export function demoTemplates() {
   return { data: TEMPLATES.map(entry => entry.template) }
 }
 
-export function demoAnalytics(): Analytics {
+export function demoSummary(): { data: AccountStats[] } {
+  return {
+    data: STORES.map((store) => {
+      const overview = demoOverview(store.id)
+
+      return {
+        id: store.id,
+        spend: 'error' in overview.spend ? null : overview.spend,
+        spendError: null,
+        phones: [store.phone],
+        templates: templateCounts(TEMPLATES.map(entry => entry.template)),
+        error: null,
+      }
+    }),
+  }
+}
+
+export function demoAnalytics(id?: unknown): Analytics {
+  const store = storeFor(id)
   const data: Record<string, TemplateStats> = {}
 
   TEMPLATES.forEach((entry, index) => {
     const daily = Array.from({ length: 30 }, (_, i) => {
       const date = dayStart(i - 29)
 
-      return { date: date.toISOString().slice(0, 10), sent: sendsOn(entry, index, date) }
+      return { date: date.toISOString().slice(0, 10), sent: sendsOn(entry, index, date, store) }
     })
     const sent = daily.reduce((sum, day) => sum + day.sent, 0)
     const delivered = Math.round(sent * 0.97)
@@ -121,7 +176,8 @@ export function demoAnalytics(): Analytics {
   return { data, days: 30 }
 }
 
-export function demoOverview(): Overview {
+export function demoOverview(id?: unknown): Overview {
+  const store = storeFor(id)
   const now = new Date()
   const from = new Date(now.getFullYear(), now.getMonth(), 1)
   const byCategory: Spend['by_category'] = {}
@@ -133,7 +189,7 @@ export function demoOverview(): Overview {
     let messages = 0
 
     TEMPLATES.forEach((entry, index) => {
-      const sent = Math.round(sendsOn(entry, index, utc) * 0.97)
+      const sent = Math.round(sendsOn(entry, index, utc, store) * 0.97)
       const price = COST[entry.template.category] ?? 0
       const bucket = (byCategory[entry.template.category] ??= { cost: 0, messages: 0 })
 
@@ -143,7 +199,7 @@ export function demoOverview(): Overview {
       messages += sent
     })
 
-    const service = Math.round(9 * wave(utc.getUTCDate()))
+    const service = Math.round(9 * store.scale * wave(utc.getUTCDate()))
     const bucket = (byCategory.SERVICE ??= { cost: 0, messages: 0 })
     bucket.messages += service
     messages += service
@@ -154,8 +210,8 @@ export function demoOverview(): Overview {
   const total = daily.reduce((sum, day) => sum + day.cost, 0)
 
   return {
-    account: { name: 'Yasmin Store', currency: 'USD' },
-    phones: { data: [PHONE] },
+    account: { name: store.name, currency: 'USD' },
+    phones: { data: [store.phone] },
     spend: {
       since: daily[0]!.date,
       currency: 'USD',

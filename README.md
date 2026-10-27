@@ -20,6 +20,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 
 ## Features
 
+- **All accounts on one page.** The home page adds every account up: this month's cost and messages, the templates and those waiting for review, rejected or paused, the cost per account, and each number's quality.
 - **Templates at a glance.** Every template on the account, grouped by name, with a column per language for its review status, plus its category and quality.
 - **Three views.** A table, a list with the selected template beside it, or cards with a preview of each message. The page remembers your choice.
 - **How each template performs.** Sent, delivered, read, cost and button clicks over the last 30 days, with a daily chart, from Meta's template analytics. Sort by the most sent.

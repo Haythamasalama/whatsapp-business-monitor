@@ -108,3 +108,18 @@ export interface Overview {
   spend: Spend | { error: MetaError }
   credit: { data?: CreditLine[], error?: MetaError } | null
 }
+
+export interface TemplateCounts {
+  /** Templates by name, whatever their languages. */
+  total: number
+  statuses: Record<string, number>
+}
+
+export interface AccountStats {
+  id: string
+  spend: Spend | null
+  spendError: string | null
+  phones: Phone[]
+  templates: TemplateCounts | null
+  error: string | null
+}
