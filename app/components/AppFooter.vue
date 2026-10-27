@@ -34,7 +34,7 @@ onMounted(async () => {
       <span class="h-3.5 w-px bg-(--ui-border-accented)" aria-hidden="true" />
 
       <a
-        href="https://github.com/Haythamasalama/whatsapp-manager-monitoring/releases"
+        href="https://github.com/Haythamasalama/whatsapp-business-monitor/releases"
         target="_blank"
         rel="noopener"
         class="font-mono text-toned transition-colors hover:text-highlighted"
@@ -56,7 +56,7 @@ onMounted(async () => {
       </UTooltip>
 
       <a
-        href="https://github.com/Haythamasalama/whatsapp-manager-monitoring"
+        href="https://github.com/Haythamasalama/whatsapp-business-monitor"
         target="_blank"
         rel="noopener"
         class="inline-flex items-center text-toned transition-colors hover:text-highlighted"

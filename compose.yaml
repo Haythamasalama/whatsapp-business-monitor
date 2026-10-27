@@ -1,10 +1,10 @@
-name: whatsapp-manager-monitoring
+name: whatsapp-business-monitor
 
 # Written by install.sh; the settings it asks for live in .env next to this file.
 services:
-  whatsapp-manager:
-    image: ghcr.io/haythamasalama/whatsapp-manager-monitoring:${WHATSAPP_MANAGER_VERSION:-latest}
-    container_name: whatsapp-manager-monitoring
+  app:
+    image: ghcr.io/haythamasalama/whatsapp-business-monitor:${WHATSAPP_MANAGER_VERSION:-latest}
+    container_name: whatsapp-business-monitor
     restart: unless-stopped
     # The owner of the data folder, so the database can be written; install.sh sets it.
     user: "${WHATSAPP_MANAGER_UID:-1000}:${WHATSAPP_MANAGER_GID:-1000}"
@@ -28,7 +28,7 @@ services:
   # restarts the app on it with the same settings and data. A pinned WHATSAPP_MANAGER_VERSION stays put.
   updater:
     image: nickfedor/watchtower:latest
-    container_name: whatsapp-manager-monitoring-updater
+    container_name: whatsapp-business-monitor-updater
     restart: unless-stopped
     environment:
       # Only containers with the label above are touched, never the rest of this computer's Docker.

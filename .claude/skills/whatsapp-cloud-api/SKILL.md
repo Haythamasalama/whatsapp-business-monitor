@@ -1,6 +1,6 @@
 ---
 name: whatsapp-cloud-api
-description: Use when code in WhatsApp Manager Monitoring calls Meta's Graph API for WhatsApp Business (server/utils/graph.ts and the routes that use it), or when someone asks why Meta rejected or refused a template, what an error code means, or how sends, reads, clicks and spend are counted. Covers the token and API version, every endpoint and field the app uses, paging, template rules and edit limits, template analytics and pricing analytics, statuses, quality and tiers, the error-code map, the copy and paste text format, and what never to do against a real account.
+description: Use when code in WhatsApp Business Monitor calls Meta's Graph API for WhatsApp Business (server/utils/graph.ts and the routes that use it), or when someone asks why Meta rejected or refused a template, what an error code means, or how sends, reads, clicks and spend are counted. Covers the token and API version, every endpoint and field the app uses, paging, template rules and edit limits, template analytics and pricing analytics, statuses, quality and tiers, the error-code map, the copy and paste text format, and what never to do against a real account.
 ---
 
 # WhatsApp Cloud API

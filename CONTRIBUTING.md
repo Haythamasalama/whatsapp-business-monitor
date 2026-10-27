@@ -1,10 +1,10 @@
-# Contributing to WhatsApp Manager Monitoring
+# Contributing to WhatsApp Business Monitor
 
 Thank you for helping improve the project. This guide shows how to set it up, how the code is organized, and what we expect in a pull request.
 
 ## Ways to help
 
-- **Report a bug.** Open an [issue](https://github.com/Haythamasalama/whatsapp-manager-monitoring/issues/new/choose) with the steps to reproduce it and a screenshot if you can. Remove tokens, phone numbers and customer data first.
+- **Report a bug.** Open an [issue](https://github.com/Haythamasalama/whatsapp-business-monitor/issues/new/choose) with the steps to reproduce it and a screenshot if you can. Remove tokens, phone numbers and customer data first.
 - **Suggest a feature.** Describe the problem first, then the solution you have in mind.
 - **Translate.** The interface is in Arabic and English. Another language is very welcome; open an issue first so we can agree on the approach.
 - **Write code.** Pick an issue labelled `good first issue` or `help wanted`, and leave a comment so others know you're working on it.
@@ -14,8 +14,8 @@ Thank you for helping improve the project. This guide shows how to set it up, ho
 Requirements: Node.js 22.21+ or 24.11+ (see `.nvmrc`) and [Bun](https://bun.sh).
 
 ```bash
-git clone https://github.com/<you>/whatsapp-manager-monitoring.git
-cd whatsapp-manager-monitoring
+git clone https://github.com/<you>/whatsapp-business-monitor.git
+cd whatsapp-business-monitor
 bun install
 bun run demo        # fictional data on http://127.0.0.1:3211, no Meta account needed
 bun run dev         # your real accounts on http://127.0.0.1:3210
@@ -66,7 +66,7 @@ Types: `feat`, `fix`, `perf`, `refactor`, `i18n`, `docs`, `test`, `build`, `ci`,
 
 1. Bump `version` in `package.json` and merge it to `main`.
 2. Tag the merge commit and push the tag: `git tag v0.2.0 && git push origin v0.2.0`.
-3. The **Docker image** workflow publishes `ghcr.io/haythamasalama/whatsapp-manager-monitoring` as `0.2.0`, `0.2` and `latest`. Users update with `docker compose pull && docker compose up -d`.
+3. The **Docker image** workflow publishes `ghcr.io/haythamasalama/whatsapp-business-monitor` (and the old name, `whatsapp-manager-monitoring`, for installs made before the rename) as `0.2.0`, `0.2` and `latest`. Users update with `docker compose pull && docker compose up -d`.
 
 ## Code of Conduct
 

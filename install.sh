@@ -1,15 +1,19 @@
 #!/bin/sh
-# Installs WhatsApp Manager Monitoring with Docker, or updates an existing install.
+# Installs WhatsApp Business Monitor with Docker, or updates an existing install.
 #
-#   curl -fsSL https://raw.githubusercontent.com/Haythamasalama/whatsapp-manager-monitoring/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/Haythamasalama/whatsapp-business-monitor/main/install.sh | sh
 #   curl -fsSL …/install.sh | sh -s -- --server     # reachable from other computers, e.g. on a server
 #
-# Settings, all optional: WHATSAPP_MANAGER_DIR (default ~/whatsapp-manager), WHATSAPP_MANAGER_PORT (3210)
+# Settings, all optional: WHATSAPP_MANAGER_DIR (default ~/whatsapp-business-monitor), WHATSAPP_MANAGER_PORT (3210)
 # and WHATSAPP_MANAGER_VERSION (a release such as 0.2.2; default: always the latest).
 set -eu
 
-REPO="Haythamasalama/whatsapp-manager-monitoring"
-DIR="${WHATSAPP_MANAGER_DIR:-$HOME/whatsapp-manager}"
+REPO="Haythamasalama/whatsapp-business-monitor"
+DIR="${WHATSAPP_MANAGER_DIR:-$HOME/whatsapp-business-monitor}"
+# Installs made before the rename keep their folder, and with it their settings and data.
+if [ -z "${WHATSAPP_MANAGER_DIR:-}" ] && [ -d "$HOME/whatsapp-manager" ] && [ ! -d "$DIR" ]; then
+  DIR="$HOME/whatsapp-manager"
+fi
 PORT="${WHATSAPP_MANAGER_PORT:-3210}"
 BIND="127.0.0.1"
 
@@ -63,11 +67,18 @@ fi
 [ -n "${WHATSAPP_MANAGER_VERSION:-}" ] && { sed -i.bak '/^WHATSAPP_MANAGER_VERSION=/d' .env && rm -f .env.bak; printf 'WHATSAPP_MANAGER_VERSION=%s\n' "$WHATSAPP_MANAGER_VERSION" >> .env; }
 
 docker compose pull
+
+# Before the rename the containers had other names; the data is in the folder above, so they can go.
+if ! grep -q '^name: whatsapp-manager-monitoring' compose.yaml; then
+  docker rm -f whatsapp-manager-monitoring whatsapp-manager-monitoring-updater >/dev/null 2>&1 || true
+fi
+
 docker compose up -d --remove-orphans
+CONTAINER="$(sed -n 's/^ *container_name: *//p' compose.yaml | head -n 1)"
 
 printf 'Waiting for the app'
 for _ in $(seq 1 30); do
-  state="$(docker inspect --format '{{.State.Health.Status}}' whatsapp-manager-monitoring 2>/dev/null || true)"
+  state="$(docker inspect --format '{{.State.Health.Status}}' "$CONTAINER" 2>/dev/null || true)"
   [ "$state" = "healthy" ] && break
   printf '.'
   sleep 2
@@ -75,7 +86,7 @@ done
 echo
 
 PORT_IN_USE="$(sed -n 's/^WHATSAPP_MANAGER_PORT=//p' .env | tail -n 1)"
-echo "WhatsApp Manager Monitoring is running."
+echo "WhatsApp Business Monitor is running."
 if grep -q '^WHATSAPP_MANAGER_BIND=0.0.0.0' .env; then
   echo "Open http://<this server's address>:$PORT_IN_USE to finish the setup."
   echo "Put it behind HTTPS (a reverse proxy) before you use it over the internet."

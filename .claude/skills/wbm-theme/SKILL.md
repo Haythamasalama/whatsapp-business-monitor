@@ -1,6 +1,6 @@
 ---
-name: wmm-theme
-description: Use when changing colours, fonts, radius, borders, shadows, dark mode or chart colours in WhatsApp Manager Monitoring (app/app.config.ts, app/assets/css/main.css, the fonts block of nuxt.config.ts), or when a component reaches for a raw colour. Covers the sage primary palette, the Nuxt UI tokens the project overrides in light and dark, the chart tokens, the fonts, and the classes to use instead of hex values or Tailwind palette names.
+name: wbm-theme
+description: Use when changing colours, fonts, radius, borders, shadows, dark mode or chart colours in WhatsApp Business Monitor (app/app.config.ts, app/assets/css/main.css, the fonts block of nuxt.config.ts), or when a component reaches for a raw colour. Covers the sage primary palette, the Nuxt UI tokens the project overrides in light and dark, the chart tokens, the fonts, and the classes to use instead of hex values or Tailwind palette names.
 ---
 
 # Theme

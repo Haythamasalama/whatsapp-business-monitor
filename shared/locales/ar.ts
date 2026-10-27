@@ -129,7 +129,7 @@ export default {
     NONE: 'لا يوجد',
   },
   brand: {
-    name: 'مراقبة واتساب الأعمال',
+    name: 'مراقب واتساب الأعمال',
     description: 'لوحة محلية لمراقبة قوالب واتساب الأعمال وأدائها وتكلفتها.',
   },
   footer: {
@@ -445,6 +445,8 @@ export default {
     security: 'الأمان',
     currentPassword: 'كلمة المرور الحالية',
     newPassword: 'كلمة المرور الجديدة',
+    confirmPassword: 'تأكيد كلمة المرور الجديدة',
+    passwordMismatch: 'كلمتا المرور غير متطابقتين',
     changePassword: 'تغيير كلمة المرور',
     passwordChanged: 'تغيّرت كلمة المرور',
     signOut: 'تسجيل الخروج',

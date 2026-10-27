@@ -1,0 +1,7 @@
+/* The dashboard's theme: palette, fonts, tokens and the RTL icon flips. */
+@import "../../../../app/assets/css/main.css";
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}

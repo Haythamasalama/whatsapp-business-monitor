@@ -129,7 +129,7 @@ const en: Dictionary = {
     NONE: 'None',
   },
   brand: {
-    name: 'WhatsApp Business Monitoring',
+    name: 'WhatsApp Business Monitor',
     description: 'A local dashboard for your WhatsApp Business templates, how they perform and what they cost.',
   },
   footer: {
@@ -445,6 +445,8 @@ const en: Dictionary = {
     security: 'Security',
     currentPassword: 'Current password',
     newPassword: 'New password',
+    confirmPassword: 'Confirm new password',
+    passwordMismatch: 'The passwords do not match',
     changePassword: 'Change password',
     passwordChanged: 'Password changed',
     signOut: 'Sign out',

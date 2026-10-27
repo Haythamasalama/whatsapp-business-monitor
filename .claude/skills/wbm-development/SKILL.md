@@ -1,6 +1,6 @@
 ---
-name: wmm-development
-description: Use when writing or changing code in WhatsApp Manager Monitoring (Nuxt 4 + Nitro + node:sqlite), or when shipping it: server API routes and middleware, the SQLite schema and settings, sign-in and sessions, how translations reach the page and the server, demo mode, Nitro auto-import pitfalls, the Docker image, compose file and install script, CI, pull request titles, and releases. Pair with wmm-ui for components and whatsapp-cloud-api for calls to Meta.
+name: wbm-development
+description: Use when writing or changing code in WhatsApp Business Monitor (Nuxt 4 + Nitro + node:sqlite), or when shipping it: server API routes and middleware, the SQLite schema and settings, sign-in and sessions, how translations reach the page and the server, demo mode, Nitro auto-import pitfalls, the Docker image, compose file and install script, CI, pull request titles, and releases. Pair with wbm-ui for components and whatsapp-cloud-api for calls to Meta.
 ---
 
 # Development
@@ -147,11 +147,11 @@ analytics, no fonts or scripts from a CDN, no error reporting service. Keep it t
   tag that commit on `main` and push the tag:
 
   ```bash
-  git remote get-url origin   # must be the whatsapp-manager-monitoring repository
+  git remote get-url origin   # must be the whatsapp-business-monitor repository
   git fetch origin && git tag -a v0.4.0 origin/main -m "v0.4.0" && git push origin v0.4.0
   ```
 
-  `.github/workflows/docker.yml` then publishes `ghcr.io/haythamasalama/whatsapp-manager-monitoring` as
+  `.github/workflows/docker.yml` then publishes `ghcr.io/haythamasalama/whatsapp-business-monitor` (and the pre-rename `whatsapp-manager-monitoring`) as
   `0.4.0`, `0.4` and `latest` for amd64 and arm64, and creates the GitHub release with generated notes.
 
 ## Before you push
