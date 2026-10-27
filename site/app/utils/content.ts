@@ -4,13 +4,14 @@ const en = {
   keywords: 'WhatsApp Business monitoring, WhatsApp Business API dashboard, WhatsApp Cloud API, manage WhatsApp templates, WhatsApp template analytics, WhatsApp number quality, WhatsApp messaging limit, WhatsApp business profile, WhatsApp QR code, self-hosted, open source',
   brand: 'WhatsApp Business Monitor',
   nav: { features: 'Features', screenshots: 'Screenshots', install: 'Install', faq: 'FAQ', docs: 'Docs' },
+  menu: 'Menu',
   language: 'العربية',
   hero: {
     badge: 'Free and open source',
     title: 'Your WhatsApp templates on one screen',
     text: 'See how every message template performs and what it costs, across all your WhatsApp Business accounts. It runs on your computer or your server, and your tokens never leave it.',
     install: 'Install',
-    github: 'View on GitHub',
+    docs: 'Read the docs',
     notes: ['One command with Docker', 'Arabic and English', 'MIT license'],
     image: 'The overview of two accounts of a fictional store: this month\'s cost, messages sent, templates that need attention and a daily cost chart.',
   },
@@ -51,16 +52,10 @@ const en = {
   },
   install: {
     title: 'Install it in one command',
-    text: 'You only need Docker. The command downloads the app, starts it and keeps it up to date.',
-    steps: [
-      { title: 'Run the command', text: 'On your computer, or on a server.' },
-      { title: 'Open the address it prints', text: 'The first visit asks for a name and an admin account.' },
-      { title: 'Add a WhatsApp account', text: 'With a Meta system user token that has whatsapp_business_management.' },
-    ],
-    server: 'On a server, add {flag} so other computers can open it:',
+    text: 'You only need Docker.',
+    tabs: { computer: 'Your computer', server: 'A server' },
+    next: 'Then open the address it prints.',
     updates: 'New versions install themselves every 6 hours, with the same settings and data.',
-    source: 'Prefer to run it from source?',
-    sourceLink: 'See the instructions',
     copy: 'Copy',
     copied: 'Copied',
   },
@@ -88,7 +83,6 @@ const en = {
   footer: {
     madeBy: 'Made by',
     license: 'MIT license',
-    trademark: 'WhatsApp is a trademark of Meta Platforms, Inc. This project is not affiliated with or endorsed by Meta.',
   },
 }
 
@@ -97,14 +91,15 @@ const ar: typeof en = {
   description: 'لوحة مجانية مفتوحة المصدر تعمل على خادمك لمراقبة وإدارة حسابات واتساب للأعمال عبر Cloud API: القوالب والإرسال والقراءة والتكلفة وصحة الأرقام والملف ورموز QR.',
   keywords: 'مراقبة واتساب الأعمال, إدارة واتساب للأعمال, لوحة تحكم واتساب, واتساب API, قوالب واتساب, إحصاءات قوالب واتساب, تكلفة رسائل واتساب, جودة رقم واتساب, حد رسائل واتساب, رمز QR واتساب, مفتوح المصدر',
   brand: 'مراقب واتساب الأعمال',
-  nav: { features: 'المميزات', screenshots: 'الصور', install: 'التثبيت', faq: 'الأسئلة الشائعة', docs: 'الدليل' },
+  nav: { features: 'المميزات', screenshots: 'الصور', install: 'التثبيت', faq: 'الأسئلة الشائعة', docs: 'دليل الاستخدام' },
+  menu: 'القائمة',
   language: 'English',
   hero: {
     badge: 'مجاني ومفتوح المصدر',
     title: 'قوالب واتساب الخاصة بك في شاشة واحدة',
     text: 'اعرف أداء كل قالب رسائل وتكلفته في جميع حسابات واتساب الأعمال. يعمل على جهازك أو على خادمك، ولا يغادره رمز الوصول أبداً.',
     install: 'التثبيت',
-    github: 'عرض على GitHub',
+    docs: 'اقرأ دليل الاستخدام',
     notes: ['أمر واحد مع Docker', 'عربي وإنجليزي', 'رخصة MIT'],
     image: 'نظرة عامة على حسابين لمتجر خيالي: تكلفة هذا الشهر والرسائل المرسلة والقوالب التي تحتاج إلى متابعة ورسم للتكلفة اليومية.',
   },
@@ -145,16 +140,10 @@ const ar: typeof en = {
   },
   install: {
     title: 'التثبيت بأمر واحد',
-    text: 'تحتاج إلى Docker فقط. ينزّل الأمر التطبيق ويشغّله ويحدّثه تلقائياً.',
-    steps: [
-      { title: 'شغّل الأمر', text: 'على جهازك أو على خادم.' },
-      { title: 'افتح العنوان الذي يظهر', text: 'تطلب الزيارة الأولى اسماً وحساباً للمدير.' },
-      { title: 'أضف حساب واتساب', text: 'برمز وصول لمستخدم نظام في Meta يملك صلاحية whatsapp_business_management.' },
-    ],
-    server: 'على خادم، أضف {flag} ليتمكن غيرك من فتحه:',
+    text: 'تحتاج إلى Docker فقط.',
+    tabs: { computer: 'جهازك', server: 'خادم' },
+    next: 'ثم افتح العنوان الذي يظهر.',
     updates: 'تُثبَّت الإصدارات الجديدة تلقائياً كل 6 ساعات، بالإعدادات والبيانات نفسها.',
-    source: 'تفضّل التشغيل من الكود المصدري؟',
-    sourceLink: 'اطّلع على التعليمات',
     copy: 'نسخ',
     copied: 'تم النسخ',
   },
@@ -180,9 +169,8 @@ const ar: typeof en = {
     ],
   },
   footer: {
-    madeBy: 'صنعه',
+    madeBy: 'من تطوير',
     license: 'رخصة MIT',
-    trademark: 'WhatsApp علامة تجارية لشركة Meta Platforms, Inc. وهذا المشروع غير تابع لها ولا معتمد منها.',
   },
 }
 
