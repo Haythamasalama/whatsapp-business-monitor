@@ -22,7 +22,8 @@ function refresh(silent = false): Promise<void> {
     return loadAccounts()
   }
 
-  return onOverview.value ? loadSummary({ silent }) : loadAccountData({ silent })
+  // The button reads Meta again; quiet refreshes take the server's cache, which renews itself in the background.
+  return onOverview.value ? loadSummary({ silent, fresh: !silent }) : loadAccountData({ silent, fresh: !silent })
 }
 
 function refreshIfStale(): void {
