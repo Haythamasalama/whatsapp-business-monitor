@@ -1,5 +1,15 @@
 const storageKey = (account: string) => `whatsapp-templates:statuses:${account}`
 
+/** Drops what the browser kept about a deleted account. */
+export function forgetAccount(account: string): void {
+  try {
+    localStorage.removeItem(storageKey(account))
+  }
+  catch {
+    // Nothing was stored when storage is blocked.
+  }
+}
+
 function stored(account: string): Record<string, string> | null {
   try {
     return JSON.parse(localStorage.getItem(storageKey(account)) ?? 'null')

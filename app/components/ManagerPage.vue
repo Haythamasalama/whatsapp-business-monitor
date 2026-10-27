@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const { accounts, accountId, current, loading, templates, lastLoadedAt, screen, summaryLoading, summaryLoadedAt, loadAccounts, loadAccountData, loadSummary, switchAccount, showOverview } = useManager()
+
+const onAccount = computed(() => screen.value === 'account')
 const toast = useToast()
 
 useStatusAlerts()
@@ -11,10 +13,14 @@ const POLL_MS = 60_000
 let poll: ReturnType<typeof setInterval> | undefined
 
 const onOverview = computed(() => screen.value === 'overview')
-const refreshing = computed(() => (onOverview.value ? summaryLoading.value : loading.value))
+const refreshing = computed(() => (onOverview.value ? summaryLoading.value : onAccount.value && loading.value))
 const loadedAt = computed(() => (onOverview.value ? summaryLoadedAt.value : lastLoadedAt.value))
 
 function refresh(silent = false): Promise<void> {
+  if (screen.value === 'accounts') {
+    return loadAccounts()
+  }
+
   return onOverview.value ? loadSummary({ silent }) : loadAccountData({ silent })
 }
 
@@ -37,7 +43,7 @@ onMounted(() => {
   window.addEventListener('focus', refreshIfStale)
   document.addEventListener('visibilitychange', refreshIfStale)
   poll = setInterval(() => {
-    if (!onOverview.value && templates.value.some(template => ['PENDING', 'IN_APPEAL'].includes(template.status))) {
+    if (onAccount.value && templates.value.some(template => ['PENDING', 'IN_APPEAL'].includes(template.status))) {
       refreshIfStale()
     }
   }, POLL_MS)
@@ -50,6 +56,8 @@ onBeforeUnmount(() => {
 })
 
 const accountOpen = ref(false)
+const exportOpen = ref(false)
+const importOpen = ref(false)
 const editingAccount = ref<AccountSummary | null>(null)
 const pasteOpen = ref(false)
 const draftsOpen = ref(false)
@@ -62,13 +70,21 @@ const booting = ref(true)
 
 // Account ids start with a letter or digit, so '*' can stand for the overview in the mobile picker.
 const OVERVIEW = '*'
+const MANAGE = '+'
 
 const accountItems = computed(() => [
   { value: OVERVIEW, label: t('nav.overview') },
+  { value: MANAGE, label: t('nav.accounts') },
   ...accounts.value.map(account => ({ value: account.id, label: accountTitle(account) })),
 ])
 
 function pick(value: string): void {
+  if (value === MANAGE) {
+    screen.value = 'accounts'
+
+    return
+  }
+
   void (value === OVERVIEW ? showOverview() : switchAccount(value))
 }
 
@@ -129,11 +145,20 @@ onMounted(async () => {
         >
           <UIcon name="i-lucide-layout-dashboard" class="size-4.5" /> {{ t('nav.overview') }}
         </button>
+        <button
+          type="button"
+          class="mt-1 flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+          :class="screen === 'accounts' ? 'bg-elevated text-highlighted' : 'text-toned hover:bg-elevated/70'"
+          :aria-current="screen === 'accounts' ? 'page' : undefined"
+          @click="screen = 'accounts'"
+        >
+          <UIcon name="i-lucide-users" class="size-4.5" /> {{ t('nav.accounts') }}
+        </button>
       </nav>
 
       <USeparator />
 
-      <AccountsSidebar @add="openAccount()" @edit="openAccount" />
+      <AccountsSidebar />
     </aside>
 
     <div class="flex min-w-0 flex-1 flex-col gap-3 p-3 lg:ps-0">
@@ -142,7 +167,7 @@ onMounted(async () => {
           <AppBrand compact />
           <USelect
             v-if="accounts.length"
-            :model-value="onOverview ? OVERVIEW : accountId ?? undefined"
+            :model-value="onOverview ? OVERVIEW : screen === 'accounts' ? MANAGE : accountId ?? undefined"
             :items="accountItems"
             class="w-52 max-w-full"
             :aria-label="t('accounts.picker')"
@@ -176,7 +201,7 @@ onMounted(async () => {
       </header>
 
       <main class="flex-1 space-y-6 rounded-2xl border border-default bg-default p-4 sm:p-6 lg:p-8">
-        <div v-if="current && !onOverview" class="flex flex-wrap items-start justify-between gap-3">
+        <div v-if="current && onAccount" class="flex flex-wrap items-start justify-between gap-3">
           <div class="min-w-0">
             <h1 class="text-2xl font-bold text-highlighted">
               {{ accountTitle(current) }}
@@ -196,7 +221,7 @@ onMounted(async () => {
         </div>
 
         <UAlert
-          v-if="current?.error && !onOverview"
+          v-if="current?.error && onAccount"
           color="error"
           variant="subtle"
           icon="i-lucide-circle-alert"
@@ -216,10 +241,22 @@ onMounted(async () => {
           <p class="font-semibold text-highlighted">
             {{ t('accounts.empty') }}
           </p>
-          <UButton :label="t('accounts.add')" icon="i-lucide-plus" @click="openAccount()" />
+          <div class="flex flex-wrap justify-center gap-2">
+            <UButton :label="t('accounts.add')" icon="i-lucide-plus" @click="openAccount()" />
+            <UButton :label="t('transfer.import')" icon="i-lucide-upload" color="neutral" variant="outline" @click="importOpen = true" />
+          </div>
         </div>
 
         <OverviewPage v-else-if="onOverview" @open="switchAccount" />
+
+        <AccountsPage
+          v-else-if="screen === 'accounts'"
+          @add="openAccount()"
+          @edit="openAccount"
+          @open="switchAccount"
+          @export="exportOpen = true"
+          @import="importOpen = true"
+        />
 
         <template v-else-if="accountId">
           <StatsCards />
@@ -235,6 +272,8 @@ onMounted(async () => {
     </div>
 
     <AccountModal v-model:open="accountOpen" :account="editingAccount" />
+    <ExportAccountsModal v-model:open="exportOpen" />
+    <ImportAccountsModal v-model:open="importOpen" />
     <PasteModal v-model:open="pasteOpen" @parsed="(list) => openDrafts(list, list.length > 1 ? t('paste.draftsTitleMany', { n: list.length }) : t('paste.draftsTitle'))" />
     <DraftsModal v-model:open="draftsOpen" v-model:drafts="drafts" :title="draftsTitle" />
     <TemplateModal v-model:open="templateOpen" v-model:mode="templateMode" :name="opened.name" :initial-id="opened.id" />

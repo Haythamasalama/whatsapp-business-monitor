@@ -3,14 +3,16 @@ const props = defineProps<{ account?: AccountSummary | null }>()
 
 const open = defineModel<boolean>('open', { default: false })
 
-const { api, loadAccounts, accountsDir } = useManager()
+const { api, loadAccounts, accountsDir, screen } = useManager()
 const toast = useToast()
+const deleteAccount = useDeleteAccount()
 
 const blank = () => ({ label: '', id: '', token: '', waba_id: '', version: 'v23.0' })
 const form = reactive(blank())
 const found = ref<DiscoveredAccount[] | null>(null)
 const discovering = ref(false)
 const saving = ref(false)
+const deleting = ref(false)
 const error = ref<string | null>(null)
 
 const editing = computed(() => Boolean(props.account))
@@ -98,7 +100,7 @@ async function save(): Promise<void> {
 
     open.value = false
     toast.add({ title: editing.value ? t('accountForm.saved') : t('accountForm.added'), color: 'success', icon: 'i-lucide-check' })
-    await loadAccounts(id)
+    await loadAccounts(screen.value === 'accounts' ? undefined : id)
   }
   catch (e) {
     error.value = (e as Error).message
@@ -107,13 +109,23 @@ async function save(): Promise<void> {
     saving.value = false
   }
 }
+
+async function remove(): Promise<void> {
+  deleting.value = true
+
+  if (await deleteAccount(props.account!)) {
+    open.value = false
+  }
+
+  deleting.value = false
+}
 </script>
 
 <template>
   <UModal
     v-model:open="open"
     :title="editing ? t('accounts.edit') : t('accountForm.addTitle')"
-    :ui="{ footer: 'justify-end' }"
+    :ui="{ footer: editing ? 'justify-between' : 'justify-end' }"
   >
     <template #body>
       <form id="account-form" class="space-y-4" autocomplete="off" @submit.prevent="save">
@@ -194,7 +206,17 @@ async function save(): Promise<void> {
     </template>
 
     <template #footer>
-      <UButton type="submit" form="account-form" :label="editing ? t('common.save') : t('common.add')" :loading="saving" />
+      <UButton
+        v-if="editing"
+        :label="t('accountForm.delete')"
+        icon="i-lucide-trash-2"
+        color="error"
+        variant="ghost"
+        :loading="deleting"
+        :disabled="saving"
+        @click="remove"
+      />
+      <UButton type="submit" form="account-form" :label="editing ? t('common.save') : t('common.add')" :loading="saving" :disabled="deleting" />
     </template>
   </UModal>
 </template>

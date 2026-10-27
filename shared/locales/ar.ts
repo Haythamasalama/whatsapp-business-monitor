@@ -2,6 +2,9 @@ import type { Params } from '../utils/i18n'
 
 export default {
   server: {
+    notInDemo: 'غير متاح في الوضع التجريبي.',
+    unknownHost: 'افتح التطبيق على {url} (العنوان {host} غير مسموح).',
+    missingHeader: 'طلب غير مسموح.',
     unexpected: 'خطأ غير متوقع في الخادم: {message}',
     accountNotFound: 'الحساب {id} غير موجود',
     accountMissing: 'الحساب غير موجود',
@@ -138,6 +141,7 @@ export default {
     github: 'المشروع على GitHub',
   },
   nav: {
+    accounts: 'إدارة الحسابات',
     overview: 'نظرة عامة',
   },
   header: {
@@ -171,6 +175,11 @@ export default {
     loadFailed: 'تعذّر تحميل الحسابات',
   },
   accountForm: {
+    deleteFailed: 'تعذّر حذف الحساب',
+    delete: 'حذف الحساب',
+    deleteTitle: 'حذف «{name}»؟',
+    deleteNote: 'يُحذف ملف الحساب من هذا الجهاز ولا يمكن التراجع. قوالبه وأرقامه على Meta لا تتأثر.',
+    deleted: 'حُذف الحساب',
     addTitle: 'إضافة حساب واتساب',
     saved: 'حُفظ الحساب',
     added: 'أُضيف الحساب',
@@ -362,5 +371,37 @@ export default {
     otherLanguage: 'لغة أخرى',
     searchLanguage: 'ابحث عن لغة',
     another: 'قالب آخر',
+  },
+  transfer: {
+    export: 'تصدير الحسابات',
+    import: 'استيراد حسابات',
+    exportTitle: 'تصدير الحسابات',
+    exportNote: 'ملف واحد فيه {n} حساب مع رموز الوصول، مشفّر بكلمة مرور تختارها. احتفظ بها: لا يُفتح الملف دونها.',
+    passphrase: 'كلمة المرور',
+    passphraseHint: '{n} أحرف على الأقل',
+    confirm: 'تأكيد كلمة المرور',
+    mismatch: 'كلمتا المرور غير متطابقتين',
+    download: 'تنزيل الملف',
+    exported: 'صُدّر {n} حساب',
+    importTitle: 'استيراد حسابات',
+    file: 'ملف الحسابات',
+    choose: 'اختر ملفاً صدّرته من هذا التطبيق',
+    replace: 'استبدل الحسابات الموجودة بنفس الاسم المختصر',
+    added: 'أُضيف',
+    replaced: 'استُبدل',
+    skippedExists: 'موجود، لم يُستبدل',
+    skippedInvalid: 'بياناته غير صالحة',
+    imported: 'استُورد {n} حساب',
+    importedNone: 'لم يُستورد أي حساب',
+    done: 'تم',
+    notAccountsFile: 'هذا ليس ملف حسابات من هذا التطبيق.',
+    wrongPassphrase: 'كلمة المرور غير صحيحة أو الملف تالف.',
+    passphraseShort: 'كلمة المرور {n} أحرف على الأقل.',
+    nothingToExport: 'لا توجد حسابات لتصديرها.',
+  },
+  manage: {
+    storedIn: 'تُحفظ على هذا الجهاز فقط، في {dir}',
+    connected: 'يعمل',
+    unreachable: 'تعذّر الوصول',
   },
 }

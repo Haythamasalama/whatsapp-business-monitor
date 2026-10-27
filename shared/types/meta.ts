@@ -136,3 +136,9 @@ export interface VersionInfo {
   /** A newer release than the one running, or null. */
   latest: Release | null
 }
+
+export interface ImportResult {
+  added: string[]
+  replaced: string[]
+  skipped: { id: string, reason: 'exists' | 'invalid' }[]
+}

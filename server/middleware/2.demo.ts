@@ -37,6 +37,10 @@ async function demoAnswer(event: H3Event) {
     return demoAnalytics(getQuery(event).account)
   }
 
+  if (post && (path === '/api/accounts/export' || path === '/api/accounts/import')) {
+    throw apiError(422, t('server.notInDemo'))
+  }
+
   if (post && path === '/api/accounts/discover') {
     return demoDiscover()
   }
@@ -54,6 +58,10 @@ async function demoAnswer(event: H3Event) {
     }
 
     return { id: String(Date.now()), status: 'PENDING', category: String(body.category ?? 'UTILITY') }
+  }
+
+  if (event.method === 'DELETE') {
+    throw apiError(422, t('server.notInDemo'))
   }
 
   if (post) {

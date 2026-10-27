@@ -1,6 +1,4 @@
 <script setup lang="ts">
-const emit = defineEmits<{ add: [], edit: [account: AccountSummary] }>()
-
 const { accounts, accountId, screen, switchAccount } = useManager()
 
 const isOpen = (id: string) => screen.value === 'account' && accountId.value === id
@@ -8,18 +6,15 @@ const isOpen = (id: string) => screen.value === 'account' && accountId.value ===
 
 <template>
   <div>
-    <div class="mb-2 flex items-center justify-between px-2">
-      <p class="text-xs font-semibold text-highlighted">
-        {{ t('accounts.title') }}
-      </p>
-      <UButton :label="t('common.add')" icon="i-lucide-plus" variant="link" size="xs" class="px-0" @click="emit('add')" />
-    </div>
+    <p class="mb-2 px-2 text-xs font-semibold text-highlighted">
+      {{ t('accounts.title') }}
+    </p>
 
     <ul class="space-y-1">
       <li
         v-for="account in accounts"
         :key="account.id"
-        class="group flex items-center gap-1 rounded-lg pe-1 transition-colors hover:bg-elevated/70"
+        class="flex items-center rounded-lg transition-colors hover:bg-elevated/70"
         :class="isOpen(account.id) ? 'bg-elevated' : ''"
       >
         <button
@@ -45,17 +40,6 @@ const isOpen = (id: string) => screen.value === 'account' && accountId.value ===
             <UIcon name="i-lucide-circle-alert" class="size-4 text-error" />
           </UTooltip>
         </button>
-        <UTooltip :text="t('accounts.edit')">
-          <UButton
-            icon="i-lucide-pencil"
-            color="neutral"
-            variant="ghost"
-            size="xs"
-            :aria-label="t('accounts.edit')"
-            class="opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
-            @click="emit('edit', account)"
-          />
-        </UTooltip>
       </li>
     </ul>
 

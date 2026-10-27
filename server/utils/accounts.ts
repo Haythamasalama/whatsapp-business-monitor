@@ -5,6 +5,8 @@ import type { H3Event } from 'h3'
 
 export const DEFAULT_VERSION = 'v23.0'
 export const ACCOUNT_ID = /^[a-z0-9][a-z0-9_-]{0,39}$/
+// These names are routes under /api/accounts, so no account may take them.
+export const RESERVED_IDS = ['discover', 'export', 'import']
 
 export interface Account {
   id: string

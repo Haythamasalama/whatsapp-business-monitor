@@ -2,6 +2,9 @@ import type { Dictionary, Params } from '../utils/i18n'
 
 const en: Dictionary = {
   server: {
+    notInDemo: 'Not available in demo mode.',
+    unknownHost: 'Open the app at {url} ({host} is not allowed).',
+    missingHeader: 'Request not allowed.',
     unexpected: 'Unexpected server error: {message}',
     accountNotFound: 'Account {id} was not found',
     accountMissing: 'Account not found',
@@ -138,6 +141,7 @@ const en: Dictionary = {
     github: 'The project on GitHub',
   },
   nav: {
+    accounts: 'Manage accounts',
     overview: 'Overview',
   },
   header: {
@@ -171,6 +175,11 @@ const en: Dictionary = {
     loadFailed: 'Could not load the accounts',
   },
   accountForm: {
+    deleteFailed: 'Could not delete the account',
+    delete: 'Delete account',
+    deleteTitle: 'Delete «{name}»?',
+    deleteNote: 'The account file is removed from this computer, and this cannot be undone. Its templates and numbers on Meta are not affected.',
+    deleted: 'Account deleted',
     addTitle: 'Add a WhatsApp account',
     saved: 'Account saved',
     added: 'Account added',
@@ -362,6 +371,38 @@ const en: Dictionary = {
     otherLanguage: 'Other language',
     searchLanguage: 'Search languages',
     another: 'Another template',
+  },
+  transfer: {
+    export: 'Export accounts',
+    import: 'Import accounts',
+    exportTitle: 'Export accounts',
+    exportNote: 'One file with {n} accounts and their access tokens, encrypted with a passphrase you choose. Keep it: the file cannot be opened without it.',
+    passphrase: 'Passphrase',
+    passphraseHint: 'At least {n} characters',
+    confirm: 'Confirm passphrase',
+    mismatch: 'The passphrases do not match',
+    download: 'Download file',
+    exported: ({ n }: Params) => (Number(n) === 1 ? '1 account exported' : `${n} accounts exported`),
+    importTitle: 'Import accounts',
+    file: 'Accounts file',
+    choose: 'Choose a file exported from this app',
+    replace: 'Replace existing accounts with the same short name',
+    added: 'Added',
+    replaced: 'Replaced',
+    skippedExists: 'exists, not replaced',
+    skippedInvalid: 'invalid data',
+    imported: ({ n }: Params) => (Number(n) === 1 ? '1 account imported' : `${n} accounts imported`),
+    importedNone: 'No account was imported',
+    done: 'Done',
+    notAccountsFile: 'This is not an accounts file from this app.',
+    wrongPassphrase: 'Wrong passphrase, or the file is damaged.',
+    passphraseShort: 'The passphrase needs at least {n} characters.',
+    nothingToExport: 'There are no accounts to export.',
+  },
+  manage: {
+    storedIn: 'Saved on this computer only, in {dir}',
+    connected: 'Working',
+    unreachable: 'Unreachable',
   },
 }
 
