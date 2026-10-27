@@ -188,7 +188,7 @@ const templatesEn: typeof en = {
   description: 'Delete, archive, unarchive, unpause and copy WhatsApp message templates between accounts, and see how many of your 250 or 6,000 templates are used.',
   keywords: 'delete WhatsApp template, archive WhatsApp template, unpause WhatsApp template, paused template, migrate WhatsApp templates, copy templates between WABA, WhatsApp template limit, message_templates API',
   heading: 'Templates',
-  intro: 'Open an account to see its templates. Besides creating and editing them, you can now delete, archive, unpause and copy them, alone or several at once. Every change asks you to confirm first and says what Meta does with it.',
+  intro: 'Open an account and choose "Templates". The table shows 25 templates a page, numbered, with a search, filters and sorting. Besides creating and editing them, you can delete, archive, unpause and copy them, alone or several at once. Every change asks you to confirm first and says what Meta does with it.',
   onThisPage: 'On this page',
   back: 'Back to the home page',
   limitsTitle: 'Meta\'s limits at a glance',
@@ -210,7 +210,7 @@ const templatesEn: typeof en = {
     {
       id: 'select',
       title: 'Acting on several templates',
-      text: 'Tick templates in the table to archive, unarchive, copy or delete them together. Ticking a name includes every language of it.',
+      text: 'Tick templates in the table to archive, unarchive, copy or delete them together. Ticking a name includes every language of it, and the box in the header ticks the page you see.',
       points: [
         'Meta takes up to 100 templates in one delete or archive, and up to 500 in one copy.',
         'When Meta refuses some of them, the page lists which ones and why.',
@@ -266,7 +266,7 @@ const templatesAr: typeof ar = {
   description: 'احذف قوالب رسائل واتساب وأرشفها وألغِ أرشفتها وألغِ إيقافها وانسخها بين الحسابات، واعرف كم استخدمت من 250 أو 6,000 قالب.',
   keywords: 'حذف قالب واتساب, أرشفة قالب واتساب, قالب موقوف واتساب, إلغاء إيقاف القالب, نسخ القوالب بين الحسابات, حد قوالب واتساب, واجهة قوالب واتساب',
   heading: 'القوالب',
-  intro: 'افتح حساباً لترى قوالبه. إلى جانب إنشائها وتعديلها، تستطيع الآن حذفها وأرشفتها وإلغاء إيقافها ونسخها، واحداً واحداً أو عدة قوالب معاً. كل تغيير يطلب تأكيدك أولاً ويذكر ما يفعله Meta به.',
+  intro: 'افتح حساباً واختر «القوالب». يعرض الجدول 25 قالباً في كل صفحة مرقّمة، مع البحث والتصفية والترتيب. وإلى جانب إنشائها وتعديلها، تستطيع حذفها وأرشفتها وإلغاء إيقافها ونسخها، واحداً واحداً أو عدة قوالب معاً. كل تغيير يطلب تأكيدك أولاً ويذكر ما يفعله Meta به.',
   onThisPage: 'في هذه الصفحة',
   back: 'العودة إلى الصفحة الرئيسية',
   limitsTitle: 'حدود Meta باختصار',
@@ -288,7 +288,7 @@ const templatesAr: typeof ar = {
     {
       id: 'select',
       title: 'العمل على عدة قوالب',
-      text: 'حدّد القوالب في الجدول لتؤرشفها أو تلغي أرشفتها أو تنسخها أو تحذفها معاً. تحديد الاسم يشمل كل لغاته.',
+      text: 'حدّد القوالب في الجدول لتؤرشفها أو تلغي أرشفتها أو تنسخها أو تحذفها معاً. تحديد الاسم يشمل كل لغاته، والمربع في رأس الجدول يحدّد الصفحة الظاهرة فقط.',
       points: [
         'يقبل Meta حتى 100 قالب في الحذف أو الأرشفة الواحدة، وحتى 500 في النسخ الواحد.',
         'حين يرفض Meta بعضها، تعرض الصفحة أيها وسبب الرفض.',

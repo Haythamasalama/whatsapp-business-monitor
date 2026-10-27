@@ -4,14 +4,14 @@
 
 # WhatsApp Business Monitor
 
-**See your WhatsApp templates, how they perform and what they cost, on one screen.**<br>
+**Your WhatsApp Business accounts on one screen: templates, costs, numbers and settings.**<br>
 Free and open source. It runs on your computer or your server, and your tokens never leave it.
 
 [![CI](https://github.com/Haythamasalama/whatsapp-business-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/Haythamasalama/whatsapp-business-monitor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-0F0F12.svg)](LICENSE)
 [![Docker image](https://img.shields.io/badge/docker-ghcr.io-317455?logo=docker&logoColor=white)](https://github.com/Haythamasalama/whatsapp-business-monitor/pkgs/container/whatsapp-business-monitor)
 
-[🌐 Website](https://wbm.haythamasalama.me/) · [العربية](https://wbm.haythamasalama.me/ar/) · [🚀 Install](#-install) · [📸 Screenshots](#-screenshots) · [🤝 Contribute](CONTRIBUTING.md)
+[🌐 Website](https://wbm.haythamasalama.me/) · [العربية](https://wbm.haythamasalama.me/ar/) · [🚀 Install](#-install) · [📖 Docs](https://wbm.haythamasalama.me/docs/accounts-and-numbers/) · [🤝 Contribute](CONTRIBUTING.md)
 
 <img src="docs/screenshots/overview.png" width="860" alt="The overview of two accounts of a fictional store: this month's cost, messages sent, templates that need attention, a daily cost chart and the cost per account.">
 
@@ -19,37 +19,20 @@ Free and open source. It runs on your computer or your server, and your tokens n
 
 ## ✨ What it does
 
-- 📊 **Every account on one screen:** this month's cost, messages and templates.
-- 📝 **Every template's numbers:** status, sends, deliveries and reads for the last 30 days.
-- ✏️ **Create and edit templates** with a live WhatsApp preview, or paste a full template as text.
-- 🔍 **Find templates fast:** search, filter and sort, as a table, a list with a preview, or cards.
-- 🔔 **Alerts** when a template is approved, rejected or paused, with Meta's reason in plain words.
-- 📱 **Number health:** whether each number can send now and why not, its quality rating and daily limit.
-- ⚙️ **Account settings:** business verification, payment method, people with access and the activity log; for each number its profile and photo, display name, green badge, username, ice breakers and commands, QR codes and short links, and blocked people. [Guide](https://wbm.haythamasalama.me/docs/accounts-and-numbers/)
-- 🗂️ **Template housekeeping:** delete a template in one language or all, archive and unarchive, unpause a paused one, copy templates to another account of the same business, act on several at once, and see how many of your 250 or 6,000 templates are used. [Guide](https://wbm.haythamasalama.me/docs/templates/)
-- 📊 **Reports and costs:** cost by country, number, category and paid or free, every message sent and received (not only templates), how many of each number's 1,000 free service messages are left this month, volume tier progress, which of two templates gets blocked less, template groups and calls, from 24 hours to 12 months. [Guide](https://wbm.haythamasalama.me/docs/reports-and-costs/)
-- 👥 **Several accounts:** find them from a token, and move them all to another computer in one encrypted file.
-- 🌍 **Arabic or English,** light or dark.
+- 🏠 **Every account at a glance:** this month's cost and messages, what needs your attention now (a rejected or paused template, a number with low quality) and the most-sent templates.
+- 📝 **Templates:** status and 30-day sends, deliveries and reads for each one. Create and edit with a live WhatsApp preview or paste them as text, and delete, archive, unpause or copy several at once. [Guide](https://wbm.haythamasalama.me/docs/templates/)
+- 📊 **Reports and costs:** what Meta charged by category, country and number, every message sent and received, the 1,000 free service messages left this month, and which of two templates customers block less. [Guide](https://wbm.haythamasalama.me/docs/reports-and-costs/)
+- ⚙️ **Account and numbers:** whether each number can send and why not, verification, payment, people with access, the activity log, and each number's profile, name, badge, username, QR codes and blocked list. [Guide](https://wbm.haythamasalama.me/docs/accounts-and-numbers/)
+- 👥 **Several accounts:** found from one token, and moved to another computer in one encrypted file.
+- 🔐 **Private:** runs where you choose, behind your own sign-in, in Arabic or English, light or dark.
 
-## 📸 Screenshots
-
-| An account | A template |
+| An account | Reports |
 |:--:|:--:|
-| <img src="docs/screenshots/dashboard.png" alt="An account: cost, messages, number, daily cost, cost by type, number health and the templates table."> | <img src="docs/screenshots/template-preview.png" alt="A template's preview, details and 30-day numbers."> |
-| **List and preview** | **Paste templates as text** |
-| <img src="docs/screenshots/views-split.png" alt="The templates as a list, with the selected one's preview and numbers beside it."> | <img src="docs/screenshots/create-from-text.png" alt="Two pasted templates: one update and one new template."> |
-| **Template housekeeping** | **A paused template** |
-| <img src="docs/screenshots/templates-actions.png" alt="Templates with two selected and the archive, unarchive, copy and delete buttons, and the count used out of 6,000."> | <img src="docs/screenshots/template-paused.png" alt="A paused template with the pause rules, an Unpause button and the More actions menu."> |
-| **Account settings** | **A number's QR codes** |
-| <img src="docs/screenshots/account-settings.png" alt="Account settings: sending health with reasons, account details, numbers, people with access and the activity log."> | <img src="docs/screenshots/number-qr.png" alt="A number's QR codes with download, edit and delete."> |
-| **Reports and costs** | **All messages** |
-| <img src="docs/screenshots/reports-costs.png" alt="Reports: cost charged, paid and free messages, free service messages left, and cost over time."> | <img src="docs/screenshots/reports-messages.png" alt="All messages: templates, replies and received, stacked by day."> |
-| **Accounts** | **Settings** |
-| <img src="docs/screenshots/accounts.png" alt="The accounts page with import, export and add buttons."> | <img src="docs/screenshots/settings.png" alt="The settings: app name and address, updates, password and backup."> |
-| **Dark mode** | **Arabic, right to left** |
-| <img src="docs/screenshots/dashboard-dark.png" alt="The overview in dark mode."> | <img src="docs/screenshots/arabic.png" alt="The overview in Arabic."> |
+| <img src="docs/screenshots/dashboard.png" alt="An account's home: cost, messages, balance, daily cost, cost by type, what needs attention and the most-sent templates."> | <img src="docs/screenshots/reports-costs.png" alt="Reports: what was charged, free messages, free replies left, cost over time, and cost by category and country."> |
+| **Templates** | **Account settings** |
+| <img src="docs/screenshots/templates-actions.png" alt="The templates tab with two selected and the archive, unarchive, copy and delete buttons."> | <img src="docs/screenshots/account-settings.png" alt="Account settings: sending health with reasons, account details, numbers, people with access and the activity log."> |
 
-The screenshots show a fictional store. More on the [website](https://wbm.haythamasalama.me/#screenshots).
+Every screenshot shows a fictional store. More on the [website](https://wbm.haythamasalama.me/#screenshots).
 
 ## 🚀 Install
 
