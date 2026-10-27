@@ -1,6 +1,7 @@
 const en = {
-  title: 'WhatsApp Business Monitor: open-source template dashboard',
-  description: 'A free, self-hosted dashboard for WhatsApp Business message templates: status, sends, reads and monthly cost across all your WhatsApp Cloud API accounts.',
+  title: 'WhatsApp Business Monitor: free WhatsApp Business API dashboard',
+  description: 'A free, open-source, self-hosted dashboard to monitor and manage WhatsApp Business accounts on the Cloud API: message templates, sends, reads, costs, number health, profile, QR codes and more.',
+  keywords: 'WhatsApp Business monitoring, WhatsApp Business API dashboard, WhatsApp Cloud API, manage WhatsApp templates, WhatsApp template analytics, WhatsApp number quality, WhatsApp messaging limit, WhatsApp business profile, WhatsApp QR code, self-hosted, open source',
   brand: 'WhatsApp Business Monitor',
   nav: { features: 'Features', screenshots: 'Screenshots', install: 'Install', faq: 'FAQ', docs: 'Docs' },
   language: 'العربية',
@@ -75,6 +76,7 @@ const en = {
     title: 'Questions',
     items: [
       { question: 'What is WhatsApp Business Monitor?', answer: 'A free, open-source dashboard for the WhatsApp Business Platform. It shows every message template in your WhatsApp Business accounts with its status, sends, deliveries, reads and cost, and this month\'s spend per account.' },
+      { question: 'Can it manage a WhatsApp Business account, not just templates?', answer: 'Yes. For each account it shows whether it can send right now and why not, its verification, payment method, people with access and activity log. For each number you can edit the business profile and photo, request a new display name or the green badge, set a username, ice breakers and commands, manage QR codes and short links, and block or unblock people.' },
       { question: 'Is it free?', answer: 'Yes. It is open source under the MIT license, with no paid plan. You keep paying Meta for the messages you send, as usual.' },
       { question: 'Is my access token safe?', answer: 'The app runs on your computer or your own server. The token stays in its database and is never sent to the browser or to anyone but Meta. There are no analytics.' },
       { question: 'What do I need to connect an account?', answer: 'A WhatsApp Business account on the Cloud API, and a Meta system user token with the whatsapp_business_management permission.' },
@@ -91,8 +93,9 @@ const en = {
 }
 
 const ar: typeof en = {
-  title: 'مراقب واتساب الأعمال: لوحة مفتوحة المصدر لقوالب واتساب',
-  description: 'لوحة مجانية تعمل على خادمك لمتابعة قوالب رسائل واتساب الأعمال: الحالة والإرسال والقراءة والتكلفة الشهرية لكل حسابات WhatsApp Cloud API.',
+  title: 'مراقب واتساب الأعمال: لوحة مجانية لمراقبة وإدارة واتساب للأعمال',
+  description: 'لوحة مجانية مفتوحة المصدر تعمل على خادمك لمراقبة وإدارة حسابات واتساب للأعمال عبر Cloud API: القوالب والإرسال والقراءة والتكلفة وصحة الأرقام والملف ورموز QR.',
+  keywords: 'مراقبة واتساب الأعمال, إدارة واتساب للأعمال, لوحة تحكم واتساب, واتساب API, قوالب واتساب, إحصاءات قوالب واتساب, تكلفة رسائل واتساب, جودة رقم واتساب, حد رسائل واتساب, رمز QR واتساب, مفتوح المصدر',
   brand: 'مراقب واتساب الأعمال',
   nav: { features: 'المميزات', screenshots: 'الصور', install: 'التثبيت', faq: 'الأسئلة الشائعة', docs: 'الدليل' },
   language: 'English',
@@ -167,6 +170,7 @@ const ar: typeof en = {
     title: 'أسئلة شائعة',
     items: [
       { question: 'ما هو مراقب واتساب الأعمال؟', answer: 'لوحة مجانية ومفتوحة المصدر لمنصة واتساب الأعمال. تعرض كل قوالب الرسائل في حسابات واتساب الأعمال الخاصة بك مع حالتها وأرقام الإرسال والتسليم والقراءة وتكلفتها، وإنفاق هذا الشهر لكل حساب.' },
+      { question: 'هل يدير حساب واتساب للأعمال أم القوالب فقط؟', answer: 'يدير الحساب أيضاً. لكل حساب يعرض هل يستطيع الإرسال الآن ولماذا لا، والتوثيق ووسيلة الدفع ومن يصل إليه وسجل النشاط. ولكل رقم تعدّل الملف والصورة، وتطلب اسماً ظاهراً جديداً أو الشارة الخضراء، وتعيّن اسم المستخدم والأسئلة السريعة والأوامر، وتدير رموز QR والروابط القصيرة، وتحظر الأرقام أو تلغي حظرها.' },
       { question: 'هل هو مجاني؟', answer: 'نعم. هو مفتوح المصدر برخصة MIT ولا توجد خطة مدفوعة. وتدفع لـ Meta ثمن الرسائل التي ترسلها كالمعتاد.' },
       { question: 'هل رمز الوصول آمن؟', answer: 'يعمل التطبيق على جهازك أو خادمك الخاص. يبقى رمز الوصول في قاعدة بياناته، ولا يُرسل إلى المتصفح ولا إلى أي جهة غير Meta. ولا توجد أي تحليلات.' },
       { question: 'ماذا أحتاج لربط حساب؟', answer: 'حساب واتساب أعمال على Cloud API، ورمز وصول لمستخدم نظام في Meta يملك صلاحية whatsapp_business_management.' },

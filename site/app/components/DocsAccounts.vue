@@ -5,6 +5,7 @@ const page = computed(() => docs[lang.value])
 
 useHead({
   htmlAttrs: { lang, dir: () => (isRtl.value ? 'rtl' : 'ltr') },
+  meta: [{ name: 'keywords', content: () => page.value.keywords }],
   link: [
     { rel: 'icon', type: 'image/svg+xml', href: asset('favicon.svg') },
     { rel: 'canonical', href: () => `${siteUrl}${page.value.path}` },
@@ -12,11 +13,42 @@ useHead({
     { rel: 'alternate', hreflang: 'ar', href: `${siteUrl}${docs.ar.path}` },
     { rel: 'alternate', hreflang: 'x-default', href: `${siteUrl}${docs.en.path}` },
   ],
+  script: [{
+    type: 'application/ld+json',
+    innerHTML: () => JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'TechArticle',
+          'headline': page.value.heading,
+          'description': page.value.description,
+          'keywords': page.value.keywords,
+          'inLanguage': lang.value,
+          'url': `${siteUrl}${page.value.path}`,
+          'image': `${siteUrl}/screenshots/${lang.value === 'ar' ? 'account-settings-ar.png' : 'account-settings.png'}`,
+          'author': { '@type': 'Person', 'name': 'Haytham A. Salama', 'url': 'https://haythamasalama.me' },
+          'about': { '@id': `${siteUrl}/#app` },
+          'articleSection': page.value.sections.map(section => section.title),
+        },
+        {
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            { '@type': 'ListItem', 'position': 1, 'name': text.value.brand, 'item': `${siteUrl}${lang.value === 'ar' ? '/ar/' : '/'}` },
+            { '@type': 'ListItem', 'position': 2, 'name': page.value.heading, 'item': `${siteUrl}${page.value.path}` },
+          ],
+        },
+      ],
+    }),
+  }],
 })
 
 useSeoMeta({
   title: () => page.value.title,
   description: () => page.value.description,
+  author: 'Haytham A. Salama',
+  ogSiteName: () => text.value.brand,
+  ogLocale: () => (lang.value === 'ar' ? 'ar_AR' : 'en_US'),
+  twitterCard: 'summary_large_image',
   robots: 'index, follow',
   ogType: 'article',
   ogTitle: () => page.value.title,
