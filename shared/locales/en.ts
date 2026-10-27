@@ -6,6 +6,7 @@ const en: Dictionary = {
     notInDemo: 'Not available in demo mode.',
     unknownHost: 'Open the app at {url} ({host} is not allowed).',
     missingHeader: 'Request not allowed.',
+    hostNotAllowed: 'This app doesn\'t answer to {host}. Open it by its saved address, or add the name to WHATSAPP_MANAGER_ALLOWED_HOSTS.',
     unexpected: 'Unexpected server error: {message}',
     accountNotFound: 'Account {id} was not found',
     accountMissing: 'Account not found',
@@ -246,11 +247,8 @@ const en: Dictionary = {
     id: 'ID',
   },
   phones: {
-    title: 'Phone numbers health',
     number: 'Number',
-    status: 'Status',
     quality: 'Quality',
-    limit: 'Sending limit',
     displayName: 'Display name',
   },
   overview: {
@@ -377,6 +375,7 @@ const en: Dictionary = {
     export: 'Export accounts',
     import: 'Import accounts',
     exportTitle: 'Export accounts',
+    exportPassword: 'Your sign-in password, to confirm it is you',
     exportNote: 'One file with {n} accounts and their access tokens, encrypted with a passphrase you choose. Keep it: the file cannot be opened without it.',
     passphrase: 'Passphrase',
     passphraseHint: 'At least {n} characters',
@@ -411,6 +410,9 @@ const en: Dictionary = {
     admin: 'Admin account',
     finish: 'Finish setup',
     done: 'The app is already set up.',
+    code: 'Setup code',
+    codeHint: 'Printed in the app\'s log when it starts: run docker compose logs, or look at the terminal that runs it.',
+    wrongCode: 'The setup code is wrong. Find it in the app\'s log.',
   },
   auth: {
     username: 'Username',

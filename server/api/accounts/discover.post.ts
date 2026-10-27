@@ -3,6 +3,10 @@ export default apiHandler(async (event) => {
   const token = String(body.token ?? '').trim()
   const account = { token, version: String(body.version ?? '').trim() || DEFAULT_VERSION }
 
+  if (!/^v\d+\.\d+$/.test(account.version)) {
+    throw apiError(422, t('server.versionFormat'))
+  }
+
   if (!/^[A-Za-z0-9]{20,}$/.test(token)) {
     throw apiError(422, t('server.tokenInvalid'))
   }

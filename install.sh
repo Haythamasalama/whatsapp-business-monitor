@@ -77,4 +77,7 @@ if grep -q '^WHATSAPP_MANAGER_BIND=0.0.0.0' .env; then
 else
   echo "Open http://localhost:$PORT_IN_USE to finish the setup."
 fi
+# A fresh install asks for the code it printed to its log, so nobody else can claim it first.
+CODE="$(docker logs "$CONTAINER" 2>&1 | sed -n 's/.*\[setup\] Setup code: \([0-9]*\).*/\1/p' | tail -n 1)"
+[ -n "$CODE" ] && echo "Setup code: $CODE"
 echo "Files: $DIR · updates install themselves · run this again any time to update now."

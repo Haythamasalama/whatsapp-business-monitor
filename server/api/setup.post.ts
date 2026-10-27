@@ -3,7 +3,15 @@ export default apiHandler(async (event) => {
     throw apiError(409, t('setup.done'))
   }
 
+  const limit = limitLogin(event, 'setup')
   const body = await readBody<Record<string, unknown>>(event)
+
+  // Without this, whoever reaches a fresh server install first would own it.
+  if (setupCodeNeeded(event) && !setupCodeMatches(String(body.setup_code ?? ''))) {
+    throw apiError(403, t('setup.wrongCode'))
+  }
+
+  limit.clear()
   const username = String(body.username ?? '').trim()
   const password = String(body.password ?? '')
   const { values, problems } = readSettingsInput(body)

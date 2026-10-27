@@ -43,6 +43,11 @@ export default defineNuxtConfig({
     public: { version },
   },
 
+  // No other site may frame the app (clickjacking), and responses are never sniffed as another type.
+  routeRules: {
+    '/**': { headers: { 'X-Frame-Options': 'DENY', 'Content-Security-Policy': 'frame-ancestors \'none\'', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin' } },
+  },
+
   devtools: { enabled: false },
 
   compatibilityDate: '2026-10-01',

@@ -2,6 +2,11 @@
 export default apiHandler(async (event) => {
   const account = requireAccount(event)
   const phone = await requirePhone(event, account)
+  // Refused before reading, so a huge body is never held in memory.
+  if (Number(getRequestHeader(event, 'content-length') ?? Number.POSITIVE_INFINITY) > PHOTO_MAX_BYTES + 64 * 1024) {
+    throw apiError(413, t('business.rules.photoSize'))
+  }
+
   const file = (await readMultipartFormData(event))?.find(entry => entry.name === 'photo')
   const type = file?.type ?? ''
 

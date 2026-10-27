@@ -10,4 +10,11 @@ export default defineEventHandler((event) => {
       throw apiError(403, t('server.missingHeader'))
     })
   }
+
+  // The header above means nothing to a page on a rebound DNS name, which is same-origin with this server.
+  if (!hostAllowed(event)) {
+    withLocale(event, () => {
+      throw apiError(403, t('server.hostNotAllowed', { host: requestHostname(event) }))
+    })
+  }
 })

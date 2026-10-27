@@ -6,6 +6,7 @@ export default {
     notInDemo: 'غير متاح في الوضع التجريبي.',
     unknownHost: 'افتح التطبيق على {url} (العنوان {host} غير مسموح).',
     missingHeader: 'طلب غير مسموح.',
+    hostNotAllowed: 'التطبيق لا يستجيب للعنوان {host}. افتحه بعنوانه المحفوظ، أو أضف الاسم إلى WHATSAPP_MANAGER_ALLOWED_HOSTS.',
     unexpected: 'خطأ غير متوقع في الخادم: {message}',
     accountNotFound: 'الحساب {id} غير موجود',
     accountMissing: 'الحساب غير موجود',
@@ -246,11 +247,8 @@ export default {
     id: 'المعرّف',
   },
   phones: {
-    title: 'صحة الأرقام',
     number: 'الرقم',
-    status: 'الحالة',
     quality: 'الجودة',
-    limit: 'حد الإرسال',
     displayName: 'اسم العرض',
   },
   overview: {
@@ -377,6 +375,7 @@ export default {
     export: 'تصدير الحسابات',
     import: 'استيراد حسابات',
     exportTitle: 'تصدير الحسابات',
+    exportPassword: 'كلمة مرور الدخول، للتأكد أنك أنت',
     exportNote: 'ملف واحد فيه {n} حساب مع رموز الوصول، مشفّر بكلمة مرور تختارها. احتفظ بها: لا يُفتح الملف دونها.',
     passphrase: 'كلمة المرور',
     passphraseHint: '{n} أحرف على الأقل',
@@ -411,6 +410,9 @@ export default {
     admin: 'حساب المدير',
     finish: 'إنهاء الإعداد',
     done: 'التطبيق مُعدّ مسبقاً.',
+    code: 'رمز الإعداد',
+    codeHint: 'يظهر في سجل التطبيق عند تشغيله: شغّل docker compose logs، أو انظر إلى الطرفية التي يعمل فيها.',
+    wrongCode: 'رمز الإعداد غير صحيح. تجده في سجل التطبيق.',
   },
   auth: {
     username: 'اسم المستخدم',

@@ -19,6 +19,15 @@ export function hashPassword(password: string): string {
   return ['scrypt', SCRYPT.N, SCRYPT.r, SCRYPT.p, salt.toString('base64'), hash.toString('base64')].join('$')
 }
 
+// Checked when the username doesn't exist, so an unknown name takes as long to refuse as a wrong password.
+let dummyHash: string | null = null
+
+export function verifyNoUser(password: string): false {
+  verifyPassword(password, (dummyHash ??= hashPassword(randomBytes(16).toString('hex'))))
+
+  return false
+}
+
 export function verifyPassword(password: string, stored: string): boolean {
   const [name, N, r, p, salt, hash] = stored.split('$')
 
@@ -27,7 +36,13 @@ export function verifyPassword(password: string, stored: string): boolean {
   }
 
   const expected = Buffer.from(hash, 'base64')
-  const actual = scryptSync(password.normalize('NFKC'), Buffer.from(salt, 'base64'), expected.length, { N: Number(N), r: Number(r), p: Number(p), maxmem: SCRYPT.maxmem })
+
+  // Only the parameters this app writes, so a tampered row can't make a sign-in run for minutes.
+  if (Number(N) !== SCRYPT.N || Number(r) !== SCRYPT.r || Number(p) !== SCRYPT.p || expected.length !== 32) {
+    return false
+  }
+
+  const actual = scryptSync(password.normalize('NFKC'), Buffer.from(salt, 'base64'), expected.length, SCRYPT)
 
   return timingSafeEqual(actual, expected)
 }
@@ -46,7 +61,8 @@ export function startSession(event: H3Event, userId: number): void {
   setCookie(event, COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: getRequestProtocol(event, { xForwardedProto: true }) === 'https',
+    // Also when the saved public address is https: a proxy may end TLS without saying so in a header.
+    secure: getRequestProtocol(event, { xForwardedProto: true }) === 'https' || readSettings().public_url.startsWith('https://'),
     path: '/',
     expires,
   })
@@ -85,23 +101,34 @@ export function requireUser(event: H3Event): User {
   return user
 }
 
-// Ten wrong passwords per address in fifteen minutes, then a wait: enough for typos, too slow for guessing.
+// Ten tries per address in fifteen minutes, then a wait: enough for typos, too slow for guessing.
 const attempts = new Map<string, { count: number, until: number }>()
+const WINDOW_MS = 15 * 60_000
+const MAX_TRIES = 10
 
-export function limitLogin(event: H3Event): { fail: () => void, clear: () => void } {
-  const key = getRequestIP(event, { xForwardedFor: true }) ?? 'local'
+/**
+ * Counts the try before the password is checked, so requests sent all at once can't slip past the limit while
+ * the first ones are still being read. A correct password clears the count.
+ */
+export function limitLogin(event: H3Event, scope = 'login'): { clear: () => void } {
+  const key = `${scope}:${clientAddress(event)}`
   const now = Date.now()
+
+  if (attempts.size > 10_000) {
+    for (const [stale, entry] of attempts) {
+      if (entry.until <= now) {
+        attempts.delete(stale)
+      }
+    }
+  }
+
   const entry = attempts.get(key)
 
-  if (entry && entry.until > now && entry.count >= 10) {
+  if (entry && entry.until > now && entry.count >= MAX_TRIES) {
     throw apiError(429, t('auth.tooMany', { minutes: Math.ceil((entry.until - now) / 60_000) }))
   }
 
-  return {
-    fail: () => {
-      const current = attempts.get(key)
-      attempts.set(key, current && current.until > now ? { ...current, count: current.count + 1 } : { count: 1, until: now + 15 * 60_000 })
-    },
-    clear: () => attempts.delete(key),
-  }
+  attempts.set(key, entry && entry.until > now ? { ...entry, count: entry.count + 1 } : { count: 1, until: now + WINDOW_MS })
+
+  return { clear: () => attempts.delete(key) }
 }

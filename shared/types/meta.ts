@@ -148,6 +148,7 @@ export interface ImportResult {
 
 export interface AppInfo {
   setup_required: boolean
+  setup_code_required?: boolean
   user: { username: string } | null
   instance_name: string
   public_url: string

@@ -106,6 +106,10 @@ The database is in `~/.config/whatsapp-templates` (or `WHATSAPP_TEMPLATES_DIR`).
 <summary>🔐 Security</summary>
 
 - Everything but the setup and sign-in pages needs a sign-in. Passwords are hashed with scrypt; sessions live in an `httpOnly` cookie.
+- A new install opened from another computer, through Docker or behind a proxy asks for the **setup code** printed in its log (`docker compose logs`; `install.sh` shows it too), so nobody else can claim it first.
+- Ten sign-in tries per address in 15 minutes. Behind your own reverse proxy, set `WHATSAPP_MANAGER_TRUST_PROXY=true` in `.env` so the real visitor's address is counted.
+- The app only answers to `localhost`, an IP address, its saved public address, or names in `WHATSAPP_MANAGER_ALLOWED_HOSTS` (comma separated). This stops other sites from reaching it through DNS rebinding.
+- Exporting the accounts asks for your sign-in password. Pages can't be framed by other sites.
 - No response ever contains an access token. Account exports are encrypted with a passphrase you choose.
 - The database folder is private (`700`), the database file `600`.
 - Besides Meta, the app only asks GitHub once a day whether a new version is out. You can turn that off in **Settings**.
