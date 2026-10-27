@@ -123,8 +123,6 @@ useSeoMeta({
       </article>
     </main>
 
-    <footer class="border-t border-default py-8 text-center text-sm text-muted">
-      {{ text.brand }}
-    </footer>
+    <SiteFooter />
   </div>
 </template>
