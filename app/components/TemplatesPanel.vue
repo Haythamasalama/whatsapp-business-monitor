@@ -171,7 +171,7 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
     meta: { class: { td: 'max-w-0 w-full min-w-44' } },
     cell: ({ row }) => h('div', { class: 'min-w-0' }, [
       h('p', { class: 'font-mono text-sm font-medium text-highlighted' }, [h('bdi', { dir: 'ltr' }, row.original.name)]),
-      h('p', { class: 'mt-0.5 truncate text-xs text-muted', dir: 'auto' }, bodyOf(row.original.items[0]).split('\n').find(line => line.trim()) ?? ''),
+      h('p', { class: 'mt-0.5 truncate text-xs text-muted', dir: 'auto' }, bodyOf(previewItem(row.original)).split('\n').find(line => line.trim()) ?? ''),
     ]),
   },
   {

@@ -6,7 +6,7 @@ const emit = defineEmits<{ open: [name: string, mode: 'view' | 'edit', id?: stri
 const { statsFor, analytics, analyticsLoading } = useManager()
 
 const preview = (group: TemplateGroup): TemplateText => {
-  const text = templateText(group.items[0]!)
+  const text = templateText(previewItem(group))
 
   return { header: text.header, body: text.body, footer: text.footer, examples: text.examples }
 }

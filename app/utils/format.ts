@@ -58,3 +58,6 @@ export function templateText(template: MetaTemplate) {
 }
 
 export const timeOfDay = (date: Date | number) => new Intl.DateTimeFormat(intlLocale(), { hour: 'numeric', minute: '2-digit' }).format(date)
+
+/** The language of a template that previews show: the interface language when it has it. */
+export const previewItem = (group: TemplateGroup): MetaTemplate => group.items.find(item => item.language.split('_')[0] === locale.value) ?? group.items[0]!

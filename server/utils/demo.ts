@@ -30,7 +30,13 @@ const STORES: DemoStore[] = [
   },
 ]
 
-const storeFor = (id?: unknown) => STORES.find(store => store.id === id) ?? STORES[0]!
+// The fictional store speaks the page's language, so screenshots read naturally in either one.
+function localized(store: DemoStore): DemoStore {
+  return requestedLocale() === 'en' ? { ...store, label: store.name, phone: { ...store.phone, verified_name: store.name } } : store
+}
+
+const storeFor = (id?: unknown) => localized(STORES.find(store => store.id === id) ?? STORES[0]!)
+const stores = () => STORES.map(localized)
 const COST: Record<string, number> = { UTILITY: 0.0107, MARKETING: 0.0436, AUTHENTICATION: 0.0102 }
 
 interface DemoTemplate {
@@ -109,7 +115,7 @@ function sendsOn(entry: DemoTemplate, index: number, date: Date, store: DemoStor
 
 export function demoAccounts(): { data: AccountSummary[], dir: string } {
   return {
-    data: STORES.map(store => ({
+    data: stores().map(store => ({
       id: store.id,
       label: store.label,
       file: `~/.config/whatsapp-templates/${store.id}.env`,
@@ -125,7 +131,9 @@ export function demoAccounts(): { data: AccountSummary[], dir: string } {
 }
 
 export function demoDiscover() {
-  return { data: [{ waba_id: STORES[0]!.waba, name: STORES[0]!.name, phones: [STORES[0]!.phone] }] }
+  const store = stores()[0]!
+
+  return { data: [{ waba_id: store.waba, name: store.name, phones: [store.phone] }] }
 }
 
 export function demoTemplates() {
@@ -134,7 +142,7 @@ export function demoTemplates() {
 
 export function demoSummary(): { data: AccountStats[] } {
   return {
-    data: STORES.map((store) => {
+    data: stores().map((store) => {
       const overview = demoOverview(store.id)
 
       return {

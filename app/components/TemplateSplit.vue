@@ -21,7 +21,7 @@ const tabs = computed(() => (group.value?.items ?? []).map(entry => ({
 })))
 
 const sent = (item: TemplateGroup) => statsFor(item.items.map(entry => entry.id))?.sent ?? 0
-const firstLine = (item: TemplateGroup) => templateText(item.items[0]!).body.split('\n').find(line => line.trim()) ?? ''
+const firstLine = (item: TemplateGroup) => templateText(previewItem(item)).body.split('\n').find(line => line.trim()) ?? ''
 
 watch(() => group.value?.name, () => {
   activeId.value = group.value?.items[0]?.id
