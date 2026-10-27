@@ -7,7 +7,8 @@ export function useLang() {
     lang,
     text: computed(() => content[lang.value]),
     isRtl: computed(() => lang.value === 'ar'),
-    otherPath: computed(() => (lang.value === 'ar' ? '/' : '/ar/')),
+    // The same page in the other language: /docs/x/ ↔ /ar/docs/x/.
+    otherPath: computed(() => (lang.value === 'ar' ? route.path.replace(/^\/ar/, '') || '/' : `/ar${route.path === '/' ? '/' : route.path}`)),
   }
 }
 

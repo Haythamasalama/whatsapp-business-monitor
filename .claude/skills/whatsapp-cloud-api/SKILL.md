@@ -27,7 +27,20 @@ It does not send messages.
 |---|---|---|
 | Find accounts for a token | `GET debug_token?input_token={token}` | WABA ids are the `target_ids` of the `whatsapp_business_*` entries in `data.granular_scopes` |
 | Account | `GET {waba}?fields=name,currency,timezone_id,account_review_status,owner_business_info` | `owner_business_info.id` is the business, used for credit |
-| Phone numbers | `GET {waba}/phone_numbers?fields=display_phone_number,verified_name,quality_rating,messaging_limit_tier,status,name_status,throughput` | |
+| Phone numbers | `GET {waba}/phone_numbers?fields=id,display_phone_number,verified_name,quality_rating,whatsapp_business_manager_messaging_limit,status,name_status,throughput` | `messaging_limit_tier` is deprecated; it is only the fallback field set |
+| Account details and health | `GET {waba}?fields=account_review_status,business_verification_status,ownership_type,primary_funding_id,health_status,owner_business_info` | no `primary_funding_id` = paid messages are not sent |
+| Numbers in detail | `GET {waba}/phone_numbers?fields=…,new_display_name,new_name_status,is_official_business_account,official_business_account,health_status,account_mode` | `health_status.can_send_message` AVAILABLE/LIMITED/BLOCKED with `entities[].errors[].possible_solution` |
+| Template health | `GET {waba}/message_templates?fields=id,name,language,health_status` | only non-AVAILABLE ones are shown |
+| Activity log | `GET {waba}/activities?fields=id,actor_business_id,actor_id,category,event_type,timestamp&limit=25&after=` | paged, newest first |
+| People with access | `GET {waba}/assigned_users?business={business}&fields=id,name,user_type,tasks` | |
+| Business profile | `GET/POST {phone}/whatsapp_business_profile` | about ≤ 139, address ≤ 256, description ≤ 512, email ≤ 128, ≤ 2 websites |
+| Profile photo | `GET debug_token` → `app_id`; `POST {app_id}/uploads` → `POST {upload_id}` (`Authorization: OAuth`, `file_offset: 0`) → `h`; then `profile_picture_handle` | JPEG/PNG ≤ 5 MB, magic bytes checked |
+| Display name | `POST {phone}?new_display_name=` | 10 per 30 days; re-register within 14 days of approval |
+| Green badge | read `official_business_account{oba_status}`; `POST {phone}/official_business_account` | 5–10 supporting links; 30 days after a refusal |
+| Username | `GET/POST {phone}/username`, `GET {phone}/username_suggestions` | 2 changes per 14 days |
+| Chat start | read `fields=conversational_automation`; `POST {phone}/conversational_automation?enable_welcome_message&prompts&commands` | ≤ 4 prompts × 80, ≤ 30 commands (32/256), no emoji |
+| QR codes | `GET/POST {phone}/message_qrdls`, `DELETE …/{code}`, image `GET …/{code}?fields=qr_image_url.format(PNG\|SVG)` | message ≤ 140, ≤ 2,000 per number |
+| Blocked people | `GET/POST/DELETE {phone}/block_users` with `{ messaging_product, block_users: [{ user }] }` | only people who wrote in the last 24 h (131047); ≤ 1,000 per call |
 | Profile photo | `GET {phone_id}/whatsapp_business_profile?fields=profile_picture_url` | first `https://` URL among the account's numbers |
 | Spend this month | `GET {waba}?fields=pricing_analytics.start({unix}).end({unix}).granularity(DAILY).dimensions(["PRICING_CATEGORY"])` | `data_points[]` have `start`, `cost`, `volume`, `pricing_category`; summed in `sumSpend()` |
 | Credit line | `GET {business}/extendedcredits?fields=id,legal_entity_name,balance,credit_available,max_balance` | Meta has no balance API for card billing |
@@ -88,8 +101,8 @@ Labels and colours live in `app/utils/labels.ts`; unknown codes show as Meta wro
 - Phone `status`: `CONNECTED`, `PENDING`, `FLAGGED`, `RATE_LIMITED`, `UNVERIFIED`, `RESTRICTED`, `BANNED`,
   `DISCONNECTED`, `MIGRATED`, `DELETED`. Display `name_status`: `APPROVED`, `AVAILABLE_WITHOUT_REVIEW`,
   `PENDING_REVIEW`, `DECLINED`, `EXPIRED`, `NONE`.
-- `messaging_limit_tier`: `TIER_50`, `TIER_250`, `TIER_1K`, `TIER_2K`, `TIER_10K`, `TIER_100K`, `TIER_UNLIMITED`
-  (customers reached per 24 hours).
+- `whatsapp_business_manager_messaging_limit` (and the deprecated `messaging_limit_tier`): `TIER_50`, `TIER_250`, `TIER_1K`, `TIER_2K`, `TIER_10K`, `TIER_100K`, `TIER_UNLIMITED`,
+  `UNTIERED` (customers reached per 24 hours, shared by the business portfolio).
 
 ## Error codes
 
@@ -132,6 +145,8 @@ otherwise.
 
 ## Safety
 
+- Never change a profile, name, username, badge, chat start, QR code or block list against a real account
+  while developing; the demo answers every `/api/business` write after the same checks.
 - Never create or edit a template, and never turn analytics on, against a real account while developing or
   testing. Use `bun run demo`, which answers every call itself, or an account made for testing.
 - Never print, log, paste or commit a token. Ask the person to enter it in the app, which keeps it on the server.

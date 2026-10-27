@@ -1,0 +1,3 @@
+<template>
+  <DocsAccounts />
+</template>
