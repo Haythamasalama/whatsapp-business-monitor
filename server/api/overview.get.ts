@@ -1,4 +1,4 @@
-export default defineEventHandler(async (event): Promise<Overview> => {
+export default apiHandler(async (event): Promise<Overview> => {
   const account = requireAccount(event)
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)

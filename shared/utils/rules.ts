@@ -38,10 +38,6 @@ export function templateProblems(values: TemplateText): string[] {
     problems.push('أدخل مثالاً لكل متغير')
   }
 
-  if (/^\s*\{\{|\}\}\s*$/.test(body)) {
-    problems.push('يرفض Meta نصاً يبدأ بمتغير أو ينتهي به')
-  }
-
   for (const [label, text] of [['الترويسة', values.header ?? ''], ['التذييل', values.footer ?? '']] as const) {
     if ([...text].length > 60) {
       problems.push(`${label} أطول من 60 حرفاً`)
@@ -68,6 +64,11 @@ const META_ERRORS: Record<number, string> = {
   80008: 'تجاوزت عدد الطلبات المسموح، حاول بعد قليل.',
   368: 'قيّدت Meta الحساب مؤقتاً بسبب مخالفة السياسات.',
   131031: 'الحساب مقفل لدى Meta.',
+}
+
+// Meta used to reject a body that starts or ends with a variable and still approves some that do, so it only warns.
+export function templateWarnings(values: TemplateText): string[] {
+  return /^\s*\{\{|\}\}\s*$/.test(values.body ?? '') ? ['قد ترفض Meta نصاً يبدأ بمتغير أو ينتهي به'] : []
 }
 
 export function errorText(error: MetaError | null | undefined): string {

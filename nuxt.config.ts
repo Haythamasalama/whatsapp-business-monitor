@@ -13,11 +13,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'مراقبة واتساب للأعمال',
+      title: 'مراقبة واتساب الأعمال',
       htmlAttrs: { lang: 'ar', dir: 'rtl' },
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       meta: [
-        { name: 'description', content: 'لوحة محلية لمراقبة قوالب واتساب للأعمال وأدائها وتكلفتها.' },
+        { name: 'description', content: 'لوحة محلية لمراقبة قوالب واتساب الأعمال وأدائها وتكلفتها.' },
         { name: 'theme-color', content: '#317455' },
       ],
     },

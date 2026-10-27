@@ -21,6 +21,37 @@ const enabling = ref(false)
 
 const sortItems = [{ label: 'الأكثر إرسالاً', value: 'sent' }, { label: 'ترتيب Meta', value: 'meta' }]
 
+type View = 'table' | 'split' | 'cards'
+
+const VIEW_KEY = 'whatsapp-templates:view'
+const views: { value: View, label: string, icon: string }[] = [
+  { value: 'table', label: 'جدول', icon: 'i-lucide-list' },
+  { value: 'split', label: 'قائمة ومعاينة', icon: 'i-lucide-columns-2' },
+  { value: 'cards', label: 'بطاقات', icon: 'i-lucide-layout-grid' },
+]
+
+function storedView(): View {
+  try {
+    const value = localStorage.getItem(VIEW_KEY)
+
+    return views.some(view => view.value === value) ? value as View : 'table'
+  }
+  catch {
+    return 'table'
+  }
+}
+
+const view = ref<View>(storedView())
+
+watch(view, (value) => {
+  try {
+    localStorage.setItem(VIEW_KEY, value)
+  }
+  catch {
+    // The choice is only a convenience; without storage it resets on the next visit.
+  }
+})
+
 const groupStats = (group: TemplateGroup) => statsFor(group.items.map(t => t.id))
 
 async function enable(): Promise<void> {
@@ -130,7 +161,9 @@ function action(icon: string, label: string, onClick: () => void, disabled = fal
   }))
 }
 
-const columns: TableColumn<TemplateGroup>[] = [
+const hasOtherLanguages = computed(() => groups.value.some(group => group.items.some(t => !LANGS.includes(t.language))))
+
+const columns = computed<TableColumn<TemplateGroup>[]>(() => [
   {
     accessorKey: 'name',
     header: 'القالب',
@@ -153,9 +186,26 @@ const columns: TableColumn<TemplateGroup>[] = [
   },
   ...LANGS.map((lang): TableColumn<TemplateGroup> => ({
     id: lang,
-    header: LANG_NAMES[lang],
+    header: languageName(lang),
     cell: ({ row }) => statusCell(inLanguage(row.original, lang)),
   })),
+  ...(hasOtherLanguages.value
+    ? [{
+        id: 'other',
+        header: 'لغات أخرى',
+        cell: ({ row }: { row: { original: TemplateGroup } }) => {
+          const others = row.original.items.filter(t => !LANGS.includes(t.language))
+
+          return others.length
+            ? h('div', { class: 'flex flex-wrap gap-1' }, others.map((t) => {
+                const { tone, icon } = statusOf(t.status)
+
+                return h(UBadge, { color: tone, variant: 'subtle', icon, label: languageCode(t.language), class: 'rounded-full font-mono' })
+              }))
+            : h('span', { class: 'text-dimmed' }, '—')
+        },
+      } satisfies TableColumn<TemplateGroup>]
+    : []),
   {
     id: 'actions',
     header: () => h('span', { class: 'sr-only' }, 'الإجراءات'),
@@ -174,7 +224,7 @@ const columns: TableColumn<TemplateGroup>[] = [
       ])
     },
   },
-]
+])
 </script>
 
 <template>
@@ -189,7 +239,21 @@ const columns: TableColumn<TemplateGroup>[] = [
         </p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <UButton label="إنشاء من نص" icon="i-lucide-clipboard-paste" color="neutral" variant="outline" :disabled="!accountId" @click="emit('paste')" />
+        <UFieldGroup aria-label="طريقة العرض">
+          <UTooltip v-for="item in views" :key="item.value" :text="item.label">
+            <UButton
+              :icon="item.icon"
+              :color="view === item.value ? 'primary' : 'neutral'"
+              :variant="view === item.value ? 'soft' : 'outline'"
+              :aria-label="item.label"
+              :aria-pressed="view === item.value"
+              @click="view = item.value"
+            />
+          </UTooltip>
+        </UFieldGroup>
+        <UTooltip text="ألصق محتوى قالب أو أكثر: يُنشأ الجديد ويُحدَّث الموجود">
+          <UButton label="إنشاء أو تحديث من محتوى قالب" icon="i-lucide-clipboard-paste" color="neutral" variant="outline" :disabled="!accountId" @click="emit('paste')" />
+        </UTooltip>
         <UButton label="قالب جديد" icon="i-lucide-plus" :disabled="!accountId" @click="emit('create')" />
       </div>
     </div>
@@ -222,6 +286,18 @@ const columns: TableColumn<TemplateGroup>[] = [
       :description="templatesError"
       class="m-5"
     />
+
+    <div v-else-if="view !== 'table' && loading && !groups.length" class="grid gap-4 p-5 sm:grid-cols-2 xl:grid-cols-3">
+      <USkeleton v-for="n in 6" :key="n" class="h-56 rounded-xl" />
+    </div>
+
+    <p v-else-if="view !== 'table' && !filtered.length" class="p-10 text-center text-sm text-muted">
+      {{ groups.length ? 'لا توجد نتائج مطابقة' : 'لا توجد قوالب على هذا الحساب' }}
+    </p>
+
+    <TemplateSplit v-else-if="view === 'split'" :groups="filtered" @open="(...args) => emit('open', ...args)" />
+
+    <TemplateCards v-else-if="view === 'cards'" :groups="filtered" @open="(...args) => emit('open', ...args)" />
 
     <UTable
       v-else

@@ -1,4 +1,4 @@
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
   const id = getRouterParam(event, 'id') ?? ''
   const file = accountFiles()[id]
 

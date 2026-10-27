@@ -1,4 +1,4 @@
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
   const body = await readBody<Record<string, unknown>>(event)
   const token = String(body.token ?? '').trim()
   const account = { token, version: String(body.version ?? '').trim() || DEFAULT_VERSION }

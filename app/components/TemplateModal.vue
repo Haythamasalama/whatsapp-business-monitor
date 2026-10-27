@@ -15,6 +15,24 @@ const activeId = ref<string>()
 const values = ref<TemplateText>({ header: '', body: '', footer: '', examples: [] })
 const result = ref<{ tone: Tone, message: string } | null>(null)
 const saving = ref(false)
+const editTab = ref<'fields' | 'code'>('fields')
+const copy = useCopy()
+
+// Editing covers one language: the code shows it alone, and a pasted code with several languages
+// gives this one its text (or the first one when it is missing).
+const editDoc = computed<TemplateDoc>(() => ({
+  name: group.value?.name ?? '',
+  category: template.value?.category ?? 'UTILITY',
+  languages: { [template.value?.language ?? 'ar']: values.value },
+}))
+
+function applyCode(doc: TemplateDoc): void {
+  const next = doc.languages[template.value?.language ?? ''] ?? Object.values(doc.languages)[0]
+
+  if (next) {
+    values.value = { ...next, examples: [...next.examples] }
+  }
+}
 
 const group = computed(() => groups.value.find(g => g.name === props.name) ?? null)
 const template = computed(() => group.value?.items.find(t => t.id === activeId.value) ?? group.value?.items[0] ?? null)
@@ -22,18 +40,6 @@ const parts = computed(() => (template.value ? templateText(template.value) : nu
 const positional = computed(() => (template.value?.parameter_format ?? 'POSITIONAL') === 'POSITIONAL')
 const editable = computed(() => Boolean(template.value && EDITABLE_STATUSES.includes(template.value.status) && positional.value))
 const status = computed(() => statusOf(template.value?.status ?? ''))
-
-const quality = computed(() => {
-  const score = template.value?.quality_score?.score
-
-  return score && score !== 'UNKNOWN' ? QUALITY[score] : null
-})
-
-const rejected = computed(() => {
-  const reason = template.value?.rejected_reason
-
-  return reason && reason !== 'NONE' ? (REJECTIONS[reason] ?? reason) : null
-})
 
 const lockedReason = computed(() => {
   if (!positional.value) {
@@ -47,24 +53,12 @@ const lockedReason = computed(() => {
 
 const tabs = computed(() => (group.value?.items ?? []).map(t => ({
   value: t.id,
-  label: LANG_NAMES[t.language] ?? t.language,
+  label: languageName(t.language),
   badge: { label: statusOf(t.status).label, color: statusOf(t.status).tone, variant: 'subtle' as const },
 })))
 
-const details = computed(() => {
-  if (!template.value || !parts.value) {
-    return []
-  }
-
-  return [
-    { label: 'الفئة', value: CATEGORY[template.value.category] ?? template.value.category },
-    { label: 'اللغة', value: LANG_NAMES[template.value.language] ?? template.value.language },
-    { label: 'المتغيرات', value: placeholders(parts.value.body).length ? `${placeholders(parts.value.body).length} متغير` : 'لا يوجد' },
-    ...(quality.value ? [{ label: 'الجودة', value: quality.value.label }] : []),
-    ...(rejected.value ? [{ label: 'سبب الرفض', value: rejected.value }] : []),
-    { label: 'المعرّف', value: template.value.id, mono: true },
-  ]
-})
+// Every language of the template as text, so it can be copied and reused for a new one.
+const asText = computed(() => (group.value ? toText([templateDoc(group.value)]) : ''))
 
 const previewValues = computed<TemplateText>(() => ({
   header: parts.value?.header ?? '',
@@ -133,25 +127,10 @@ async function save(): Promise<void> {
         <UTabs v-if="tabs.length > 1" v-model="activeId" :items="tabs" :content="false" variant="link" />
 
         <template v-if="mode === 'view'">
-          <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_16rem]">
-            <WhatsAppPreview :values="previewValues" :media="parts.media" :buttons="parts.buttons" />
+          <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_20rem]">
+            <WhatsAppPreview :values="previewValues" :media="parts.media" :buttons="parts.buttons" class="min-w-0" />
 
-            <dl class="divide-y divide-default rounded-xl border border-default text-sm">
-              <div class="flex items-center justify-between gap-3 px-4 py-2.5">
-                <dt class="text-muted">
-                  الحالة
-                </dt>
-                <dd><UBadge :color="status.tone" :icon="status.icon" :label="status.label" variant="subtle" class="rounded-full" /></dd>
-              </div>
-              <div v-for="item in details" :key="item.label" class="flex items-center justify-between gap-3 px-4 py-2.5">
-                <dt class="text-muted">
-                  {{ item.label }}
-                </dt>
-                <dd class="text-end text-highlighted" :class="item.mono ? 'font-mono text-xs' : ''">
-                  {{ item.value }}
-                </dd>
-              </div>
-            </dl>
+            <TemplateDetails :template="template" />
           </div>
 
           <TemplateStatsCard
@@ -166,7 +145,14 @@ async function save(): Promise<void> {
         <template v-else>
           <UAlert v-if="!editable" color="warning" variant="subtle" icon="i-lucide-lock" :description="lockedReason" />
 
-          <TemplateForm v-model="values" :disabled="!editable" :media="parts.media" :buttons="parts.buttons" />
+          <UTabs v-model="editTab" :items="EDIT_TABS" :content="false" size="sm" />
+
+          <TemplateCodeEditor
+            v-if="editTab === 'code'"
+            :model-value="editDoc"
+            @update:model-value="applyCode"
+          />
+          <TemplateForm v-else v-model="values" :disabled="!editable" :media="parts.media" :buttons="parts.buttons" />
 
           <UAlert v-if="result" :color="result.tone" variant="subtle" :description="result.message" class="whitespace-pre-line" />
         </template>
@@ -185,6 +171,9 @@ async function save(): Promise<void> {
           variant="ghost"
         />
         <div v-if="mode === 'view'" class="flex gap-2">
+          <UTooltip text="نسخ محتوى القالب كاملاً بكل لغاته ومتغيراته، لتلصقه في قالب جديد">
+            <UButton label="نسخ المحتوى" icon="i-lucide-copy" color="neutral" variant="outline" @click="copy(asText)" />
+          </UTooltip>
           <UTooltip :text="editable ? '' : lockedReason" :disabled="editable">
             <UButton label="تعديل" icon="i-lucide-pencil" :disabled="!editable" @click="mode = 'edit'" />
           </UTooltip>

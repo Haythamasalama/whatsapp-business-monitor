@@ -1,4 +1,4 @@
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
   const account = requireAccount(event)
   const id = getRouterParam(event, 'id') ?? ''
 

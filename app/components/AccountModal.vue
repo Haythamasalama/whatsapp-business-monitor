@@ -126,7 +126,7 @@ async function save(): Promise<void> {
             <UInput
               v-else
               v-model.trim="form.id"
-              :dir="form.id ? 'ltr' : 'rtl'"
+              :dir="form.id ? 'ltr' : undefined"
               placeholder="بالإنجليزية، مثل: main"
               class="w-full"
               required
@@ -138,7 +138,7 @@ async function save(): Promise<void> {
           <UInput
             v-model.trim="form.token"
             type="password"
-            :dir="form.token ? 'ltr' : 'rtl'"
+            :dir="form.token ? 'ltr' : undefined"
             :placeholder="editing ? 'اتركه فارغاً لإبقاء الرمز الحالي' : 'System user token'"
             icon="i-lucide-key-round"
             class="w-full"
@@ -175,10 +175,10 @@ async function save(): Promise<void> {
 
         <div class="grid gap-4 sm:grid-cols-2">
           <UFormField label="معرّف حساب الأعمال" :required="!editing">
-            <UInput v-model.trim="form.waba_id" dir="ltr" inputmode="numeric" placeholder="WABA ID" class="w-full" :required="!editing" />
+            <UInput v-model.trim="form.waba_id" :dir="form.waba_id ? 'ltr' : undefined" inputmode="numeric" placeholder="WABA ID" class="w-full" :required="!editing" />
           </UFormField>
           <UFormField label="إصدار واجهة Meta">
-            <UInput v-model.trim="form.version" dir="ltr" placeholder="v23.0" class="w-full" />
+            <UInput v-model.trim="form.version" :dir="form.version ? 'ltr' : undefined" placeholder="v23.0" class="w-full" />
           </UFormField>
         </div>
 
