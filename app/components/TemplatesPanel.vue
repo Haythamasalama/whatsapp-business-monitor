@@ -251,7 +251,7 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
             />
           </UTooltip>
         </UFieldGroup>
-        <UButton label="إنشاء أو تحديث من نص" icon="i-lucide-clipboard-paste" color="neutral" variant="outline" :disabled="!accountId" @click="emit('paste')" />
+        <UButton label="إنشاء أو تحديث بكود القالب" icon="i-lucide-code" color="neutral" variant="outline" :disabled="!accountId" @click="emit('paste')" />
         <UButton label="قالب جديد" icon="i-lucide-plus" :disabled="!accountId" @click="emit('create')" />
       </div>
     </div>

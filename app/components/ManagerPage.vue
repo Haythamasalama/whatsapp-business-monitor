@@ -196,7 +196,7 @@ onMounted(async () => {
     </div>
 
     <AccountModal v-model:open="accountOpen" :account="editingAccount" />
-    <PasteModal v-model:open="pasteOpen" @parsed="(list) => openDrafts(list, list.length > 1 ? `من نص (${list.length} قوالب)` : 'من نص')" />
+    <PasteModal v-model:open="pasteOpen" @parsed="(list) => openDrafts(list, list.length > 1 ? `من كود القالب (${list.length} قوالب)` : 'من كود القالب')" />
     <DraftsModal v-model:open="draftsOpen" v-model:drafts="drafts" :title="draftsTitle" />
     <TemplateModal v-model:open="templateOpen" v-model:mode="templateMode" :name="opened.name" :initial-id="opened.id" />
   </div>

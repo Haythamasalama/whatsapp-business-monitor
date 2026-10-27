@@ -37,7 +37,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 
   {{1}} = 10482
   ```
-- **Create or update from text.** Paste one or several templates in that format. A template that doesn't exist yet is created; one that does is updated with the new text, keeping its category and sample values. Unchanged or locked templates (under review, for example) are skipped.
+- **Create or update from template code.** Paste one or several templates in that format. A template that doesn't exist yet is created; one that does is updated with the new text, keeping its category and sample values. Unchanged or locked templates (under review, for example) are skipped.
 - **Any language.** Arabic and English first, plus any language Meta supports.
 - **Always current.** Data refreshes when you come back to the tab, and every minute while a template waits for review. A notification tells you when a template is approved, rejected or paused, including what changed since your last visit.
 - **Several accounts.** Add, edit and switch between WhatsApp Business Accounts, each shown with its WhatsApp profile photo. Paste a token and it finds the accounts and phone numbers it can reach.
@@ -50,7 +50,7 @@ The interface is in Arabic, right to left, in light and dark mode.
 | Template preview and numbers | Editing a template |
 |:--:|:--:|
 | <img src="docs/screenshots/template-preview.png" alt="A template preview with its status, category, variables and 30-day sends, deliveries, reads and cost."> | <img src="docs/screenshots/template-edit.png" alt="Editing a template: the body, header and footer fields, sample values per variable and a live WhatsApp preview."> |
-| **Create or update from pasted text** | **Dark mode** |
+| **Create or update from template code** | **Dark mode** |
 | <img src="docs/screenshots/create-from-text.png" alt="Pasted text turned into a draft with Arabic and English bodies, sample values and previews."> | <img src="docs/screenshots/dashboard-dark.png" alt="The dashboard in dark mode."> |
 
 Every screenshot uses the built-in demo data: a fictional store with made-up numbers.
@@ -130,7 +130,7 @@ WhatsApp is a trademark of Meta Platforms, Inc. This project is not affiliated w
 
 ## بالعربية
 
-**مراقبة واتساب للأعمال**: لوحة مجانية ومفتوحة المصدر لمراقبة قوالب رسائل واتساب لحساب أو أكثر. تعرض حالة مراجعة كل قالب، وعدد مرات إرساله، ونسب التسليم والقراءة، وتكلفة الشهر، وتتيح إنشاء القوالب وتعديلها وإنشاءها من نص ملصوق.
+**مراقبة واتساب للأعمال**: لوحة مجانية ومفتوحة المصدر لمراقبة قوالب رسائل واتساب لحساب أو أكثر. تعرض حالة مراجعة كل قالب، وعدد مرات إرساله، ونسب التسليم والقراءة، وتكلفة الشهر، وتتيح إنشاء القوالب وتعديلها وإنشاءها أو تحديثها من كود القالب.
 
 تعمل على جهازك فقط: تُحفظ رموز الوصول في ملفات داخل `~/.config/whatsapp-templates/`، ولا تصل إلى المتصفح.
 
