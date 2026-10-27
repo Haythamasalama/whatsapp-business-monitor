@@ -98,6 +98,5 @@ const creditHint = computed(() => {
       <CategoryBreakdown :spend="spend" />
     </div>
 
-    <PhonesHealth v-if="!loading && overview?.phones?.data?.length" :phones="overview.phones.data" />
   </div>
 </template>
