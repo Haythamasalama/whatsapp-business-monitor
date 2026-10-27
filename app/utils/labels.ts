@@ -5,8 +5,8 @@ export const LANGS = ['ar', 'en']
 export type Lang = string
 
 export const EDIT_TABS = [
-  { label: 'حقول منفصلة', value: 'fields', icon: 'i-lucide-rows-3' },
-  { label: 'نص كامل', value: 'code', icon: 'i-lucide-file-text' },
+  { label: 'يدوي', value: 'fields', icon: 'i-lucide-text-cursor-input' },
+  { label: 'كود القالب', value: 'code', icon: 'i-lucide-code' },
 ]
 
 export const LANG_NAMES: Record<string, string> = { ar: 'العربية', en: 'الإنجليزية' }

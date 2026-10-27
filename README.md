@@ -25,7 +25,7 @@ A free, open-source dashboard for the WhatsApp Business Platform. It runs on you
 - **How each template performs.** Sent, delivered, read, cost and button clicks over the last 30 days, with a daily chart, from Meta's template analytics. Sort by the most sent.
 - **What you spend.** This month's cost and message count, per day and per message type (marketing, utility, authentication, service).
 - **Preview like the customer.** The message rendered as a WhatsApp bubble, with the sample values filled in, line by line in the right direction for Arabic and English.
-- **Create and edit, two ways.** *Separate fields*: header, body, footer, and a sample value per `{{n}}`, with buttons to add or remove a variable (the rest are renumbered), a header or a footer. *Full text*: the whole template as plain labelled text with a live preview. Meta's rules are checked before anything is sent; buttons and media headers are kept as they are when you edit.
+- **Create and edit, two ways.** *Manual*: header, body, footer, and a sample value per `{{n}}`, with buttons to add or remove a variable (the rest are renumbered), a header or a footer. *Template code*: the whole template as plain labelled text with a live preview. Meta's rules are checked before anything is sent; buttons and media headers are kept as they are when you edit.
 - **Copy any template.** One click copies it as text, with every language and sample value, ready to change and paste back as a new one:
 
   ```
