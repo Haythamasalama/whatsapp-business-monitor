@@ -5,6 +5,9 @@ import type { TableColumn } from '@nuxt/ui'
 const emit = defineEmits<{ add: [], edit: [account: AccountSummary], open: [id: string], export: [], import: [] }>()
 
 const { accounts, accountsDir } = useManager()
+
+// Isolated as left to right, so the path reads the same inside an Arabic sentence.
+const storedIn = computed(() => t('manage.storedIn', { dir: `\u2066${accountsDir.value}\u2069` }))
 const deleteAccount = useDeleteAccount()
 
 const columns = computed<TableColumn<AccountSummary>[]>(() => [
@@ -23,11 +26,11 @@ const columns = computed<TableColumn<AccountSummary>[]>(() => [
         <h1 class="text-2xl font-bold text-highlighted">
           {{ t('nav.accounts') }}
         </h1>
-        <p class="mt-1 flex flex-wrap items-center gap-x-1.5 text-sm text-muted">
+        <p class="mt-1 flex items-center gap-1.5 text-sm text-muted">
           {{ t('overview.accountCount', { n: accounts.length }) }}
-          <span class="text-dimmed">·</span>
-          <UIcon name="i-lucide-lock" class="size-3.5 text-dimmed" />
-          <bdi dir="ltr" class="font-mono text-xs">{{ accountsDir }}</bdi>
+          <UTooltip :text="storedIn">
+            <UIcon name="i-lucide-info" class="size-3.5 text-dimmed" :aria-label="storedIn" />
+          </UTooltip>
         </p>
       </div>
       <div class="flex flex-wrap gap-2">

@@ -400,6 +400,7 @@ const en: Dictionary = {
     nothingToExport: 'There are no accounts to export.',
   },
   manage: {
+    storedIn: 'Saved on this computer only, in {dir}',
     connected: 'Working',
     unreachable: 'Unreachable',
   },

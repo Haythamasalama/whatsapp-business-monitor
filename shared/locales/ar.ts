@@ -400,6 +400,7 @@ export default {
     nothingToExport: 'لا توجد حسابات لتصديرها.',
   },
   manage: {
+    storedIn: 'تُحفظ على هذا الجهاز فقط، في {dir}',
     connected: 'يعمل',
     unreachable: 'تعذّر الوصول',
   },
