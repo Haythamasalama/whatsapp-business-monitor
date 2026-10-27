@@ -1,4 +1,4 @@
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
   const body = await readBody<Record<string, unknown>>(event)
   const id = String(body.id ?? '').trim().toLowerCase()
   const values = readAccountValues(body)

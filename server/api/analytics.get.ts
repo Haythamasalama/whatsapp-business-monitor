@@ -14,7 +14,7 @@ function addPoint(stats: Record<string, TemplateStats>, point: GraphResponse): v
   entry.daily.push({ date: new Date(Number(point.start) * 1000).toISOString().slice(0, 10), sent })
 }
 
-export default defineEventHandler(async (event): Promise<Analytics> => {
+export default apiHandler(async (event): Promise<Analytics> => {
   const account = requireAccount(event)
   const ids = String(getQuery(event).ids ?? '').split(',').filter(id => /^\d+$/.test(id))
   const now = new Date()

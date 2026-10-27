@@ -37,6 +37,8 @@ export function useManager() {
   const analytics = useState<Analytics | null>('analytics', () => null)
   const analyticsError = useState<string | null>('analyticsError', () => null)
   const analyticsLoading = useState('analyticsLoading', () => false)
+  const templatesFor = useState<string | null>('templatesFor', () => null)
+  const lastLoadedAt = useState('lastLoadedAt', () => 0)
 
   const current = computed(() => accounts.value.find(account => account.id === accountId.value) ?? null)
 
@@ -73,8 +75,12 @@ export function useManager() {
       }) as T
     }
     catch (error) {
-      const data = (error as { data?: { data?: { error?: MetaError }, error?: MetaError } }).data
-      throw new Error(errorText(data?.data?.error ?? data?.error) || (error as Error).message)
+      const failure = error as { data?: { data?: { error?: MetaError }, error?: MetaError }, statusCode?: number }
+      const reason = errorText(failure.data?.data?.error ?? failure.data?.error)
+
+      throw new Error(reason || (failure.statusCode
+        ? `ردّ الخادم المحلي بالرمز ${failure.statusCode} دون سبب. راجع سجل الخادم.`
+        : 'تعذّر الوصول إلى الخادم المحلي. تأكد أنه يعمل.'))
     }
   }
 
@@ -98,12 +104,17 @@ export function useManager() {
     await loadAccountData()
   }
 
-  async function loadAccountData(): Promise<void> {
+  // `silent` refreshes in place (focus, polling): no skeletons, and a failed refresh keeps what is on screen.
+  async function loadAccountData({ silent = false } = {}): Promise<void> {
     const mine = ++ticket
+    const account = accountId.value!
 
-    remember(accountId.value!)
-    loading.value = true
-    overview.value = null
+    remember(account)
+
+    if (!silent) {
+      loading.value = true
+      overview.value = null
+    }
 
     const [overviewResult, templatesResult] = await Promise.allSettled([
       api<Overview>('/api/overview'),
@@ -114,35 +125,46 @@ export function useManager() {
       return
     }
 
-    overview.value = overviewResult.status === 'fulfilled' ? overviewResult.value : null
-    overviewError.value = overviewResult.status === 'rejected' ? (overviewResult.reason as Error).message : null
-    templates.value = templatesResult.status === 'fulfilled' ? templatesResult.value.data : []
-    templatesError.value = templatesResult.status === 'rejected' ? (templatesResult.reason as Error).message : null
+    if (overviewResult.status === 'fulfilled' || !silent) {
+      overview.value = overviewResult.status === 'fulfilled' ? overviewResult.value : null
+      overviewError.value = overviewResult.status === 'rejected' ? (overviewResult.reason as Error).message : null
+    }
+
+    if (templatesResult.status === 'fulfilled' || !silent) {
+      templatesFor.value = account
+      templates.value = templatesResult.status === 'fulfilled' ? templatesResult.value.data : []
+      templatesError.value = templatesResult.status === 'rejected' ? (templatesResult.reason as Error).message : null
+    }
+
     loading.value = false
+    lastLoadedAt.value = Date.now()
 
     // The numbers per template come from a slower Meta call; the table shows first and fills them in.
-    void loadAnalytics(mine)
+    void loadAnalytics(mine, silent)
   }
 
-  async function loadAnalytics(mine = ticket): Promise<void> {
-    analytics.value = null
-    analyticsError.value = null
+  async function loadAnalytics(mine = ticket, silent = false): Promise<void> {
+    if (!silent) {
+      analytics.value = null
+      analyticsError.value = null
+    }
 
     if (!templates.value.length) {
       return
     }
 
-    analyticsLoading.value = true
+    analyticsLoading.value = !silent
 
     try {
       const result = await api<Analytics>(`/api/analytics?ids=${templates.value.map(t => t.id).join(',')}`)
 
       if (mine === ticket) {
         analytics.value = result
+        analyticsError.value = null
       }
     }
     catch (error) {
-      if (mine === ticket) {
+      if (mine === ticket && !silent) {
         analyticsError.value = (error as Error).message
       }
     }
@@ -159,9 +181,15 @@ export function useManager() {
   }
 
   async function reloadTemplates(): Promise<void> {
+    const account = accountId.value
+
     try {
-      templates.value = (await api<{ data: MetaTemplate[] }>('/api/templates')).data
+      const list = (await api<{ data: MetaTemplate[] }>('/api/templates')).data
+
+      templatesFor.value = account
+      templates.value = list
       templatesError.value = null
+      lastLoadedAt.value = Date.now()
     }
     catch (error) {
       templatesError.value = (error as Error).message
@@ -223,6 +251,8 @@ export function useManager() {
     overview,
     overviewError,
     loading,
+    templatesFor,
+    lastLoadedAt,
     analytics,
     analyticsError,
     analyticsLoading,

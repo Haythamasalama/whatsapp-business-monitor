@@ -15,6 +15,27 @@ const activeId = ref<string>()
 const values = ref<TemplateText>({ header: '', body: '', footer: '', examples: [] })
 const result = ref<{ tone: Tone, message: string } | null>(null)
 const saving = ref(false)
+const editTab = ref<'fields' | 'code'>('fields')
+const editTabs = [
+  { label: 'الحقول', value: 'fields', icon: 'i-lucide-list' },
+  { label: 'نسخ ولصق', value: 'code', icon: 'i-lucide-clipboard' },
+]
+
+// Editing covers one language: the code shows it alone, and a pasted code with several languages
+// gives this one its text (or the first one when it is missing).
+const editDoc = computed<TemplateDoc>(() => ({
+  name: group.value?.name ?? '',
+  category: template.value?.category ?? 'UTILITY',
+  languages: { [template.value?.language ?? 'ar']: values.value },
+}))
+
+function applyCode(doc: TemplateDoc): void {
+  const next = doc.languages[template.value?.language ?? ''] ?? Object.values(doc.languages)[0]
+
+  if (next) {
+    values.value = { ...next, examples: [...next.examples] }
+  }
+}
 
 const group = computed(() => groups.value.find(g => g.name === props.name) ?? null)
 const template = computed(() => group.value?.items.find(t => t.id === activeId.value) ?? group.value?.items[0] ?? null)
@@ -47,7 +68,7 @@ const lockedReason = computed(() => {
 
 const tabs = computed(() => (group.value?.items ?? []).map(t => ({
   value: t.id,
-  label: LANG_NAMES[t.language] ?? t.language,
+  label: languageName(t.language),
   badge: { label: statusOf(t.status).label, color: statusOf(t.status).tone, variant: 'subtle' as const },
 })))
 
@@ -58,13 +79,16 @@ const details = computed(() => {
 
   return [
     { label: 'الفئة', value: CATEGORY[template.value.category] ?? template.value.category },
-    { label: 'اللغة', value: LANG_NAMES[template.value.language] ?? template.value.language },
+    { label: 'اللغة', value: languageName(template.value.language) },
     { label: 'المتغيرات', value: placeholders(parts.value.body).length ? `${placeholders(parts.value.body).length} متغير` : 'لا يوجد' },
     ...(quality.value ? [{ label: 'الجودة', value: quality.value.label }] : []),
     ...(rejected.value ? [{ label: 'سبب الرفض', value: rejected.value }] : []),
     { label: 'المعرّف', value: template.value.id, mono: true },
   ]
 })
+
+// Every language of the template as code, so it can be copied and reused for a new one.
+const asText = computed(() => (group.value ? toText([templateDoc(group.value)]) : ''))
 
 const previewValues = computed<TemplateText>(() => ({
   header: parts.value?.header ?? '',
@@ -133,10 +157,13 @@ async function save(): Promise<void> {
         <UTabs v-if="tabs.length > 1" v-model="activeId" :items="tabs" :content="false" variant="link" />
 
         <template v-if="mode === 'view'">
-          <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_16rem]">
-            <WhatsAppPreview :values="previewValues" :media="parts.media" :buttons="parts.buttons" />
+          <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_20rem]">
+            <div class="min-w-0 space-y-5">
+              <WhatsAppPreview :values="previewValues" :media="parts.media" :buttons="parts.buttons" />
+              <TemplateTextBlock :text="asText" />
+            </div>
 
-            <dl class="divide-y divide-default rounded-xl border border-default text-sm">
+            <dl class="h-fit divide-y divide-default rounded-xl border border-default text-sm">
               <div class="flex items-center justify-between gap-3 px-4 py-2.5">
                 <dt class="text-muted">
                   الحالة
@@ -166,7 +193,14 @@ async function save(): Promise<void> {
         <template v-else>
           <UAlert v-if="!editable" color="warning" variant="subtle" icon="i-lucide-lock" :description="lockedReason" />
 
-          <TemplateForm v-model="values" :disabled="!editable" :media="parts.media" :buttons="parts.buttons" />
+          <UTabs v-model="editTab" :items="editTabs" :content="false" size="sm" />
+
+          <TemplateCodeEditor
+            v-if="editTab === 'code'"
+            :model-value="editDoc"
+            @update:model-value="applyCode"
+          />
+          <TemplateForm v-else v-model="values" :disabled="!editable" :media="parts.media" :buttons="parts.buttons" />
 
           <UAlert v-if="result" :color="result.tone" variant="subtle" :description="result.message" class="whitespace-pre-line" />
         </template>

@@ -1,4 +1,4 @@
-export default defineEventHandler(async () => {
+export default apiHandler(async () => {
   const data: AccountSummary[] = await Promise.all(Object.keys(accountFiles()).map(async (id) => {
     const account = loadAccount(id)
     const meta = account.token && account.waba

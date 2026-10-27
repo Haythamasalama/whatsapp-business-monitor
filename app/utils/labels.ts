@@ -1,9 +1,23 @@
 export type Tone = 'success' | 'warning' | 'error' | 'neutral' | 'primary' | 'info'
 
-export const LANGS = ['ar', 'en'] as const
-export type Lang = (typeof LANGS)[number]
+/** Arabic and English come first everywhere; any other language Meta supports can be added. */
+export const LANGS = ['ar', 'en']
+export type Lang = string
 
 export const LANG_NAMES: Record<string, string> = { ar: 'العربية', en: 'الإنجليزية' }
+
+export const META_LANGUAGES = [
+  'af', 'sq', 'ar', 'az', 'bn', 'bg', 'ca', 'zh_CN', 'zh_HK', 'zh_TW', 'hr', 'cs', 'da', 'nl', 'en', 'en_GB', 'en_US',
+  'et', 'fil', 'fi', 'fr', 'ka', 'de', 'el', 'gu', 'ha', 'he', 'hi', 'hu', 'id', 'ga', 'it', 'ja', 'kn', 'kk', 'rw_RW',
+  'ko', 'ky_KG', 'lo', 'lv', 'lt', 'mk', 'ms', 'ml', 'mr', 'nb', 'fa', 'pl', 'pt_BR', 'pt_PT', 'pa', 'ro', 'ru', 'sr',
+  'sk', 'sl', 'es', 'es_AR', 'es_ES', 'es_MX', 'sw', 'sv', 'ta', 'te', 'th', 'tr', 'uk', 'ur', 'uz', 'vi', 'zu',
+]
+
+export function sortLanguages(codes: string[]): string[] {
+  const rank = (code: string) => (LANGS.includes(code) ? LANGS.indexOf(code) : LANGS.length)
+
+  return [...codes].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))
+}
 
 export const STATUS: Record<string, { label: string, tone: Tone, icon: string }> = {
   APPROVED: { label: 'مُعتمد', tone: 'success', icon: 'i-lucide-circle-check' },
@@ -59,6 +73,19 @@ export const REJECTIONS: Record<string, string> = {
   TAG_CONTENT_MISMATCH: 'المحتوى لا يطابق الفئة',
   INCORRECT_CATEGORY: 'فئة غير صحيحة',
   SCAM: 'اشتباه احتيال',
+}
+
+export function languageName(code: string): string {
+  if (LANG_NAMES[code]) {
+    return LANG_NAMES[code]
+  }
+
+  try {
+    return new Intl.DisplayNames(['ar'], { type: 'language' }).of(code.replace('_', '-')) ?? code
+  }
+  catch {
+    return code
+  }
 }
 
 export const statusOf = (status: string) => STATUS[status] ?? { label: status, tone: 'neutral' as Tone, icon: 'i-lucide-circle-help' }

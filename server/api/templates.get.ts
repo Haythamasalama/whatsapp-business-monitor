@@ -1,6 +1,6 @@
 const MAX_PAGES = 20
 
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
   const account = requireAccount(event)
   const templates: MetaTemplate[] = []
   let after: string | undefined

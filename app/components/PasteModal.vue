@@ -7,15 +7,16 @@ const toast = useToast()
 const text = ref('')
 
 const placeholder = [
-  'order_confirmation',
-  '',
+  'الاسم: order_confirmation',
+  'الفئة: إشعارات',
   '----------------',
+  'اللغة: ar',
+  'تم تأكيد طلبك رقم {{1}}.',
   '',
-  'النص العربي مع {{1}}',
-  '',
+  '{{1}} = 10482',
   '----------------',
-  '',
-  'English text with {{1}}',
+  'اللغة: en (اختياري)',
+  'Your order {{1}} is confirmed.',
 ].join('\n')
 
 function parse(): void {
@@ -40,7 +41,7 @@ function parse(): void {
     :ui="{ footer: 'justify-end' }"
   >
     <template #body>
-      <UTextarea v-model="text" :placeholder="placeholder" dir="auto" :rows="14" class="w-full" autofocus />
+      <UTextarea v-model="text" :placeholder="placeholder" :dir="text ? 'auto' : undefined" :rows="14" class="w-full" autofocus />
     </template>
 
     <template #footer>

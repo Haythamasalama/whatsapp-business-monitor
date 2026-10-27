@@ -130,7 +130,9 @@ function action(icon: string, label: string, onClick: () => void, disabled = fal
   }))
 }
 
-const columns: TableColumn<TemplateGroup>[] = [
+const hasOtherLanguages = computed(() => groups.value.some(group => group.items.some(t => !LANGS.includes(t.language))))
+
+const columns = computed<TableColumn<TemplateGroup>[]>(() => [
   {
     accessorKey: 'name',
     header: 'القالب',
@@ -153,9 +155,26 @@ const columns: TableColumn<TemplateGroup>[] = [
   },
   ...LANGS.map((lang): TableColumn<TemplateGroup> => ({
     id: lang,
-    header: LANG_NAMES[lang],
+    header: languageName(lang),
     cell: ({ row }) => statusCell(inLanguage(row.original, lang)),
   })),
+  ...(hasOtherLanguages.value
+    ? [{
+        id: 'other',
+        header: 'لغات أخرى',
+        cell: ({ row }: { row: { original: TemplateGroup } }) => {
+          const others = row.original.items.filter(t => !LANGS.includes(t.language))
+
+          return others.length
+            ? h('div', { class: 'flex flex-wrap gap-1' }, others.map((t) => {
+                const { tone, icon } = statusOf(t.status)
+
+                return h(UBadge, { color: tone, variant: 'subtle', icon, label: t.language, class: 'rounded-full font-mono' })
+              }))
+            : h('span', { class: 'text-dimmed' }, '—')
+        },
+      } satisfies TableColumn<TemplateGroup>]
+    : []),
   {
     id: 'actions',
     header: () => h('span', { class: 'sr-only' }, 'الإجراءات'),
@@ -174,7 +193,7 @@ const columns: TableColumn<TemplateGroup>[] = [
       ])
     },
   },
-]
+])
 </script>
 
 <template>

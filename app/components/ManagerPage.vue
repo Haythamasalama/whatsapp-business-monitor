@@ -1,6 +1,40 @@
 <script setup lang="ts">
-const { accounts, accountId, current, loading, loadAccounts, loadAccountData, switchAccount } = useManager()
+const { accounts, accountId, current, loading, templates, lastLoadedAt, loadAccounts, loadAccountData, switchAccount } = useManager()
 const toast = useToast()
+
+useStatusAlerts()
+
+// Like a query cache: data older than STALE_MS is refetched when the tab regains focus, and while a
+// template waits for review the page polls, so an approval shows up without touching anything.
+const STALE_MS = 30_000
+const POLL_MS = 60_000
+let poll: ReturnType<typeof setInterval> | undefined
+
+function refreshIfStale(): void {
+  if (document.visibilityState === 'visible' && accountId.value && !loading.value && Date.now() - lastLoadedAt.value > STALE_MS) {
+    void loadAccountData({ silent: true })
+  }
+}
+
+const lastLoaded = computed(() => (lastLoadedAt.value
+  ? new Intl.DateTimeFormat('ar-u-nu-latn', { hour: 'numeric', minute: '2-digit' }).format(lastLoadedAt.value)
+  : ''))
+
+onMounted(() => {
+  window.addEventListener('focus', refreshIfStale)
+  document.addEventListener('visibilitychange', refreshIfStale)
+  poll = setInterval(() => {
+    if (templates.value.some(template => ['PENDING', 'IN_APPEAL'].includes(template.status))) {
+      refreshIfStale()
+    }
+  }, POLL_MS)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('focus', refreshIfStale)
+  document.removeEventListener('visibilitychange', refreshIfStale)
+  clearInterval(poll)
+})
 
 const accountOpen = ref(false)
 const editingAccount = ref<AccountSummary | null>(null)
@@ -92,7 +126,7 @@ onMounted(async () => {
         <span class="hidden lg:block" />
 
         <div class="flex items-center gap-1 rounded-lg border border-default bg-default p-1">
-          <UTooltip text="تحديث البيانات">
+          <UTooltip :text="lastLoaded ? `تحديث البيانات · آخر تحديث ${lastLoaded}` : 'تحديث البيانات'">
             <UButton icon="i-lucide-refresh-cw" color="neutral" variant="ghost" size="sm" aria-label="تحديث البيانات" :loading="loading" :disabled="!accountId" @click="loadAccountData()" />
           </UTooltip>
           <UTooltip text="إضافة حساب">
