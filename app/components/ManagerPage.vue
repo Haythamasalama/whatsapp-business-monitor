@@ -68,7 +68,8 @@ const draftsTitle = ref('')
 const opened = ref<{ name: string | null, id?: string }>({ name: null })
 const templateMode = ref<'view' | 'edit'>('view')
 const booting = ref(true)
-const accountTab = ref('templates')
+const { accountTab } = useManager()
+const address = useAddress()
 const accountTabs = computed(() => [
   { label: t('business.templatesTab'), value: 'templates', icon: 'i-lucide-house' },
   { label: t('business.tab'), value: 'business', icon: 'i-lucide-settings' },
@@ -123,11 +124,18 @@ function openTemplate(name: string, mode: 'view' | 'edit', id?: string): void {
 
 onMounted(async () => {
   try {
+    const path = address.initialPath()
+
     await loadAccounts()
 
     if (!accounts.value.length) {
       openAccount()
     }
+    else if (path !== '/') {
+      await address.open(path)
+    }
+
+    address.start()
   }
   catch (error) {
     toast.add({ title: t('accounts.loadFailed'), description: (error as Error).message, color: 'error' })
