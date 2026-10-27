@@ -59,7 +59,7 @@ fix(templates): keep media headers when editing
 docs: explain where account files live
 ```
 
-Types: `feat`, `fix`, `perf`, `refactor`, `i18n`, `docs`, `test`, `build`, `ci`, `chore`. Scopes are optional: `dashboard`, `templates`, `analytics`, `accounts`, `server`, `demo`, `docs`.
+Types: `feat`, `fix`, `perf`, `refactor`, `i18n`, `docs`, `test`, `build`, `ci`, `chore`. Scopes are optional: `dashboard`, `templates`, `analytics`, `accounts`, `server`, `docker`, `demo`, `docs`.
 
 ## Releases
 
