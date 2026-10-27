@@ -1,5 +1,5 @@
 interface ApiOptions {
-  method?: 'GET' | 'POST'
+  method?: 'GET' | 'POST' | 'DELETE'
   body?: Record<string, unknown>
   scoped?: boolean
 }

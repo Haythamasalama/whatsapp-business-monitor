@@ -2,6 +2,7 @@ import type { Dictionary, Params } from '../utils/i18n'
 
 const en: Dictionary = {
   server: {
+    notInDemo: 'Not available in demo mode.',
     unknownHost: 'Open the app at {url} ({host} is not allowed).',
     missingHeader: 'Request not allowed.',
     unexpected: 'Unexpected server error: {message}',
@@ -173,6 +174,10 @@ const en: Dictionary = {
     loadFailed: 'Could not load the accounts',
   },
   accountForm: {
+    delete: 'Delete account',
+    deleteTitle: 'Delete «{name}»?',
+    deleteNote: 'The account file is removed from this computer, and this cannot be undone. Its templates and numbers on Meta are not affected.',
+    deleted: 'Account deleted',
     addTitle: 'Add a WhatsApp account',
     saved: 'Account saved',
     added: 'Account added',
@@ -392,7 +397,6 @@ const en: Dictionary = {
     wrongPassphrase: 'Wrong passphrase, or the file is damaged.',
     passphraseShort: 'The passphrase needs at least {n} characters.',
     nothingToExport: 'There are no accounts to export.',
-    demo: 'Not available in demo mode.',
   },
 }
 

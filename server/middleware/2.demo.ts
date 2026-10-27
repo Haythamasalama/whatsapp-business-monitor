@@ -38,7 +38,7 @@ async function demoAnswer(event: H3Event) {
   }
 
   if (post && (path === '/api/accounts/export' || path === '/api/accounts/import')) {
-    throw apiError(422, t('transfer.demo'))
+    throw apiError(422, t('server.notInDemo'))
   }
 
   if (post && path === '/api/accounts/discover') {
@@ -58,6 +58,10 @@ async function demoAnswer(event: H3Event) {
     }
 
     return { id: String(Date.now()), status: 'PENDING', category: String(body.category ?? 'UTILITY') }
+  }
+
+  if (event.method === 'DELETE') {
+    throw apiError(422, t('server.notInDemo'))
   }
 
   if (post) {

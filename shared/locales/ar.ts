@@ -2,6 +2,7 @@ import type { Params } from '../utils/i18n'
 
 export default {
   server: {
+    notInDemo: 'غير متاح في الوضع التجريبي.',
     unknownHost: 'افتح التطبيق على {url} (العنوان {host} غير مسموح).',
     missingHeader: 'طلب غير مسموح.',
     unexpected: 'خطأ غير متوقع في الخادم: {message}',
@@ -173,6 +174,10 @@ export default {
     loadFailed: 'تعذّر تحميل الحسابات',
   },
   accountForm: {
+    delete: 'حذف الحساب',
+    deleteTitle: 'حذف «{name}»؟',
+    deleteNote: 'يُحذف ملف الحساب من هذا الجهاز ولا يمكن التراجع. قوالبه وأرقامه على Meta لا تتأثر.',
+    deleted: 'حُذف الحساب',
     addTitle: 'إضافة حساب واتساب',
     saved: 'حُفظ الحساب',
     added: 'أُضيف الحساب',
@@ -392,6 +397,5 @@ export default {
     wrongPassphrase: 'كلمة المرور غير صحيحة أو الملف تالف.',
     passphraseShort: 'كلمة المرور {n} أحرف على الأقل.',
     nothingToExport: 'لا توجد حسابات لتصديرها.',
-    demo: 'غير متاح في الوضع التجريبي.',
   },
 }
