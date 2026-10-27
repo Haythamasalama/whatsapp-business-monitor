@@ -213,10 +213,6 @@ export default {
     billing: 'عرض الفوترة',
     noCreditLine: 'لا يوجد خط ائتمان.',
     cardBalance: 'لا تعرض Meta رصيد الدفع بالبطاقة.',
-    phone: 'رقم واتساب',
-    quality: 'الجودة: {quality}',
-    otherPhones: '+{n} أرقام',
-    noPhone: 'لا يوجد رقم',
   },
   chart: {
     cost: 'التكلفة',

@@ -213,10 +213,6 @@ const en: Dictionary = {
     billing: 'View billing',
     noCreditLine: 'There is no credit line.',
     cardBalance: 'Meta does not show the balance of an account paid by card.',
-    phone: 'WhatsApp number',
-    quality: 'Quality: {quality}',
-    otherPhones: '+{n} numbers',
-    noPhone: 'No number',
   },
   chart: {
     cost: 'Cost',

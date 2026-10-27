@@ -28,14 +28,11 @@ const creditHint = computed(() => {
   return [t('stats.cardBalance'), reason].filter(Boolean).join(' ')
 })
 
-const phone = computed(() => overview.value?.phones?.data?.[0] ?? null)
-const otherPhones = computed(() => (overview.value?.phones?.data ?? []).length - 1)
-const quality = computed(() => qualityOf(phone.value?.quality_rating) ?? qualityOf('UNKNOWN')!)
 </script>
 
 <template>
   <div class="space-y-4">
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid gap-4 md:grid-cols-3">
       <StatTile :title="t('stats.monthCost')" icon="i-lucide-receipt" :loading="loading">
         <template v-if="spend">
           <p class="text-3xl font-semibold text-highlighted">
@@ -89,22 +86,6 @@ const quality = computed(() => qualityOf(phone.value?.quality_rating) ?? quality
             class="mt-0.5 px-0"
           />
         </template>
-      </StatTile>
-
-      <StatTile :title="t('stats.phone')" icon="i-lucide-phone" :loading="loading">
-        <template v-if="phone">
-          <p class="font-mono text-lg font-semibold whitespace-nowrap text-highlighted">
-            <bdi dir="ltr">{{ phone.display_phone_number }}</bdi>
-          </p>
-          <div class="mt-2 flex flex-wrap items-center gap-1.5">
-            <UBadge :color="quality.tone" variant="subtle" size="sm" :label="t('stats.quality', { quality: quality.label })" />
-            <UBadge v-if="phoneLimit(phone)" color="neutral" variant="subtle" size="sm" :label="phoneLimit(phone)" />
-            <span v-if="otherPhones > 0" class="text-xs text-muted">{{ t('stats.otherPhones', { n: otherPhones }) }}</span>
-          </div>
-        </template>
-        <p v-else class="text-sm text-muted">
-          {{ t('stats.noPhone') }}
-        </p>
       </StatTile>
     </div>
 
