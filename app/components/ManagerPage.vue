@@ -72,6 +72,7 @@ const { accountTab } = useManager()
 const address = useAddress()
 const accountTabs = computed(() => [
   { label: t('business.templatesTab'), value: 'templates', icon: 'i-lucide-house' },
+  { label: t('reports.tab'), value: 'reports', icon: 'i-lucide-chart-column' },
   { label: t('business.tab'), value: 'business', icon: 'i-lucide-settings' },
 ])
 
@@ -291,6 +292,7 @@ onMounted(async () => {
         <template v-else-if="accountId">
           <UTabs v-model="accountTab" :items="accountTabs" :content="false" variant="link" />
           <BusinessPanel v-if="accountTab === 'business'" />
+          <ReportsPanel v-else-if="accountTab === 'reports'" />
           <template v-else>
             <StatsCards />
             <TemplatesPanel

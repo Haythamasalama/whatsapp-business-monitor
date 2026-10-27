@@ -41,7 +41,7 @@ export function useManager() {
   const templatesFor = useState<string | null>('templatesFor', () => null)
   const lastLoadedAt = useState('lastLoadedAt', () => 0)
   const screen = useState<'overview' | 'account' | 'accounts' | 'settings'>('screen', () => 'overview')
-  const accountTab = useState<'templates' | 'business'>('accountTab', () => 'templates')
+  const accountTab = useState<'templates' | 'reports' | 'business'>('accountTab', () => 'templates')
   const summary = useState<AccountStats[] | null>('summary', () => null)
   const summaryError = useState<string | null>('summaryError', () => null)
   const summaryLoading = useState('summaryLoading', () => false)

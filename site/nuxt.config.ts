@@ -16,7 +16,7 @@ export default defineNuxtConfig({
 
   nitro: {
     publicAssets: [{ dir: fromRoot('docs/screenshots'), baseURL: '/screenshots' }],
-    prerender: { routes: ['/', '/ar/', '/docs/accounts-and-numbers/', '/ar/docs/accounts-and-numbers/', '/docs/templates/', '/ar/docs/templates/', '/sitemap.xml', '/robots.txt', '/llms.txt'] },
+    prerender: { routes: ['/', '/ar/', '/docs/accounts-and-numbers/', '/ar/docs/accounts-and-numbers/', '/docs/templates/', '/ar/docs/templates/', '/docs/reports-and-costs/', '/ar/docs/reports-and-costs/', '/sitemap.xml', '/robots.txt', '/llms.txt'] },
   },
 
   app: {

@@ -27,6 +27,7 @@ Free and open source. It runs on your computer or your server, and your tokens n
 - 📱 **Number health:** whether each number can send now and why not, its quality rating and daily limit.
 - ⚙️ **Account settings:** business verification, payment method, people with access and the activity log; for each number its profile and photo, display name, green badge, username, ice breakers and commands, QR codes and short links, and blocked people. [Guide](https://wbm.haythamasalama.me/docs/accounts-and-numbers/)
 - 🗂️ **Template housekeeping:** delete a template in one language or all, archive and unarchive, unpause a paused one, copy templates to another account of the same business, act on several at once, and see how many of your 250 or 6,000 templates are used. [Guide](https://wbm.haythamasalama.me/docs/templates/)
+- 📊 **Reports and costs:** cost by country, number, category and paid or free, every message sent and received (not only templates), how many of each number's 1,000 free service messages are left this month, volume tier progress, which of two templates gets blocked less, template groups and calls, from 24 hours to 12 months. [Guide](https://wbm.haythamasalama.me/docs/reports-and-costs/)
 - 👥 **Several accounts:** find them from a token, and move them all to another computer in one encrypted file.
 - 🌍 **Arabic or English,** light or dark.
 
@@ -41,6 +42,8 @@ Free and open source. It runs on your computer or your server, and your tokens n
 | <img src="docs/screenshots/templates-actions.png" alt="Templates with two selected and the archive, unarchive, copy and delete buttons, and the count used out of 6,000."> | <img src="docs/screenshots/template-paused.png" alt="A paused template with the pause rules, an Unpause button and the More actions menu."> |
 | **Account settings** | **A number's QR codes** |
 | <img src="docs/screenshots/account-settings.png" alt="Account settings: sending health with reasons, account details, numbers, people with access and the activity log."> | <img src="docs/screenshots/number-qr.png" alt="A number's QR codes with download, edit and delete."> |
+| **Reports and costs** | **All messages** |
+| <img src="docs/screenshots/reports-costs.png" alt="Reports: cost charged, paid and free messages, free service messages left, and cost over time."> | <img src="docs/screenshots/reports-messages.png" alt="All messages: templates, replies and received, stacked by day."> |
 | **Accounts** | **Settings** |
 | <img src="docs/screenshots/accounts.png" alt="The accounts page with import, export and add buttons."> | <img src="docs/screenshots/settings.png" alt="The settings: app name and address, updates, password and backup."> |
 | **Dark mode** | **Arabic, right to left** |

@@ -54,6 +54,11 @@ It does not send messages.
 | Archive / unarchive | `POST {waba}/message_templates/archive` or `/unarchive` with `{ hsm_ids }` (≤ 100) | answers `archived_templates`/`unarchived_templates` and `failed_templates` `{ id: reason }`; APPROVED or REJECTED only; auto-archived after 12 months unused, deleted 28 days later |
 | Unpause | `POST {template_id}/unpause` | quality pauses: 3 h, then 6 h, the third disables; pacing pauses stay until unpaused |
 | Copy to another account | `POST {dest_waba}/migrate_message_templates` with `{ source_waba_id, template_ids }` (≤ 500), using the destination's token | same business; APPROVED with GREEN/UNKNOWN quality; answers `migrated_templates` and `failed_templates` `{ id: reason }` |
+| Cost breakdown | `GET {waba}?fields=pricing_analytics.start.end.granularity(HALF_HOUR\|DAILY\|MONTHLY).phone_numbers([…]).country_codes([…]).dimensions(["COUNTRY","PHONE","PRICING_CATEGORY","PRICING_TYPE","TIER"])` | 1 year back; `tier` is `lower:upper` (marketing `0:MAX`), only with PRICING_CATEGORY and COUNTRY; pricing types FREE_CUSTOMER_SERVICE, FREE_ENTRY_POINT, REGULAR; since 2026-10-01 service is charged after 1,000 free per number per month (`server/utils/reports.ts`) |
+| All messages | `GET {waba}?fields=analytics.start.end.granularity(HALF_HOUR\|DAY\|MONTH).product_types([0\|2\|100])` | spelled DAY/MONTH, not DAILY/MONTHLY; points don't say their type, so one call per type (template, non-template, incoming) |
+| Template comparison | `GET {template_id}/compare?template_ids=[other]&start&end` | windows 7/30/60/90 days; each template sent ≥ 1,000 times; answers BLOCK_RATE order, MESSAGE_SENDS, TOP_BLOCK_REASON |
+| Template groups | `GET {waba}/template_groups`, then `GET {waba}/template_group_analytics?granularity=daily&start&end&template_group_ids=[≤ 10]` | 90 days back; no groups or an error hides the part |
+| Calls | `GET {waba}?fields=call_analytics.start.end.granularity(…).metric_types(["COUNT","COST","AVERAGE_DURATION"])` | an error or no calls hides the part |
 
 Components the app builds (`textComponents()` in `server/utils/templates.ts`):
 
