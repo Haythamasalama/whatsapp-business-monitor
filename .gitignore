@@ -1,0 +1,18 @@
+node_modules
+.nuxt
+.output
+.data
+dist
+*.log
+
+# Secrets: account files hold Meta access tokens and must never be committed.
+.env
+.env.*
+!.env.example
+*.env
+/accounts/
+
+.DS_Store
+.idea
+.vscode
+.claude

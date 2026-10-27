@@ -1,0 +1,241 @@
+interface ApiOptions {
+  method?: 'GET' | 'POST'
+  body?: Record<string, unknown>
+  scoped?: boolean
+}
+
+const STORAGE_KEY = 'whatsapp-templates:account'
+let ticket = 0
+
+function remember(id: string): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, id)
+  }
+  catch {
+    // Storage can be blocked; the page then opens on the first account.
+  }
+}
+
+function remembered(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY)
+  }
+  catch {
+    return null
+  }
+}
+
+export function useManager() {
+  const accounts = useState<AccountSummary[]>('accounts', () => [])
+  const accountsDir = useState('accountsDir', () => '')
+  const accountId = useState<string | null>('accountId', () => null)
+  const templates = useState<MetaTemplate[]>('templates', () => [])
+  const templatesError = useState<string | null>('templatesError', () => null)
+  const overview = useState<Overview | null>('overview', () => null)
+  const overviewError = useState<string | null>('overviewError', () => null)
+  const loading = useState('loading', () => false)
+  const analytics = useState<Analytics | null>('analytics', () => null)
+  const analyticsError = useState<string | null>('analyticsError', () => null)
+  const analyticsLoading = useState('analyticsLoading', () => false)
+
+  const current = computed(() => accounts.value.find(account => account.id === accountId.value) ?? null)
+
+  const groups = computed<TemplateGroup[]>(() => {
+    const map = new Map<string, TemplateGroup>()
+    const rank = (language: string) => {
+      const index = (LANGS as readonly string[]).indexOf(language)
+
+      return index === -1 ? LANGS.length : index
+    }
+
+    for (const template of templates.value) {
+      if (!map.has(template.name)) {
+        map.set(template.name, { name: template.name, category: template.category, items: [] })
+      }
+
+      map.get(template.name)!.items.push(template)
+    }
+
+    for (const group of map.values()) {
+      group.items.sort((a, b) => rank(a.language) - rank(b.language))
+    }
+
+    return [...map.values()]
+  })
+
+  async function api<T>(path: string, { method = 'GET', body, scoped = true }: ApiOptions = {}): Promise<T> {
+    try {
+      return await $fetch(path, {
+        method,
+        body,
+        headers: { 'X-Requested-With': 'whatsapp-manager' },
+        query: scoped ? { account: accountId.value } : undefined,
+      }) as T
+    }
+    catch (error) {
+      const data = (error as { data?: { data?: { error?: MetaError }, error?: MetaError } }).data
+      throw new Error(errorText(data?.data?.error ?? data?.error) || (error as Error).message)
+    }
+  }
+
+  async function loadAccounts(select?: string): Promise<void> {
+    const response = await api<{ data: AccountSummary[], dir: string }>('/api/accounts', { scoped: false })
+
+    accounts.value = response.data
+    accountsDir.value = response.dir
+
+    if (!response.data.length) {
+      accountId.value = null
+      templates.value = []
+      overview.value = null
+
+      return
+    }
+
+    const wanted = select ?? remembered()
+    accountId.value = response.data.some(account => account.id === wanted) ? wanted : response.data[0]!.id
+
+    await loadAccountData()
+  }
+
+  async function loadAccountData(): Promise<void> {
+    const mine = ++ticket
+
+    remember(accountId.value!)
+    loading.value = true
+    overview.value = null
+
+    const [overviewResult, templatesResult] = await Promise.allSettled([
+      api<Overview>('/api/overview'),
+      api<{ data: MetaTemplate[] }>('/api/templates'),
+    ])
+
+    if (mine !== ticket) {
+      return
+    }
+
+    overview.value = overviewResult.status === 'fulfilled' ? overviewResult.value : null
+    overviewError.value = overviewResult.status === 'rejected' ? (overviewResult.reason as Error).message : null
+    templates.value = templatesResult.status === 'fulfilled' ? templatesResult.value.data : []
+    templatesError.value = templatesResult.status === 'rejected' ? (templatesResult.reason as Error).message : null
+    loading.value = false
+
+    // The numbers per template come from a slower Meta call; the table shows first and fills them in.
+    void loadAnalytics(mine)
+  }
+
+  async function loadAnalytics(mine = ticket): Promise<void> {
+    analytics.value = null
+    analyticsError.value = null
+
+    if (!templates.value.length) {
+      return
+    }
+
+    analyticsLoading.value = true
+
+    try {
+      const result = await api<Analytics>(`/api/analytics?ids=${templates.value.map(t => t.id).join(',')}`)
+
+      if (mine === ticket) {
+        analytics.value = result
+      }
+    }
+    catch (error) {
+      if (mine === ticket) {
+        analyticsError.value = (error as Error).message
+      }
+    }
+    finally {
+      if (mine === ticket) {
+        analyticsLoading.value = false
+      }
+    }
+  }
+
+  async function enableAnalytics(): Promise<void> {
+    await api('/api/analytics/enable', { method: 'POST' })
+    await loadAnalytics()
+  }
+
+  async function reloadTemplates(): Promise<void> {
+    try {
+      templates.value = (await api<{ data: MetaTemplate[] }>('/api/templates')).data
+      templatesError.value = null
+    }
+    catch (error) {
+      templatesError.value = (error as Error).message
+    }
+  }
+
+  const statsFor = (ids: string[]): TemplateStats | null => {
+    if (!analytics.value) {
+      return null
+    }
+
+    const total: TemplateStats = { sent: 0, delivered: 0, read: 0, clicked: 0, cost: 0, daily: [] }
+    const byDay = new Map<string, number>()
+
+    for (const id of ids) {
+      const entry = analytics.value.data[id]
+
+      if (!entry) {
+        continue
+      }
+
+      total.sent += entry.sent
+      total.delivered += entry.delivered
+      total.read += entry.read
+      total.clicked += entry.clicked
+      total.cost += entry.cost
+
+      for (const day of entry.daily) {
+        byDay.set(day.date, (byDay.get(day.date) ?? 0) + day.sent)
+      }
+    }
+
+    total.daily = [...byDay].sort(([a], [b]) => a.localeCompare(b)).map(([date, sent]) => ({ date, sent }))
+
+    return total
+  }
+
+  async function switchAccount(id: string): Promise<void> {
+    accountId.value = id
+    await loadAccountData()
+  }
+
+  const findTemplate = (name: string, language: string) => templates.value.find(t => t.name === name && t.language === language)
+
+  function managerUrl(): string {
+    const business = overview.value?.account?.owner_business_info?.id
+    const query = new URLSearchParams({ waba_id: current.value?.waba_id ?? '', ...(business ? { business_id: business } : {}) })
+
+    return `https://business.facebook.com/wa/manage/message-templates/?${query}`
+  }
+
+  return {
+    accounts,
+    accountsDir,
+    accountId,
+    current,
+    templates,
+    templatesError,
+    overview,
+    overviewError,
+    loading,
+    analytics,
+    analyticsError,
+    analyticsLoading,
+    statsFor,
+    loadAnalytics,
+    enableAnalytics,
+    groups,
+    api,
+    loadAccounts,
+    loadAccountData,
+    reloadTemplates,
+    switchAccount,
+    findTemplate,
+    managerUrl,
+  }
+}
