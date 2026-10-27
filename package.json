@@ -1,6 +1,6 @@
 {
   "name": "whatsapp-business-monitor",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "A free, open-source dashboard to monitor WhatsApp Business message templates: review status, sends, delivery and read rates, and monthly spend, across several accounts. Runs on your machine.",
   "license": "MIT",
   "author": {
