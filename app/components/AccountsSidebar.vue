@@ -26,9 +26,13 @@ const { accounts, accountId, switchAccount } = useManager()
           :aria-current="account.id === accountId ? 'true' : undefined"
           @click="switchAccount(account.id)"
         >
-          <span class="grid size-9 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
-            <UIcon name="i-lucide-message-circle" class="size-4.5" />
-          </span>
+          <UAvatar
+            :src="account.photo ?? undefined"
+            :alt="accountTitle(account)"
+            icon="i-lucide-message-circle"
+            class="size-9 shrink-0"
+            :ui="{ root: 'bg-primary/10', icon: 'size-4.5 text-primary' }"
+          />
           <span class="min-w-0 flex-1">
             <span class="block truncate text-sm font-medium text-highlighted">{{ accountTitle(account) }}</span>
             <span class="block truncate text-xs text-muted">

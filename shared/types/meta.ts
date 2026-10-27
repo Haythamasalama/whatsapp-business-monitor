@@ -40,6 +40,7 @@ export interface TemplateText {
 }
 
 export interface Phone {
+  id?: string
   display_phone_number: string
   verified_name?: string
   quality_rating?: string
@@ -55,6 +56,7 @@ export interface AccountSummary {
   version: string
   name: string | null
   phones: Phone[]
+  photo: string | null
   error: string | null
 }
 

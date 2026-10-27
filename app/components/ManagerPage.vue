@@ -144,10 +144,15 @@ onMounted(async () => {
             <h1 class="text-2xl font-bold text-highlighted">
               {{ accountTitle(current) }}
             </h1>
-            <p class="mt-1 text-sm text-muted">
-              <bdi dir="ltr">{{ subtitle }}</bdi>
-              <span class="mx-1.5 text-dimmed">·</span>
-              حساب الأعمال <bdi dir="ltr" class="font-mono text-xs">{{ current.waba_id }}</bdi>
+            <p class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
+              <span v-if="subtitle" class="inline-flex items-center gap-1.5">
+                <UIcon name="i-lucide-phone" class="size-3.5 text-dimmed" />
+                <bdi dir="ltr">{{ subtitle }}</bdi>
+              </span>
+              <span class="inline-flex items-center gap-1.5">
+                <UIcon name="i-lucide-building-2" class="size-3.5 text-dimmed" />
+                حساب الأعمال <bdi dir="ltr" class="font-mono text-xs">{{ current.waba_id }}</bdi>
+              </span>
             </p>
           </div>
           <UButton label="تعديل الحساب" icon="i-lucide-pencil" color="neutral" variant="outline" size="sm" @click="openAccount(current)" />

@@ -82,7 +82,7 @@ function sendsOn(entry: DemoTemplate, index: number, date: Date): number {
 
 export function demoAccounts() {
   return {
-    data: [{ id: DEMO_ID, label: 'متجر الياسمين', file: '~/.config/whatsapp-templates/demo.env', waba_id: WABA_ID, version: 'v23.0', name: 'Yasmin Store', phones: [PHONE], error: null }],
+    data: [{ id: DEMO_ID, label: 'متجر الياسمين', file: '~/.config/whatsapp-templates/demo.env', waba_id: WABA_ID, version: 'v23.0', name: 'Yasmin Store', phones: [PHONE], photo: null, error: null }],
     dir: '~/.config/whatsapp-templates',
   }
 }
