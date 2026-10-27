@@ -11,7 +11,7 @@ Free and open source. It runs on your computer or your server, and your tokens n
 [![License: MIT](https://img.shields.io/badge/license-MIT-0F0F12.svg)](LICENSE)
 [![Docker image](https://img.shields.io/badge/docker-ghcr.io-317455?logo=docker&logoColor=white)](https://github.com/Haythamasalama/whatsapp-business-monitor/pkgs/container/whatsapp-business-monitor)
 
-[🌐 Website](https://haythamasalama.github.io/whatsapp-business-monitor/) · [العربية](https://haythamasalama.github.io/whatsapp-business-monitor/ar/) · [🚀 Install](#-install) · [📸 Screenshots](#-screenshots) · [🤝 Contribute](CONTRIBUTING.md)
+[🌐 Website](https://wbm.haythamasalama.me/) · [العربية](https://wbm.haythamasalama.me/ar/) · [🚀 Install](#-install) · [📸 Screenshots](#-screenshots) · [🤝 Contribute](CONTRIBUTING.md)
 
 <img src="docs/screenshots/overview.png" width="860" alt="The overview of two accounts of a fictional store: this month's cost, messages sent, templates that need attention, a daily cost chart and the cost per account.">
 
@@ -40,7 +40,7 @@ Free and open source. It runs on your computer or your server, and your tokens n
 | **Dark mode** | **Arabic, right to left** |
 | <img src="docs/screenshots/dashboard-dark.png" alt="The overview in dark mode."> | <img src="docs/screenshots/arabic.png" alt="The overview in Arabic."> |
 
-The screenshots show a fictional store. More on the [website](https://haythamasalama.github.io/whatsapp-business-monitor/#screenshots).
+The screenshots show a fictional store. More on the [website](https://wbm.haythamasalama.me/#screenshots).
 
 ## 🚀 Install
 

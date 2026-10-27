@@ -11,5 +11,5 @@ export function useLang() {
   }
 }
 
-/** A file under the site's base path, which is /whatsapp-business-monitor/ on GitHub Pages. */
+/** A file under the site's base path, so the site still works when it is served from a sub-folder. */
 export const asset = (path: string) => `${useRuntimeConfig().app.baseURL}${path}`

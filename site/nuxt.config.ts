@@ -16,7 +16,7 @@ export default defineNuxtConfig({
 
   nitro: {
     publicAssets: [{ dir: fromRoot('docs/screenshots'), baseURL: '/screenshots' }],
-    prerender: { routes: ['/', '/ar/', '/sitemap.xml', '/llms.txt'] },
+    prerender: { routes: ['/', '/ar/', '/sitemap.xml', '/robots.txt', '/llms.txt'] },
   },
 
   app: {
@@ -42,7 +42,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       version,
-      siteUrl: 'https://haythamasalama.github.io/whatsapp-business-monitor',
+      siteUrl: 'https://wbm.haythamasalama.me',
       repo: 'https://github.com/Haythamasalama/whatsapp-business-monitor',
     },
   },
