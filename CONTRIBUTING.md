@@ -32,6 +32,7 @@ Work with `bun run demo` whenever you can: it never calls Meta, never asks to si
 - **`shared/`** is used by both sides: types for Meta's payloads, the template rules (`templateProblems()`), so the page and the server check a template the same way, and the translations: `t()` in `shared/utils/i18n.ts` with the dictionaries in `shared/locales/`.
 - **`app/composables/useManager.ts`** holds the page state and the API helper. Components read from it.
 - **`app/components/`** is the interface, built with [Nuxt UI](https://ui.nuxt.com) components.
+- **`.claude/skills/`** holds [Claude Code](https://claude.com/claude-code) skills for the theme, the UI, development and the WhatsApp API. They are plain Markdown, so they also work as a short guide to the project's rules.
 
 ## Code style
 
