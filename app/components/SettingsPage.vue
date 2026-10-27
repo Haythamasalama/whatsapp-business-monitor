@@ -149,7 +149,7 @@ onMounted(load)
             </template>
             <UInput v-model="password.next" type="password" autocomplete="new-password" class="w-full" />
           </UFormField>
-          <UFormField :label="t('transfer.confirm')" :error="mismatch ? t('transfer.mismatch') : undefined">
+          <UFormField :label="t('settings.confirmPassword')" :error="mismatch ? t('settings.passwordMismatch') : undefined">
             <UInput v-model="password.confirmation" type="password" autocomplete="new-password" class="w-full" />
           </UFormField>
           <UAlert v-if="error?.section === 'password'" color="error" variant="subtle" icon="i-lucide-circle-alert" :description="error.message" />

@@ -1,6 +1,6 @@
 ---
-name: wmm-ui
-description: Use when building or changing a screen or component in WhatsApp Manager Monitoring (app/components, app/composables, app/utils): page layout, cards, stat tiles, forms and field hints, tables, modals and confirmations, toasts, copy buttons, loading states, the template views, interface text, translations, and right-to-left (Arabic) versus left-to-right (English) layout. Pair with wmm-theme for colours and fonts.
+name: wbm-ui
+description: Use when building or changing a screen or component in WhatsApp Business Monitor (app/components, app/composables, app/utils): page layout, cards, stat tiles, forms and field hints, tables, modals and confirmations, toasts, copy buttons, loading states, the template views, interface text, translations, and right-to-left (Arabic) versus left-to-right (English) layout. Pair with wbm-theme for colours and fonts.
 ---
 
 # UI

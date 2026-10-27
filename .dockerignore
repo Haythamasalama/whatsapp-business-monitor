@@ -5,6 +5,7 @@
 .data
 node_modules
 docs
+site
 *.log
 .env
 .env.*

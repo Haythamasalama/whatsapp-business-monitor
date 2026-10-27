@@ -1,5 +1,5 @@
 {
-  "name": "whatsapp-manager-monitoring",
+  "name": "whatsapp-business-monitor",
   "version": "0.3.0",
   "description": "A free, open-source dashboard to monitor WhatsApp Business message templates: review status, sends, delivery and read rates, and monthly spend, across several accounts. Runs on your machine.",
   "license": "MIT",
@@ -7,13 +7,13 @@
     "name": "Haytham A. Salama",
     "url": "https://haythamasalama.me"
   },
-  "homepage": "https://github.com/Haythamasalama/whatsapp-manager-monitoring#readme",
+  "homepage": "https://github.com/Haythamasalama/whatsapp-business-monitor#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Haythamasalama/whatsapp-manager-monitoring.git"
+    "url": "git+https://github.com/Haythamasalama/whatsapp-business-monitor.git"
   },
   "bugs": {
-    "url": "https://github.com/Haythamasalama/whatsapp-manager-monitoring/issues"
+    "url": "https://github.com/Haythamasalama/whatsapp-business-monitor/issues"
   },
   "private": true,
   "type": "module",
@@ -21,6 +21,9 @@
     "whatsapp",
     "whatsapp-business",
     "whatsapp-cloud-api",
+    "whatsapp-business-api",
+    "template-analytics",
+    "self-hosted",
     "message-templates",
     "monitoring",
     "dashboard",
@@ -37,6 +40,9 @@
     "build": "nuxt build",
     "preview": "nuxt preview",
     "typecheck": "nuxt typecheck",
+    "site": "nuxt dev site --port 3214",
+    "site:generate": "nuxt generate site",
+    "site:typecheck": "nuxt typecheck site",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {

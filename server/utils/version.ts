@@ -1,4 +1,4 @@
-const RELEASES = 'https://api.github.com/repos/Haythamasalama/whatsapp-manager-monitoring/releases/latest'
+const RELEASES = 'https://api.github.com/repos/Haythamasalama/whatsapp-business-monitor/releases/latest'
 const DAY = 24 * 60 * 60 * 1000
 
 let checked: { at: number, latest: Release | null } | null = null
@@ -20,7 +20,7 @@ export function isNewer(candidate: string, current: string): boolean {
 async function fetchLatest(): Promise<Release | null> {
   try {
     const response = await fetch(RELEASES, {
-      headers: { 'Accept': 'application/vnd.github+json', 'User-Agent': 'whatsapp-manager-monitoring' },
+      headers: { 'Accept': 'application/vnd.github+json', 'User-Agent': 'whatsapp-business-monitor' },
       signal: AbortSignal.timeout(5_000),
     })
     const release = response.ok ? await response.json() as { tag_name?: string, html_url?: string } : null

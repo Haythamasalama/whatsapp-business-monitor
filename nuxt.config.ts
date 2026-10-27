@@ -17,7 +17,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'مراقبة واتساب الأعمال',
+      title: 'مراقب واتساب الأعمال',
       htmlAttrs: { lang: 'ar', dir: 'rtl' },
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       meta: [

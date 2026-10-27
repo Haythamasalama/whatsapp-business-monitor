@@ -1,92 +1,66 @@
 <div align="center">
 
-<img src="public/logo.svg" width="88" height="88" alt="WhatsApp Manager Monitoring logo">
+<img src="public/logo.svg" width="80" height="80" alt="WhatsApp Business Monitor logo">
 
-# WhatsApp Manager Monitoring
+# WhatsApp Business Monitor
 
-**Your WhatsApp templates, how they perform and what they cost, on one screen.**<br>
-A free, open-source dashboard for the WhatsApp Business Platform. It runs on your machine; your tokens never leave it.
+**See your WhatsApp templates, how they perform and what they cost, on one screen.**<br>
+Free and open source. It runs on your computer or your server, and your tokens never leave it.
 
-[![CI](https://github.com/Haythamasalama/whatsapp-manager-monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/Haythamasalama/whatsapp-manager-monitoring/actions/workflows/ci.yml)
+[![CI](https://github.com/Haythamasalama/whatsapp-business-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/Haythamasalama/whatsapp-business-monitor/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-0F0F12.svg)](LICENSE)
-![Nuxt 4](https://img.shields.io/badge/Nuxt-4-317455?logo=nuxt&logoColor=white)
-![Node 22.21+ or 24.11+](https://img.shields.io/badge/node-22.21%2B%20%7C%2024.11%2B-317455?logo=node.js&logoColor=white)
+[![Docker image](https://img.shields.io/badge/docker-ghcr.io-317455?logo=docker&logoColor=white)](https://github.com/Haythamasalama/whatsapp-business-monitor/pkgs/container/whatsapp-business-monitor)
 
-[Features](#-features) · [Install](#-install) · [Updates](#-updates) · [From source](#-run-from-source) · [Contribute](CONTRIBUTING.md)
+[🌐 Website](https://haythamasalama.github.io/whatsapp-business-monitor/) · [العربية](https://haythamasalama.github.io/whatsapp-business-monitor/ar/) · [🚀 Install](#-install) · [📸 Screenshots](#-screenshots) · [🤝 Contribute](CONTRIBUTING.md)
 
-<img src="docs/screenshots/overview.png" width="860" alt="The overview of two accounts of a fictional store: this month's cost, messages sent, templates that need attention, a daily cost chart, the cost per account and a table of accounts.">
+<img src="docs/screenshots/overview.png" width="860" alt="The overview of two accounts of a fictional store: this month's cost, messages sent, templates that need attention, a daily cost chart and the cost per account.">
 
 </div>
 
-## ✨ Features
+## ✨ What it does
 
-- 📊 **All accounts in one place.** Cost, messages and templates for every account.
-- 📝 **Every template's numbers.** Status, sends, deliveries and reads. Table, list or cards.
-- 💰 **What you spend.** This month's cost per day and per message type.
-- ✏️ **Create and edit.** Fill in the fields or paste the full template, with a live WhatsApp preview.
-- 📋 **Copy and paste.** Copy any template, change it, paste it back. New ones are created, changed ones updated.
-- 🔔 **Live status.** A notification when a template is approved, rejected or paused.
-- 📱 **Number health.** Status, quality and daily limit of every number.
-- 👥 **Manage accounts.** Add, edit and delete accounts in one place, export them all to one file encrypted with your passphrase, and import it on another computer.
-- 🌍 **Arabic or English.** Light or dark, and templates in any language.
-- 🔒 **Yours.** Runs on your computer or your server, behind your own sign-in, with a setup page on the first visit.
-
-<details>
-<summary>The copy and paste format</summary>
-
-```
-Name: order_confirmation
-Category: Utility
-----------------
-Language: en
-Your order {{1}} is confirmed.
-
-{{1}} = 10482
-```
-
-</details>
+- 📊 **Every account on one screen:** this month's cost, messages and templates.
+- 📝 **Every template's numbers:** status, sends, deliveries and reads for the last 30 days.
+- ✏️ **Create and edit templates** with a live WhatsApp preview, or paste a full template as text.
+- 🔍 **Find templates fast:** search, filter and sort, as a table, a list with a preview, or cards.
+- 🔔 **Alerts** when a template is approved, rejected or paused, with Meta's reason in plain words.
+- 📱 **Number health:** status, quality rating and daily limit.
+- 👥 **Several accounts:** find them from a token, and move them all to another computer in one encrypted file.
+- 🌍 **Arabic or English,** light or dark.
 
 ## 📸 Screenshots
 
-| Account | Template |
+| An account | A template |
 |:--:|:--:|
-| <img src="docs/screenshots/dashboard.png" alt="An account: cost, messages, balance, number, daily cost, cost by type, number health and the templates table."> | <img src="docs/screenshots/template-preview.png" alt="A template's preview, details and 30-day numbers."> |
-| **Editing** | **Pasted content** |
-| <img src="docs/screenshots/template-edit.png" alt="Editing a template with fields, sample values and a live preview."> | <img src="docs/screenshots/create-from-text.png" alt="Two pasted templates: one update and one new template."> |
-| **Card view** | **Dark mode** |
-| <img src="docs/screenshots/views-cards.png" alt="Templates as cards with a message preview each."> | <img src="docs/screenshots/dashboard-dark.png" alt="The overview in dark mode."> |
-| **Arabic, right to left** | |
-| <img src="docs/screenshots/arabic.png" alt="The overview in Arabic."> | |
+| <img src="docs/screenshots/dashboard.png" alt="An account: cost, messages, number, daily cost, cost by type, number health and the templates table."> | <img src="docs/screenshots/template-preview.png" alt="A template's preview, details and 30-day numbers."> |
+| **List and preview** | **Paste templates as text** |
+| <img src="docs/screenshots/views-split.png" alt="The templates as a list, with the selected one's preview and numbers beside it."> | <img src="docs/screenshots/create-from-text.png" alt="Two pasted templates: one update and one new template."> |
+| **Accounts** | **Settings** |
+| <img src="docs/screenshots/accounts.png" alt="The accounts page with import, export and add buttons."> | <img src="docs/screenshots/settings.png" alt="The settings: app name and address, updates, password and backup."> |
+| **Dark mode** | **Arabic, right to left** |
+| <img src="docs/screenshots/dashboard-dark.png" alt="The overview in dark mode."> | <img src="docs/screenshots/arabic.png" alt="The overview in Arabic."> |
 
-The screenshots show a fictional store.
+The screenshots show a fictional store. More on the [website](https://haythamasalama.github.io/whatsapp-business-monitor/#screenshots).
 
 ## 🚀 Install
 
-One command installs it with Docker, on your computer or on a server, and starts it:
+You need [Docker](https://docs.docker.com/get-docker/). Run one command:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Haythamasalama/whatsapp-manager-monitoring/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Haythamasalama/whatsapp-business-monitor/main/install.sh | sh
 ```
 
-On a server, so other computers can open it:
+Open the address it prints, create your admin account, then add a WhatsApp account with a Meta system user token that has `whatsapp_business_management`.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/Haythamasalama/whatsapp-manager-monitoring/main/install.sh | sh -s -- --server
-```
+- **On a server:** add `--server` so other computers can open it: `… | sh -s -- --server`
+- **Updates install themselves** every 6 hours, with the same settings and data. To update right away, run the command again.
+- **Your data** stays in `~/whatsapp-business-monitor`: the settings in `.env`, the database in `data/`.
+- **Installed it as WhatsApp Manager Monitoring?** That was its old name. Run the command again: it keeps your `~/whatsapp-manager` folder, settings and data, and the old image keeps getting updates too.
 
-Then open the address it prints. The first visit shows the setup: the app's name, its address, the language and an admin account. After that, add a WhatsApp account (a Meta system user token with `whatsapp_business_management`) or import the ones you exported elsewhere.
+<details>
+<summary>🌐 HTTPS on a server</summary>
 
-Everything lives in `~/whatsapp-manager`: the settings in `.env`, and the database (accounts, settings, users) in `data/`.
-
-### 🔄 Updates
-
-- **They install themselves.** An updater container ([Watchtower](https://github.com/nicholas-fedor/watchtower)) checks every 6 hours and restarts the app on the new version, with the same settings and data. It only touches this app's containers.
-- **Update now:** run the install command again.
-- **Stay on a version:** `WHATSAPP_MANAGER_VERSION=0.2.2` in `.env` (or before the install command), then run it again. Remove the line to follow new releases again.
-
-### 🌐 On a server
-
-Put it behind a reverse proxy with HTTPS (Caddy, nginx, Traefik…) that forwards to port `3210`, and set the same address in **Settings**. With Caddy that is two lines:
+Put it behind a reverse proxy (Caddy, nginx, Traefik…) that forwards to port `3210`, and set the same address in **Settings**. With Caddy:
 
 ```
 wa.example.com {
@@ -94,37 +68,55 @@ wa.example.com {
 }
 ```
 
-## 💻 Run from source
+</details>
 
-You need Node.js 22.21+ or 24.11+ and [Bun](https://bun.sh) or npm.
+<details>
+<summary>📌 Stay on one version</summary>
+
+Add `WHATSAPP_MANAGER_VERSION=0.3.0` to `.env` in that folder and run the install command again. Remove the line to follow new releases again.
+
+</details>
+
+<details>
+<summary>💻 Run from source</summary>
+
+You need Node.js 22.21+ or 24.11+ and [Bun](https://bun.sh).
 
 ```bash
-git clone https://github.com/Haythamasalama/whatsapp-manager-monitoring.git
-cd whatsapp-manager-monitoring
+git clone https://github.com/Haythamasalama/whatsapp-business-monitor.git
+cd whatsapp-business-monitor
 bun install
-bun run dev
+bun run dev    # http://127.0.0.1:3210
+bun run demo   # fictional data, no Meta account needed
 ```
 
-Then open <http://127.0.0.1:3210>. To update: `git pull && bun install`. The database is in `~/.config/whatsapp-templates` (or `WHATSAPP_TEMPLATES_DIR`).
+The database is in `~/.config/whatsapp-templates` (or `WHATSAPP_TEMPLATES_DIR`).
 
-## 🔐 Security
+</details>
 
-- Sign-in is required for everything but the setup and the sign-in page. Passwords are hashed with scrypt, sessions are random tokens in an `httpOnly` cookie, and wrong passwords are slowed down.
-- No response contains an access token. Exports are encrypted with a passphrase you choose.
-- `/api` refuses requests without its `X-Requested-With` header, so a page elsewhere cannot call it with your session.
-- The database folder is private (`700`) and the database file `600`.
-- Besides Meta, the server only asks GitHub once a day whether a new version is out. Turn it off in **Settings**.
+<details>
+<summary>🔐 Security</summary>
+
+- Everything but the setup and sign-in pages needs a sign-in. Passwords are hashed with scrypt; sessions live in an `httpOnly` cookie.
+- No response ever contains an access token. Account exports are encrypted with a passphrase you choose.
+- The database folder is private (`700`), the database file `600`.
+- Besides Meta, the app only asks GitHub once a day whether a new version is out. You can turn that off in **Settings**.
 - Found a vulnerability? See the [security policy](SECURITY.md).
 
-## ⚠️ Limits from Meta
+</details>
 
-- There is no balance API for accounts paid by card.
-- Template analytics must be turned on once per account (the app has a button), and can't be turned off.
+<details>
+<summary>⚠️ Limits from Meta</summary>
+
+- Accounts paid by card have no balance API.
+- Template analytics must be turned on once per account, and can't be turned off again.
 - Reads and clicks are counted for 7 days after sending.
 - An approved template can be edited once every 24 hours, up to 10 times in 30 days.
 
+</details>
+
 ## 📄 License
 
-[MIT](LICENSE) · Made by [Haytham A. Salama](https://haythamasalama.me) · Built with [Nuxt](https://nuxt.com) and [Nuxt UI](https://ui.nuxt.com).
+[MIT](LICENSE) · Made by [Haytham A. Salama](https://haythamasalama.me) · Built with [Nuxt](https://nuxt.com) and [Nuxt UI](https://ui.nuxt.com)
 
 WhatsApp is a trademark of Meta Platforms, Inc. This project is not affiliated with or endorsed by Meta.
