@@ -135,6 +135,8 @@ export interface VersionInfo {
   current: string
   /** A newer release than the one running, or null. */
   latest: Release | null
+  /** An updater container installs new releases by itself (compose.yaml). */
+  autoUpdate: boolean
 }
 
 export interface ImportResult {

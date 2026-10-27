@@ -135,6 +135,7 @@ const en: Dictionary = {
   },
   footer: {
     update: 'New version v{version}',
+    updateAuto: 'Installs by itself within 6 hours, nothing to do',
     updateHint: 'To update: docker compose pull && docker compose up -d',
     releases: 'Releases',
     madeBy: 'Made by',

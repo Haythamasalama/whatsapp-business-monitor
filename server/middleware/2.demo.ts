@@ -18,7 +18,7 @@ async function demoAnswer(event: H3Event) {
   }
 
   if (!post && path === '/api/version') {
-    return { current: String(useRuntimeConfig().public.version), latest: null }
+    return { current: String(useRuntimeConfig().public.version), latest: null, autoUpdate: false }
   }
 
   if (!post && path === '/api/summary') {
