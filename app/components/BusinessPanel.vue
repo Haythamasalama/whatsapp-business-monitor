@@ -1,17 +1,17 @@
 <script setup lang="ts">
-const { api, accountId } = useManager()
+const { api, accountId, freshAt } = useManager()
 
 const details = ref<BusinessDetails | null>(null)
 const error = ref('')
 const loading = ref(false)
 const managing = ref<PhoneDetails | null>(null)
 
-async function load(): Promise<void> {
+async function load(fresh = false): Promise<void> {
   loading.value = true
   error.value = ''
 
   try {
-    details.value = await api<BusinessDetails>('/api/business')
+    details.value = await api<BusinessDetails>('/api/business', { fresh })
   }
   catch (failure) {
     error.value = (failure as Error).message
@@ -25,6 +25,8 @@ watch(accountId, () => {
   details.value = null
   void load()
 }, { immediate: true })
+
+watch(freshAt, () => void load(true))
 
 const account = computed(() => details.value?.account ?? null)
 const phones = computed(() => details.value?.phones.data ?? [])
@@ -254,6 +256,6 @@ const review = computed(() => (account.value?.account_review_status ? statusOf(a
       </div>
     </template>
 
-    <PhoneManager v-if="managing" :phone="managing" @close="managing = null" @changed="load" />
+    <PhoneManager v-if="managing" :phone="managing" @close="managing = null" @changed="load()" />
   </div>
 </template>

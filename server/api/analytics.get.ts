@@ -14,9 +14,14 @@ function addPoint(stats: Record<string, TemplateStats>, point: GraphResponse): v
   entry.daily.push({ date: new Date(Number(point.start) * 1000).toISOString().slice(0, 10), sent })
 }
 
-export default apiHandler(async (event): Promise<Analytics> => {
+export default apiHandler((event): Promise<Analytics> => {
   const account = requireAccount(event)
   const ids = String(getQuery(event).ids ?? '').split(',').filter(id => /^\d+$/.test(id))
+
+  return cached(account, `analytics:${listKey(ids)}`, () => templateAnalytics(account, ids), wantsFresh(event))
+})
+
+async function templateAnalytics(account: Account, ids: string[]): Promise<Analytics> {
   const now = new Date()
   const start = Math.floor(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - (DAYS - 1)) / 1000)
   const end = Math.floor(now.getTime() / 1000)
@@ -59,4 +64,4 @@ export default apiHandler(async (event): Promise<Analytics> => {
   }
 
   return { data: stats, days: DAYS }
-})
+}

@@ -18,10 +18,15 @@ export default apiHandler(async (event) => {
   }
 
   // https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-migration
-  const response = orFail(await graph(target, 'POST', `${target.waba}/migrate_message_templates`, {}, {
+  const answer = await graph(target, 'POST', `${target.waba}/migrate_message_templates`, {}, {
     source_waba_id: source.waba,
     template_ids: ids,
-  }))
+  })
+
+  // The write lands on the other account, which the request's ?account= does not name.
+  dropCache(target.id, ['templates', 'business'])
+
+  const response = orFail(answer)
 
   return {
     done: (response.migrated_templates ?? []).map(String),
