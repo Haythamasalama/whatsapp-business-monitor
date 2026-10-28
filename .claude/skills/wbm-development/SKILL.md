@@ -27,9 +27,9 @@ on every push and pull request.
 
 | Path | Holds |
 |---|---|
-| `server/api/` | one route per action: accounts, templates, overview, summary, analytics, business (account settings and numbers), settings, setup, auth, version |
+| `server/api/` | one route per action: accounts, templates, overview, summary, analytics, reports (costs, all messages, template comparison, groups, calls), business (account settings and numbers), settings, setup, auth, version |
 | `server/middleware/` | `1.guard`, `2.demo`, `3.auth`, run in that order |
-| `server/utils/` | `graph` (Meta), `db`, `accounts`, `settings`, `auth`, `templates`, `overview`, `transfer` (encrypted export), `version`, `demo`, `demo-business`, `business`, `locale`, `handler` |
+| `server/utils/` | `graph` (Meta), `db`, `accounts`, `settings`, `auth`, `templates`, `overview`, `transfer` (encrypted export), `version`, `demo`, `demo-business`, `demo-reports`, `business`, `reports` (Meta analytics and a 5-minute cache), `locale`, `handler` |
 | `shared/` | `types/meta.ts`, `utils/rules.ts` (template checks and Meta error codes), `utils/i18n.ts`, `locales/{ar,en}.ts` |
 | `app/composables/` | `useManager` (state and the API helper), `useSession`, `useConfirm`, `useCopy`, `useStatusAlerts`, `usePhoneAction` and `useTemplateAction` (confirm, write, toast) |
 | `app/utils/` | `labels`, `format`, `locale`, `templateCode` (copy and paste text), `drafts` |
@@ -62,7 +62,9 @@ export default apiHandler(async (event) => {
 ## Middleware and the page's requests
 
 1. `1.guard` refuses any `/api/` request without `X-Requested-With: whatsapp-manager`. Another site can't add
-   that header without a CORS preflight, and the server answers none.
+   that header without a CORS preflight, and the server answers none. It also refuses a DNS name in `Host` that
+   isn't localhost, the saved `public_url` or in `WHATSAPP_MANAGER_ALLOWED_HOSTS` (`hostAllowed()` in
+   `server/utils/security.ts`), because a rebound name is same-origin and could add the header.
 2. `2.demo` answers every `/api/` call from `server/utils/demo.ts` when `WHATSAPP_TEMPLATES_DEMO=true`.
 3. `3.auth` needs a session for everything except `OPEN`: `/api/app`, `/api/setup`, `/api/auth/login`,
    `/api/auth/logout`. Adding a route to `OPEN` is a security decision; say why in the pull request.
@@ -92,9 +94,14 @@ Meta in a way the demo can't fake throws `apiError(422, t('server.notInDemo'))`.
 - Passwords are hashed with scrypt (`hashPassword`, `verifyPassword`); at least 8 characters.
 - A session is a random token in the `wmm_session` cookie (httpOnly, SameSite Lax, Secure on HTTPS). Only its
   sha256 hash is stored; it lasts 30 days.
-- `limitLogin()` allows 10 failed sign-ins per 15 minutes per address, kept in memory.
+- `limitLogin(event, scope)` counts every try before the password is checked (10 per 15 minutes per address)
+  and clears on success. The address is the socket's, or the last `X-Forwarded-For` entry only when
+  `WHATSAPP_MANAGER_TRUST_PROXY=true`. Unknown usernames still run scrypt (`verifyNoUser`).
 - With no user yet the page shows `SetupPage`; `/api/setup` creates the first user and the settings, and answers
-  409 once a user exists.
+  409 once a user exists. Unless the request comes from loopback by a local name, it needs the setup code that
+  `server/plugins/setup-code.ts` prints to the log at start.
+- Export asks for the signed-in user's password; imports only accept the scrypt cost and 16-byte GCM tag this app
+  writes.
 
 ## Translations
 

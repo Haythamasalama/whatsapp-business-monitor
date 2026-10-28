@@ -150,6 +150,7 @@ export interface ImportResult {
 
 export interface AppInfo {
   setup_required: boolean
+  setup_code_required?: boolean
   user: { username: string } | null
   instance_name: string
   public_url: string
@@ -285,4 +286,54 @@ export interface TemplateQuota {
 export interface TemplateActionResult {
   done: string[]
   failed: { id: string, reason: string }[]
+}
+
+/** One slice of a report: a country, a number, a pricing type or a time bucket. */
+export interface ReportSlice {
+  key: string
+  cost: number
+  messages: number
+}
+
+export interface CostReport {
+  currency: string | null
+  granularity: string
+  total: number
+  messages: number
+  series: ReportSlice[]
+  by_country: ReportSlice[]
+  by_phone: ReportSlice[]
+  by_pricing_type: ReportSlice[]
+  by_category: ReportSlice[]
+  /** Volume tier progress per country and category; upper is null for "MAX". */
+  tiers: { country: string, category: string, lower: number, upper: number | null, volume: number }[]
+  /** Free service messages used this month per number (FREE_CUSTOMER_SERVICE volume). */
+  free_service: { phone: string, used: number }[]
+}
+
+export interface TrafficReport {
+  granularity: string
+  types: Record<'template' | 'non_template' | 'incoming', { sent: number, delivered: number }>
+  series: { key: string, template: number, non_template: number, incoming: number }[]
+  phones: string[]
+  countries: string[]
+}
+
+export interface TemplateComparison {
+  days: number
+  /** Ids from the lowest block rate to the highest. */
+  ranking: string[]
+  sends: Record<string, number>
+  top_block_reason: Record<string, string>
+}
+
+export interface TemplateGroupReport {
+  groups: { id: string, name: string, description?: string, templates: number, sent: number, delivered: number, read: number, clicked: number, cost: number }[]
+}
+
+export interface CallReport {
+  count: number
+  cost: number
+  average_duration: number
+  series: { key: string, count: number, cost: number }[]
 }

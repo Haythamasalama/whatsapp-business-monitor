@@ -15,7 +15,7 @@ short, calm and dense with information; text is short and every hint hides behin
 | `screen` | Component | Shows |
 |---|---|---|
 | `overview` | `OverviewPage` | every account together: month spend and messages, templates, what needs attention, spend by day and by account |
-| `account` | `StatsCards` + `TemplatesPanel` | one account: its spend, phone numbers (`PhonesHealth`) and templates |
+| `account` | `StatsCards` + `TemplatesPanel` | one account: its spend and templates (numbers live in the account settings tab); the Reports tab is `ReportsPanel` (`ReportBars` for charts over time, `CostShares` for shares, `ReportCompare`) |
 | `accounts` | `AccountsPage` | the account table: add, edit, open, delete, export, import |
 | `settings` | `SettingsPage` | general, updates, security, backup |
 

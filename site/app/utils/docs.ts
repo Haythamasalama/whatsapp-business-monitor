@@ -188,7 +188,7 @@ const templatesEn: typeof en = {
   description: 'Delete, archive, unarchive, unpause and copy WhatsApp message templates between accounts, and see how many of your 250 or 6,000 templates are used.',
   keywords: 'delete WhatsApp template, archive WhatsApp template, unpause WhatsApp template, paused template, migrate WhatsApp templates, copy templates between WABA, WhatsApp template limit, message_templates API',
   heading: 'Templates',
-  intro: 'Open an account to see its templates. Besides creating and editing them, you can now delete, archive, unpause and copy them, alone or several at once. Every change asks you to confirm first and says what Meta does with it.',
+  intro: 'Open an account and choose "Templates". The table shows 25 templates a page, numbered, with a search, filters and sorting. Besides creating and editing them, you can delete, archive, unpause and copy them, alone or several at once. Every change asks you to confirm first and says what Meta does with it.',
   onThisPage: 'On this page',
   back: 'Back to the home page',
   limitsTitle: 'Meta\'s limits at a glance',
@@ -210,7 +210,7 @@ const templatesEn: typeof en = {
     {
       id: 'select',
       title: 'Acting on several templates',
-      text: 'Tick templates in the table to archive, unarchive, copy or delete them together. Ticking a name includes every language of it.',
+      text: 'Tick templates in the table to archive, unarchive, copy or delete them together. Ticking a name includes every language of it, and the box in the header ticks the page you see.',
       points: [
         'Meta takes up to 100 templates in one delete or archive, and up to 500 in one copy.',
         'When Meta refuses some of them, the page lists which ones and why.',
@@ -266,7 +266,7 @@ const templatesAr: typeof ar = {
   description: 'احذف قوالب رسائل واتساب وأرشفها وألغِ أرشفتها وألغِ إيقافها وانسخها بين الحسابات، واعرف كم استخدمت من 250 أو 6,000 قالب.',
   keywords: 'حذف قالب واتساب, أرشفة قالب واتساب, قالب موقوف واتساب, إلغاء إيقاف القالب, نسخ القوالب بين الحسابات, حد قوالب واتساب, واجهة قوالب واتساب',
   heading: 'القوالب',
-  intro: 'افتح حساباً لترى قوالبه. إلى جانب إنشائها وتعديلها، تستطيع الآن حذفها وأرشفتها وإلغاء إيقافها ونسخها، واحداً واحداً أو عدة قوالب معاً. كل تغيير يطلب تأكيدك أولاً ويذكر ما يفعله Meta به.',
+  intro: 'افتح حساباً واختر «القوالب». يعرض الجدول 25 قالباً في كل صفحة مرقّمة، مع البحث والتصفية والترتيب. وإلى جانب إنشائها وتعديلها، تستطيع حذفها وأرشفتها وإلغاء إيقافها ونسخها، واحداً واحداً أو عدة قوالب معاً. كل تغيير يطلب تأكيدك أولاً ويذكر ما يفعله Meta به.',
   onThisPage: 'في هذه الصفحة',
   back: 'العودة إلى الصفحة الرئيسية',
   limitsTitle: 'حدود Meta باختصار',
@@ -288,7 +288,7 @@ const templatesAr: typeof ar = {
     {
       id: 'select',
       title: 'العمل على عدة قوالب',
-      text: 'حدّد القوالب في الجدول لتؤرشفها أو تلغي أرشفتها أو تنسخها أو تحذفها معاً. تحديد الاسم يشمل كل لغاته.',
+      text: 'حدّد القوالب في الجدول لتؤرشفها أو تلغي أرشفتها أو تنسخها أو تحذفها معاً. تحديد الاسم يشمل كل لغاته، والمربع في رأس الجدول يحدّد الصفحة الظاهرة فقط.',
       points: [
         'يقبل Meta حتى 100 قالب في الحذف أو الأرشفة الواحدة، وحتى 500 في النسخ الواحد.',
         'حين يرفض Meta بعضها، تعرض الصفحة أيها وسبب الرفض.',
@@ -338,6 +338,146 @@ const templatesAr: typeof ar = {
 
 export const templateDocs = { en: templatesEn, ar: templatesAr }
 
+const reportsEn: typeof en = {
+  path: '/docs/reports-and-costs/',
+  cover: 'reports-costs.png',
+  nav: 'Reports & costs',
+  title: 'Reports and costs: WhatsApp Business Monitor docs',
+  description: 'See what WhatsApp messages cost by country, number and paid or free, all messages sent and received, the 1,000 free service messages per number, volume tiers, template block rates, template groups and calls.',
+  keywords: 'WhatsApp pricing analytics, WhatsApp cost by country, WhatsApp free service messages 1000, WhatsApp service message charge October 2026, WhatsApp volume tier, WhatsApp template block rate, template comparison, WhatsApp call analytics, template group analytics',
+  heading: 'Reports and costs',
+  intro: 'Open an account and choose "Reports". The page reads Meta\'s analytics for the last 24 hours, 7, 30 or 90 days, or 12 months, and says in plain words what each number means. It has four short tabs: costs, all messages, templates and calls (only when the account has calls). It only reads; nothing is sent or changed.',
+  onThisPage: 'On this page',
+  back: 'Back to the home page',
+  limitsTitle: 'Meta\'s limits at a glance',
+  limits: [
+    ['How far back', '1 year for costs, messages and calls; 90 days for template groups; 7, 30, 60 or 90 days for a comparison'],
+    ['Free service messages', '1,000 per number per month since 1 October 2026; Meta charges from the 1,001st; they don\'t roll over'],
+    ['Comparison', 'two templates of the same account, each sent at least 1,000 times in the chosen days'],
+    ['Freshness', 'Meta\'s numbers are approximate and can be a few hours behind; the page keeps an answer for 5 minutes'],
+    ['Costs', 'not shown when the account pays through a Solution Partner\'s credit line'],
+  ],
+  sections: [
+    {
+      id: 'costs',
+      title: 'Costs',
+      text: 'The amount Meta charged for messages delivered in the range, how many were paid and how many free, and the cost over time (by half hour for 24 hours, by month for 12 months, by day otherwise). Below it, the cost by category and by customer country; "More details" adds paid or free, each number and volume discounts.',
+      points: [
+        '"Paid" covers marketing and authentication templates, utility templates, and service replies after the free tier.',
+        '"Free from an ad or page button" is a 72-hour window that starts when a customer messages you from an ad or a page button.',
+        'Filter by one number or one country at the top.',
+      ],
+      image: { file: 'reports-costs.png', alt: 'The costs of a fictional store over 30 days: total charged, paid and free messages, free service messages left, and the cost by day.' },
+    },
+    {
+      id: 'free-tier',
+      title: 'The 1,000 free service messages',
+      text: 'Since 1 October 2026 Meta charges for service messages, the replies you send inside a 24-hour customer window. Each number still gets 1,000 free ones a month; the card shows how many are left for this month. Utility templates sent inside a customer window are charged too.',
+      points: [
+        'The free tier resets on the 1st of each month and unused messages don\'t carry over.',
+        'If it runs out early, answer in fewer, fuller messages, or move routine replies to a template customers ask for.',
+      ],
+    },
+    {
+      id: 'tiers',
+      title: 'Volume discounts',
+      text: 'Utility and authentication templates get cheaper as you send more to one country in a month. When Meta reports a tier, the page shows how far you are and how many messages are left to the next one. Marketing has no tiers.',
+    },
+    {
+      id: 'messages',
+      title: 'All messages',
+      text: 'Every message, not only templates: templates you sent, free-form replies from your team or bot, and messages customers sent you, with how many were delivered. This shows how busy each number really is.',
+      image: { file: 'reports-messages.png', alt: 'All messages of a fictional store: templates, replies and received messages, and a stacked chart by day.' },
+    },
+    {
+      id: 'compare',
+      title: 'Comparing two templates',
+      text: 'Pick two approved templates and 7, 30, 60 or 90 days. Meta answers which one customers block less, how many times each was sent, and the main reason people blocked it.',
+      points: [
+        'Meta only compares templates that were each sent at least 1,000 times in the chosen days. With fewer, the page says so; pick a longer range or wait.',
+        'Blocks lower the number\'s quality rating. Learn from the template with fewer blocks.',
+      ],
+      image: { file: 'reports-compare.png', alt: 'Two templates compared: the one with fewer blocks, how many times each was sent, and the main block reason.' },
+    },
+    {
+      id: 'groups-calls',
+      title: 'Template groups and calls',
+      text: 'When the account has template groups made in WhatsApp Manager, the page lists them with their sends, read rate, clicks and cost for up to the last 90 days. When the account had WhatsApp calls, it shows how many, what they cost and how long they lasted. Accounts without either don\'t see these parts.',
+    },
+  ],
+}
+
+const reportsAr: typeof ar = {
+  path: '/ar/docs/reports-and-costs/',
+  cover: 'reports-costs-ar.png',
+  nav: 'التقارير والتكاليف',
+  title: 'التقارير والتكاليف: توثيق WhatsApp Business Monitor',
+  description: 'اعرف تكلفة رسائل واتساب حسب الدولة والرقم والمدفوع والمجاني، وكل الرسائل المرسلة والواردة، والـ 1,000 رسالة خدمة المجانية لكل رقم، وشرائح الكمية، ونسبة حظر القوالب، ومجموعات القوالب والمكالمات.',
+  keywords: 'تكلفة رسائل واتساب, تحليلات أسعار واتساب, رسائل الخدمة المجانية 1000, احتساب رسائل الخدمة أكتوبر 2026, شرائح الكمية واتساب, نسبة حظر القالب, مقارنة القوالب, تحليلات مكالمات واتساب',
+  heading: 'التقارير والتكاليف',
+  intro: 'افتح حسابًا واختر «التقارير». تقرأ الصفحة تحليلات Meta لآخر 24 ساعة أو 7 أو 30 أو 90 يومًا أو 12 شهرًا، وتشرح بكلمات بسيطة ماذا يعني كل رقم. فيها أربعة تبويبات قصيرة: التكاليف، وكل الرسائل، والقوالب، والمكالمات (إن وُجدت). الصفحة تقرأ فقط؛ لا ترسل شيئًا ولا تغيّر شيئًا.',
+  onThisPage: 'في هذه الصفحة',
+  back: 'العودة إلى الصفحة الرئيسية',
+  limitsTitle: 'حدود Meta باختصار',
+  limits: [
+    ['إلى أي مدى', 'سنة للتكاليف والرسائل والمكالمات؛ 90 يومًا لمجموعات القوالب؛ 7 أو 30 أو 60 أو 90 يومًا للمقارنة'],
+    ['رسائل الخدمة المجانية', '1,000 لكل رقم في الشهر منذ 1 أكتوبر 2026؛ تبدأ Meta الحساب من الرسالة 1,001؛ ولا يُرحَّل الباقي'],
+    ['المقارنة', 'قالبان من الحساب نفسه، أُرسل كل منهما 1,000 مرة على الأقل في المدة المختارة'],
+    ['حداثة الأرقام', 'أرقام Meta تقريبية وقد تتأخر بضع ساعات؛ وتحتفظ الصفحة بالإجابة 5 دقائق'],
+    ['التكاليف', 'لا تظهر إذا كان الحساب يدفع عبر خط ائتمان شريك حلول'],
+  ],
+  sections: [
+    {
+      id: 'costs',
+      title: 'التكاليف',
+      text: 'المبلغ الذي حسبته Meta على الرسائل التي وصلت في المدة، وكم منها مدفوع وكم مجاني، والتكلفة عبر الوقت (بنصف الساعة لمدة 24 ساعة، وبالشهر لمدة 12 شهرًا، وباليوم فيما عدا ذلك). وتحتها التكلفة حسب الفئة ودولة العميل، وزر «تفاصيل أكثر» يضيف المدفوع والمجاني وكل رقم وخصومات الكمية.',
+      points: [
+        '«مدفوعة» تشمل قوالب التسويق والتحقق، وقوالب الخدمات، وردود الخدمة بعد انتهاء الحصة المجانية.',
+        '«مجانية من إعلان أو زر صفحة» نافذة مدتها 72 ساعة تبدأ عندما يراسلك العميل من إعلان أو زر صفحة.',
+        'صفِّ النتائج برقم واحد أو دولة واحدة من أعلى الصفحة.',
+      ],
+      image: { file: 'reports-costs-ar.png', alt: 'تكاليف متجر خيالي خلال 30 يومًا: المبلغ المحسوب، والرسائل المدفوعة والمجانية، والمتبقي من رسائل الخدمة المجانية، والتكلفة اليومية.' },
+    },
+    {
+      id: 'free-tier',
+      title: 'الـ 1,000 رسالة خدمة المجانية',
+      text: 'منذ 1 أكتوبر 2026 تحسب Meta رسائل الخدمة، وهي الردود التي ترسلها خلال نافذة الـ 24 ساعة مع العميل. وما زال لكل رقم 1,000 رسالة مجانية في الشهر، وتعرض البطاقة كم بقي منها هذا الشهر. وقوالب الخدمات المرسلة داخل نافذة العميل صارت مدفوعة أيضًا.',
+      points: [
+        'تتجدد الحصة أول كل شهر، ولا يُرحَّل ما لم يُستخدم.',
+        'إذا نفدت مبكرًا فاجمع ردك في رسائل أقل وأوضح، أو انقل الردود المتكررة إلى قالب يطلبه العميل.',
+      ],
+    },
+    {
+      id: 'tiers',
+      title: 'خصومات الكمية',
+      text: 'يقل سعر قوالب الخدمات والتحقق كلما زاد ما ترسله إلى دولة واحدة في الشهر. حين تذكر Meta الشريحة، تعرض الصفحة أين وصلت وكم رسالة بقيت للشريحة التالية. التسويق بلا شرائح.',
+    },
+    {
+      id: 'messages',
+      title: 'كل الرسائل',
+      text: 'كل الرسائل وليس القوالب فقط: القوالب التي أرسلتها، والردود الحرة من فريقك أو الرد الآلي، والرسائل التي أرسلها العملاء، مع عدد ما وصل. هكذا ترى مدى انشغال كل رقم فعلًا.',
+      image: { file: 'reports-messages-ar.png', alt: 'كل رسائل متجر خيالي: القوالب والردود والواردة، ومخطط يومي مكدّس.' },
+    },
+    {
+      id: 'compare',
+      title: 'المقارنة بين قالبين',
+      text: 'اختر قالبين معتمدين و7 أو 30 أو 60 أو 90 يومًا. تجيب Meta أيهما يحظره العملاء أقل، وكم مرة أُرسل كل منهما، وأكثر سبب للحظر.',
+      points: [
+        'لا تقارن Meta إلا قوالب أُرسل كل منها 1,000 مرة على الأقل في المدة المختارة. وإذا قلّ العدد تقول الصفحة ذلك؛ اختر مدة أطول أو انتظر.',
+        'الحظر يخفض تقييم جودة الرقم. تعلّم من القالب الأقل حظرًا.',
+      ],
+      image: { file: 'reports-compare-ar.png', alt: 'مقارنة قالبين: الأقل حظرًا، وعدد مرات إرسال كل منهما، وأكثر سبب للحظر.' },
+    },
+    {
+      id: 'groups-calls',
+      title: 'مجموعات القوالب والمكالمات',
+      text: 'إذا كان للحساب مجموعات قوالب أُنشئت في WhatsApp Manager، تعرضها الصفحة مع عدد الإرسال ونسبة القراءة والنقرات والتكلفة لآخر 90 يومًا كحد أقصى. وإذا كانت للحساب مكالمات واتساب، تعرض عددها وتكلفتها ومتوسط مدتها. والحسابات التي ليس لها أي منهما لا ترى هذين الجزأين.',
+    },
+  ],
+}
+
+export const reportDocs = { en: reportsEn, ar: reportsAr }
+
 /** Every guide, in the order the docs menu lists them. */
-export const guides = { accounts: docs, templates: templateDocs }
+export const guides = { accounts: docs, templates: templateDocs, reports: reportDocs }
 export type Guide = keyof typeof guides

@@ -5,7 +5,11 @@ const { text, lang } = useLang()
 const { version, repo } = useRuntimeConfig().public
 
 const INSTALL = installCommand(repo)
-const shot = ref('dashboard.png')
+// Each language has its own screenshots, so the chosen tab starts over on the first one when it changes.
+const shot = ref(text.value.screenshots.tabs[0]!.file)
+watch(lang, () => {
+  shot.value = text.value.screenshots.tabs[0]!.file
+})
 const tabs = computed(() => text.value.screenshots.tabs.map(tab => ({ label: tab.label, value: tab.file })))
 const currentShot = computed(() => text.value.screenshots.tabs.find(tab => tab.file === shot.value) ?? text.value.screenshots.tabs[0]!)
 const installOn = ref<'computer' | 'server'>('computer')
@@ -69,7 +73,7 @@ useSiteSeo()
               {{ text.features.text }}
             </p>
           </div>
-          <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <li v-for="feature in text.features.items" :key="feature.icon" class="rounded-xl border border-default bg-muted/50 p-5">
               <div class="grid size-10 place-items-center rounded-lg border border-default bg-default text-primary">
                 <UIcon :name="feature.icon" class="size-5" />

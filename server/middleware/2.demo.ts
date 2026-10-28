@@ -62,6 +62,10 @@ async function demoAnswer(event: H3Event) {
     }
   }
 
+  if (!post && path?.startsWith('/api/reports/')) {
+    return demoReport(event, path)
+  }
+
   if (path?.startsWith('/api/business')) {
     return demoBusinessAnswer(event, path)
   }
@@ -118,6 +122,23 @@ function demoBusinessAnswer(event: H3Event, path: string) {
       return demoUsernameSuggestions(event)
     case '/api/business/qr-image':
       return demoQrImage(event)
+  }
+
+  throw apiError(404, 'Not found')
+}
+
+function demoReport(event: H3Event, path: string) {
+  switch (path) {
+    case '/api/reports/costs':
+      return demoCostReport(event)
+    case '/api/reports/traffic':
+      return demoTrafficReport(event)
+    case '/api/reports/compare':
+      return demoCompare(event)
+    case '/api/reports/groups':
+      return demoTemplateGroups(event)
+    case '/api/reports/calls':
+      return demoCalls(event)
   }
 
   throw apiError(404, 'Not found')

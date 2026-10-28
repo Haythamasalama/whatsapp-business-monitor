@@ -337,3 +337,15 @@ export function demoOverview(id?: unknown): Overview {
     credit: null,
   }
 }
+
+/** What the demo reports build on: the store's number, how busy it is, and each template's daily sends. */
+export function demoReportBase(id?: unknown) {
+  const store = storeFor(id)
+
+  return {
+    phone: store.phone.display_phone_number.replace(/\D/g, ''),
+    scale: store.scale,
+    templates: TEMPLATES.map(entry => ({ id: entry.template.id, name: entry.template.name, category: entry.template.category, daily: entry.daily * store.scale })),
+    cost: COST,
+  }
+}

@@ -27,6 +27,9 @@
   /* Chart marks need more chroma than the soft UI green to stay distinct for colour-blind readers. */
   --chart-bar: #2f9468;
   --chart-track: #e6f2eb;
+  /* The second and third series of a stacked chart: blue and amber stay apart from green for every reader. */
+  --chart-2: #3a6fc4;
+  --chart-3: #c98a1b;
 }
 
 .dark {
@@ -36,6 +39,8 @@
 
   --chart-bar: #46a77a;
   --chart-track: #1c2a23;
+  --chart-2: #6b98e0;
+  --chart-3: #dca545;
 }
 
 /* Arrows and the send icon point toward the reading direction. */

@@ -1,12 +1,13 @@
 <script setup lang="ts">
-const { loadApp } = useSession()
+const { loadApp, info } = useSession()
 
-const form = reactive({ instance_name: '', public_url: '', username: '', password: '', confirmation: '' })
+const form = reactive({ instance_name: '', public_url: '', username: '', password: '', confirmation: '', setup_code: '' })
 const saving = ref(false)
 const error = ref<string | null>(null)
 
 const mismatch = computed(() => Boolean(form.confirmation) && form.confirmation !== form.password)
-const ready = computed(() => form.username.trim().length >= 3 && form.password.length >= 8 && form.confirmation === form.password)
+const codeNeeded = computed(() => Boolean(info.value?.setup_code_required))
+const ready = computed(() => (!codeNeeded.value || form.setup_code.trim().length > 0) && form.username.trim().length >= 3 && form.password.length >= 8 && form.confirmation === form.password)
 
 onMounted(() => {
   form.public_url = window.location.origin
@@ -20,7 +21,7 @@ async function finish(): Promise<void> {
     await $fetch('/api/setup', {
       method: 'POST',
       headers: { 'X-Requested-With': 'whatsapp-manager', 'X-Locale': locale.value },
-      body: { instance_name: form.instance_name, public_url: form.public_url, default_locale: locale.value, username: form.username, password: form.password },
+      body: { instance_name: form.instance_name, public_url: form.public_url, default_locale: locale.value, username: form.username, password: form.password, setup_code: form.setup_code },
     })
     await loadApp()
   }
@@ -36,6 +37,12 @@ async function finish(): Promise<void> {
 <template>
   <AuthLayout :title="t('setup.title')" :subtitle="t('setup.subtitle')">
     <form class="space-y-4" autocomplete="off" @submit.prevent="finish">
+      <UFormField v-if="codeNeeded" required>
+        <template #label>
+          <FieldLabel :label="t('setup.code')" :hint="t('setup.codeHint')" />
+        </template>
+        <UInput v-model="form.setup_code" inputmode="numeric" icon="i-lucide-shield-check" class="w-full" autofocus />
+      </UFormField>
       <UFormField>
         <template #label>
           <FieldLabel :label="t('settings.name')" :hint="t('hints.name')" />

@@ -69,10 +69,13 @@ function toggle(name: string, on: boolean | 'indeterminate'): void {
   selected.value = on === true ? [...new Set([...selected.value, name])] : selected.value.filter(value => value !== name)
 }
 
-const allSelected = computed(() => filtered.value.length > 0 && filtered.value.every(group => selected.value.includes(group.name)))
+// "Select all" covers the page on screen, so a bulk delete never reaches rows you can't see.
+const allSelected = computed(() => paged.value.length > 0 && paged.value.every(group => selected.value.includes(group.name)))
 
 function toggleAll(on: boolean | 'indeterminate'): void {
-  selected.value = on === true ? filtered.value.map(group => group.name) : []
+  const names = paged.value.map(group => group.name)
+
+  selected.value = on === true ? [...new Set([...selected.value, ...names])] : selected.value.filter(name => !names.includes(name))
 }
 
 async function bulkArchive(unarchive: boolean): Promise<void> {
@@ -199,6 +202,22 @@ const filtered = computed(() => {
     : list
 })
 
+// A long list loads at once but shows a page at a time; a new search or filter goes back to the first page.
+const PAGE_SIZE = 25
+const page = ref(1)
+const pageStart = computed(() => (page.value - 1) * PAGE_SIZE)
+const paged = computed(() => filtered.value.slice(pageStart.value, pageStart.value + PAGE_SIZE))
+
+watch([search, status, category, sort], () => {
+  page.value = 1
+})
+
+watch(() => filtered.value.length, (length) => {
+  if (pageStart.value >= length) {
+    page.value = Math.max(1, Math.ceil(length / PAGE_SIZE))
+  }
+})
+
 function statusCell(template?: MetaTemplate) {
   if (!template) {
     return h('span', { class: 'text-dimmed' }, '—')
@@ -236,6 +255,12 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
       'aria-label': t('templateActions.select', { name: row.original.name }),
       'onUpdate:modelValue': (value: boolean | 'indeterminate') => toggle(row.original.name, value),
     })]),
+  },
+  {
+    id: 'number',
+    header: '#',
+    meta: { class: { th: 'w-0', td: 'w-0 text-xs text-muted tabular-nums' } },
+    cell: ({ row }) => count(pageStart.value + row.index + 1),
   },
   {
     accessorKey: 'name',
@@ -384,19 +409,26 @@ const columns = computed<TableColumn<TemplateGroup>[]>(() => [
       {{ groups.length ? t('templates.noMatch') : t('templates.noneOnAccount') }}
     </p>
 
-    <TemplateSplit v-else-if="view === 'split'" :groups="filtered" @open="(...args) => emit('open', ...args)" />
+    <TemplateSplit v-else-if="view === 'split'" :groups="paged" @open="(...args) => emit('open', ...args)" />
 
-    <TemplateCards v-else-if="view === 'cards'" :groups="filtered" @open="(...args) => emit('open', ...args)" />
+    <TemplateCards v-else-if="view === 'cards'" :groups="paged" @open="(...args) => emit('open', ...args)" />
 
     <UTable
       v-else
-      :data="filtered"
+      :data="paged"
       :columns="columns"
       :loading="loading"
       :empty="groups.length ? t('templates.noMatch') : t('templates.noneOnAccount')"
       :ui="{ th: 'py-2.5 text-xs font-medium text-muted', td: 'py-3.5', tr: 'cursor-pointer hover:bg-muted/50' }"
       @select="(_event: Event, row) => emit('open', row.original.name, 'view')"
     />
+
+    <div v-if="filtered.length > PAGE_SIZE" class="flex flex-wrap items-center justify-between gap-3 border-t border-default px-5 py-3">
+      <span class="text-xs text-muted">
+        {{ t('templates.range', { from: count(pageStart + 1), to: count(Math.min(pageStart + PAGE_SIZE, filtered.length)), total: count(filtered.length) }) }}
+      </span>
+      <UPagination v-model:page="page" :total="filtered.length" :items-per-page="PAGE_SIZE" size="sm" />
+    </div>
 
     <CopyTemplatesModal v-model:open="copyOpen" :ids="selectedIds" />
   </section>

@@ -1,4 +1,4 @@
-const SCREENSHOTS = ['overview.png', 'dashboard.png', 'template-preview.png', 'views-split.png']
+const SCREENSHOTS = ['overview.png', 'dashboard.png', 'templates-actions.png', 'reports.png']
 
 export function useSiteSeo() {
   const { text, lang, isRtl } = useLang()

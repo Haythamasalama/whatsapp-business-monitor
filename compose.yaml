@@ -21,6 +21,10 @@ services:
       # Lets the settings page show where the database is on this computer.
       WHATSAPP_MANAGER_DATA_SHOWN: ${WHATSAPP_MANAGER_DATA:-${HOME}/.config/whatsapp-templates}
       WHATSAPP_MANAGER_HOST_HOME: ${HOME}
+      # Extra names the app answers to besides localhost and its saved address, comma separated.
+      WHATSAPP_MANAGER_ALLOWED_HOSTS: ${WHATSAPP_MANAGER_ALLOWED_HOSTS:-}
+      # true only behind a reverse proxy you run, so sign-in limits count the real visitor's address.
+      WHATSAPP_MANAGER_TRUST_PROXY: ${WHATSAPP_MANAGER_TRUST_PROXY:-false}
     volumes:
       # The database: accounts, settings and users. Kept on this computer across updates.
       - ${WHATSAPP_MANAGER_DATA:-${HOME}/.config/whatsapp-templates}:/data/accounts

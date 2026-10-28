@@ -45,7 +45,13 @@ export function decryptAccounts(file: unknown, passphrase: string): ExportedAcco
 
   try {
     const { N, r, p } = parsed.kdf
-    const decipher = createDecipheriv('aes-256-gcm', key(passphrase, Buffer.from(parsed.kdf.salt, 'base64'), { N, r, p }), Buffer.from(parsed.cipher.iv, 'base64'))
+
+    // Only the cost this app writes: a file can't make the server spend minutes on scrypt.
+    if (N !== SCRYPT.N || r !== SCRYPT.r || p !== SCRYPT.p) {
+      throw new Error('kdf')
+    }
+
+    const decipher = createDecipheriv('aes-256-gcm', key(passphrase, Buffer.from(parsed.kdf.salt, 'base64'), { N, r, p }), Buffer.from(parsed.cipher.iv, 'base64'), { authTagLength: 16 })
 
     decipher.setAuthTag(Buffer.from(parsed.cipher.tag, 'base64'))
 
