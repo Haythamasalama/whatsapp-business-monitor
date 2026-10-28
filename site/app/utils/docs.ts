@@ -354,7 +354,7 @@ const reportsEn: typeof en = {
     ['How far back', '1 year for costs, messages and calls; 90 days for template groups; 7, 30, 60 or 90 days for a comparison'],
     ['Free service messages', '1,000 per number per month since 1 October 2026; Meta charges from the 1,001st; they don\'t roll over'],
     ['Comparison', 'two templates of the same account, each sent at least 1,000 times in the chosen days'],
-    ['Freshness', 'Meta\'s numbers are approximate and can be a few hours behind; the page keeps an answer for 5 minutes'],
+    ['Freshness', 'Meta\'s numbers are approximate and can be a few hours behind; the app keeps an answer for 10 minutes'],
     ['Costs', 'not shown when the account pays through a Solution Partner\'s credit line'],
   ],
   sections: [
@@ -423,7 +423,7 @@ const reportsAr: typeof ar = {
     ['إلى أي مدى', 'سنة للتكاليف والرسائل والمكالمات؛ 90 يومًا لمجموعات القوالب؛ 7 أو 30 أو 60 أو 90 يومًا للمقارنة'],
     ['رسائل الخدمة المجانية', '1,000 لكل رقم في الشهر منذ 1 أكتوبر 2026؛ تبدأ Meta الحساب من الرسالة 1,001؛ ولا يُرحَّل الباقي'],
     ['المقارنة', 'قالبان من الحساب نفسه، أُرسل كل منهما 1,000 مرة على الأقل في المدة المختارة'],
-    ['حداثة الأرقام', 'أرقام Meta تقريبية وقد تتأخر بضع ساعات؛ وتحتفظ الصفحة بالإجابة 5 دقائق'],
+    ['حداثة الأرقام', 'أرقام Meta تقريبية وقد تتأخر بضع ساعات؛ ويحتفظ التطبيق بالإجابة 10 دقائق'],
     ['التكاليف', 'لا تظهر إذا كان الحساب يدفع عبر خط ائتمان شريك حلول'],
   ],
   sections: [

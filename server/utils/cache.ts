@@ -11,6 +11,7 @@ export const CACHE_AGES = {
   overview: 10 * 60_000,
   analytics: 10 * 60_000,
   business: 10 * 60_000,
+  reports: 10 * 60_000,
 } as const
 
 export type CacheKind = keyof typeof CACHE_AGES

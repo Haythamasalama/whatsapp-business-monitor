@@ -1,29 +1,5 @@
 import type { H3Event } from 'h3'
 
-// Meta's numbers move slowly (most are a few hours behind), so a short cache keeps the page quick and stops
-// a range switch or a refresh from sending the same request again.
-const CACHE_MS = 5 * 60_000
-const CACHE_MAX = 200
-const cache = new Map<string, { at: number, value: unknown }>()
-
-export async function cached<T>(key: string, load: () => Promise<T>): Promise<T> {
-  const hit = cache.get(key)
-
-  if (hit && Date.now() - hit.at < CACHE_MS) {
-    return hit.value as T
-  }
-
-  const value = await load()
-
-  if (cache.size >= CACHE_MAX) {
-    cache.delete(cache.keys().next().value!)
-  }
-
-  cache.set(key, { at: Date.now(), value })
-
-  return value
-}
-
 const round = (value: number) => Math.round(value * 10_000) / 10_000
 
 /** A time bucket's key: the month, the day, or the half hour, in UTC. */
