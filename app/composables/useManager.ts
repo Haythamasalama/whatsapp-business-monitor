@@ -2,6 +2,8 @@ interface ApiOptions {
   method?: 'GET' | 'POST' | 'DELETE'
   body?: Record<string, unknown>
   scoped?: boolean
+  // Skip the server's cache and read Meta now (the refresh button).
+  fresh?: boolean
 }
 
 const STORAGE_KEY = 'whatsapp-templates:account'
@@ -46,6 +48,8 @@ export function useManager() {
   const summaryError = useState<string | null>('summaryError', () => null)
   const summaryLoading = useState('summaryLoading', () => false)
   const summaryLoadedAt = useState('summaryLoadedAt', () => 0)
+  // When the refresh button last asked Meta; panels that load on their own (business) follow it.
+  const freshAt = useState('freshAt', () => 0)
 
   const current = computed(() => accounts.value.find(account => account.id === accountId.value) ?? null)
 
@@ -72,13 +76,13 @@ export function useManager() {
     return [...map.values()]
   })
 
-  async function api<T>(path: string, { method = 'GET', body, scoped = true }: ApiOptions = {}): Promise<T> {
+  async function api<T>(path: string, { method = 'GET', body, scoped = true, fresh = false }: ApiOptions = {}): Promise<T> {
     try {
       return await $fetch(path, {
         method,
         body,
         headers: { 'X-Requested-With': 'whatsapp-manager', 'X-Locale': locale.value },
-        query: scoped ? { account: accountId.value } : undefined,
+        query: { ...(scoped ? { account: accountId.value } : {}), ...(fresh ? { fresh: 1 } : {}) },
       }) as T
     }
     catch (error) {
@@ -123,13 +127,13 @@ export function useManager() {
     }
   }
 
-  async function loadSummary({ silent = false } = {}): Promise<void> {
+  async function loadSummary({ silent = false, fresh = false } = {}): Promise<void> {
     if (!silent) {
       summaryLoading.value = true
     }
 
     try {
-      summary.value = (await api<{ data: AccountStats[] }>('/api/summary', { scoped: false })).data
+      summary.value = (await api<{ data: AccountStats[] }>('/api/summary', { scoped: false, fresh })).data
       summaryError.value = null
     }
     catch (error) {
@@ -153,7 +157,8 @@ export function useManager() {
   }
 
   // `silent` refreshes in place (focus, polling): no skeletons, and a failed refresh keeps what is on screen.
-  async function loadAccountData({ silent = false } = {}): Promise<void> {
+  // `fresh` (the refresh button) asks Meta instead of the server's cache.
+  async function loadAccountData({ silent = false, fresh = false } = {}): Promise<void> {
     const mine = ++ticket
     const account = accountId.value!
 
@@ -165,8 +170,8 @@ export function useManager() {
     }
 
     const [overviewResult, templatesResult] = await Promise.allSettled([
-      api<Overview>('/api/overview'),
-      api<{ data: MetaTemplate[], quota: TemplateQuota | null }>('/api/templates'),
+      api<Overview>('/api/overview', { fresh }),
+      api<{ data: MetaTemplate[], quota: TemplateQuota | null }>('/api/templates', { fresh }),
     ])
 
     if (mine !== ticket) {
@@ -189,10 +194,14 @@ export function useManager() {
     lastLoadedAt.value = Date.now()
 
     // The numbers per template come from a slower Meta call; the table shows first and fills them in.
-    void loadAnalytics(mine, silent)
+    if (fresh) {
+      freshAt.value = Date.now()
+    }
+
+    void loadAnalytics(mine, silent, fresh)
   }
 
-  async function loadAnalytics(mine = ticket, silent = false): Promise<void> {
+  async function loadAnalytics(mine = ticket, silent = false, fresh = false): Promise<void> {
     if (!silent) {
       analytics.value = null
       analyticsError.value = null
@@ -205,7 +214,7 @@ export function useManager() {
     analyticsLoading.value = !silent
 
     try {
-      const result = await api<Analytics>(`/api/analytics?ids=${templates.value.map(entry => entry.id).join(',')}`)
+      const result = await api<Analytics>(`/api/analytics?ids=${templates.value.map(entry => entry.id).join(',')}`, { fresh })
 
       if (mine === ticket) {
         analytics.value = result
@@ -299,6 +308,7 @@ export function useManager() {
 
   return {
     accountTab,
+    freshAt,
     accounts,
     storage,
     accountId,

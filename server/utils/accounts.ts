@@ -65,6 +65,8 @@ export function saveAccount(id: string, values: AccountValues): void {
     ON CONFLICT (id) DO UPDATE SET label = excluded.label, token = excluded.token, waba_id = excluded.waba_id,
       version = excluded.version, updated_at = CURRENT_TIMESTAMP
   `).run(id, values.label, values.token, values.waba, values.version)
+  // A new token or WABA id may see different data.
+  dropCache(id)
 }
 
 export function deleteAccount(id: string): boolean {

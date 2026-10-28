@@ -8,5 +8,5 @@ export default apiHandler((event) => {
 
   failOn(problems)
 
-  return cached(`compare:${account.id}:${target}:${other}:${days}`, () => compareTemplates(account, target, other, days))
+  return cached(account, `reports:compare:${target}:${other}:${days}`, () => compareTemplates(account, target, other, days), wantsFresh(event))
 })

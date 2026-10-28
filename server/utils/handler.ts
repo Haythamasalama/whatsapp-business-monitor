@@ -18,5 +18,9 @@ export function apiHandler<T>(handler: (event: H3Event) => T | Promise<T>): Even
 
       throw apiError(500, t('server.unexpected', { message: (error as Error)?.message ?? String(error) }))
     }
+    finally {
+      // Even a write Meta refused may have changed something, so the account's cached answers go either way.
+      dropAfterWrite(event)
+    }
   }))
 }

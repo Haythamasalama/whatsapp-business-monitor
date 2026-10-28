@@ -31,6 +31,16 @@ const MIGRATIONS = [
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
   `,
+  // What Meta answered, per account, so pages open without waiting on it (server/utils/cache.ts). No tokens.
+  `
+  CREATE TABLE cache (
+    account_id TEXT NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
+    key TEXT NOT NULL,
+    value TEXT NOT NULL,
+    fetched_at INTEGER NOT NULL,
+    PRIMARY KEY (account_id, key)
+  );
+  `,
 ]
 
 let connection: DatabaseSync | null = null
