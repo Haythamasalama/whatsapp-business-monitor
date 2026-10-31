@@ -8,6 +8,7 @@ export function useAppUpdate() {
   const toast = useToast()
   const info = useState<VersionInfo | null>('versionInfo', () => null)
   const updating = useState('updating', () => false)
+  const checking = ref(false)
 
   async function load(): Promise<void> {
     try {
@@ -15,6 +16,27 @@ export function useAppUpdate() {
     }
     catch {
       // Without the check the page simply shows no update.
+    }
+  }
+
+  // "Check now": asks GitHub again instead of waiting for the hourly check, and says what it found.
+  async function check(): Promise<void> {
+    checking.value = true
+
+    try {
+      info.value = await api<VersionInfo>('/api/version?refresh=1', { scoped: false })
+
+      const latest = info.value.latest
+
+      toast.add(latest
+        ? { title: t('settings.newVersion', { version: latest.version }), color: 'info', icon: 'i-lucide-arrow-up-circle' }
+        : { title: t('settings.upToDate'), color: 'success', icon: 'i-lucide-check' })
+    }
+    catch (error) {
+      toast.add({ title: t('common.failed'), description: (error as Error).message, color: 'error' })
+    }
+    finally {
+      checking.value = false
     }
   }
 
@@ -73,5 +95,5 @@ export function useAppUpdate() {
     }
   }
 
-  return { info, updating, load, updateNow }
+  return { info, updating, checking, load, check, updateNow }
 }

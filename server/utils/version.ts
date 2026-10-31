@@ -1,5 +1,7 @@
 const RELEASES = 'https://api.github.com/repos/Haythamasalama/whatsapp-business-monitor/releases/latest'
-const DAY = 24 * 60 * 60 * 1000
+const HOUR = 60 * 60 * 1000
+// "Check now" asks again, but not more often than this, so a busy button can't use up GitHub's hourly limit.
+const MIN_GAP = 30 * 1000
 
 let checked: { at: number, latest: Release | null } | null = null
 
@@ -32,9 +34,11 @@ async function fetchLatest(): Promise<Release | null> {
   }
 }
 
-/** Asks GitHub for the latest release at most once a day; the only call this app makes outside Meta. */
-export async function latestRelease(): Promise<Release | null> {
-  if (!checked || Date.now() - checked.at > DAY) {
+/** Asks GitHub for the latest release at most once an hour, or now with `force`; the only call this app makes outside Meta. */
+export async function latestRelease(force = false): Promise<Release | null> {
+  const age = checked ? Date.now() - checked.at : Infinity
+
+  if (!checked || age > HOUR || (force && age > MIN_GAP)) {
     checked = { at: Date.now(), latest: await fetchLatest() }
   }
 

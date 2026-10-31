@@ -9,8 +9,9 @@ const { version } = useRuntimeConfig().public
 const settings = ref<SettingsInfo | null>(null)
 const general = reactive({ instance_name: '', public_url: '', default_locale: 'ar' as Locale })
 const password = reactive({ current: '', next: '', confirmation: '' })
-const { info: versionInfo, updating, load: loadVersion, updateNow } = useAppUpdate()
+const { info: versionInfo, updating, checking, load: loadVersion, check, updateNow } = useAppUpdate()
 const autoUpdate = computed(() => versionInfo.value?.autoUpdate ?? false)
+const checkEnabled = computed(() => Boolean(settings.value?.update_check && !settings.value?.update_check_forced_off))
 const saving = ref<'general' | 'updates' | 'password' | null>(null)
 const error = ref<{ section: string, message: string } | null>(null)
 
@@ -119,6 +120,20 @@ onMounted(load)
                 class="font-sans"
                 @click="updateNow"
               />
+              <UTooltip v-else-if="versionInfo?.latest" :text="t('footer.updateHint')">
+                <UBadge color="info" variant="subtle" :label="t('settings.newVersion', { version: versionInfo.latest.version })" class="rounded-full font-sans" />
+              </UTooltip>
+              <UButton
+                v-else-if="checkEnabled"
+                :label="t('settings.checkNow')"
+                icon="i-lucide-refresh-cw"
+                size="xs"
+                color="neutral"
+                variant="outline"
+                :loading="checking"
+                class="font-sans"
+                @click="check"
+              />
             </dd>
           </div>
           <div class="flex items-center justify-between gap-3 px-4 py-2.5">
@@ -131,7 +146,7 @@ onMounted(load)
           </div>
         </dl>
         <USwitch
-          :model-value="Boolean(settings?.update_check && !settings?.update_check_forced_off)"
+          :model-value="checkEnabled"
           :disabled="settings?.update_check_forced_off || saving === 'updates'"
           @update:model-value="(value) => save('updates', { update_check: value })"
         >

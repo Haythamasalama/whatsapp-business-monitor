@@ -52,7 +52,7 @@ const en = {
     items: [
       { icon: 'i-lucide-server', title: 'Runs where you choose', text: 'On your computer or your own server, behind your own sign-in.' },
       { icon: 'i-lucide-lock', title: 'Tokens stay on the server', text: 'No page and no response ever contains an access token, and exporting them asks for your password.' },
-      { icon: 'i-lucide-eye-off', title: 'No tracking', text: 'No analytics. Besides Meta, it only asks GitHub once a day whether a new version is out.' },
+      { icon: 'i-lucide-eye-off', title: 'No tracking', text: 'No analytics. Besides Meta, it only asks GitHub once an hour whether a new version is out.' },
     ],
   },
   faq: {
@@ -128,7 +128,7 @@ const ar: typeof en = {
     items: [
       { icon: 'i-lucide-server', title: 'يعمل حيث تختار', text: 'على جهازك أو خادمك الخاص، خلف تسجيل الدخول الخاص بك.' },
       { icon: 'i-lucide-lock', title: 'رمز الوصول يبقى على الخادم', text: 'لا تحتوي أي صفحة أو استجابة على رمز الوصول، وتصديره يطلب كلمة مرورك.' },
-      { icon: 'i-lucide-eye-off', title: 'بلا تتبّع', text: 'لا تحليلات. وعدا Meta، يسأل GitHub مرة في اليوم فقط عن وجود إصدار جديد.' },
+      { icon: 'i-lucide-eye-off', title: 'بلا تتبّع', text: 'لا تحليلات. وعدا Meta، يسأل GitHub مرة كل ساعة فقط عن وجود إصدار جديد.' },
     ],
   },
   faq: {

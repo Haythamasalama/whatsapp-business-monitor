@@ -95,7 +95,7 @@ The database is in `~/.config/whatsapp-templates` (or `WHATSAPP_TEMPLATES_DIR`).
 - Exporting the accounts asks for your sign-in password. Pages can't be framed by other sites.
 - No response ever contains an access token. Account exports are encrypted with a passphrase you choose.
 - The database folder is private (`700`), the database file `600`.
-- Besides Meta, the app only asks GitHub once a day whether a new version is out. You can turn that off in **Settings**.
+- Besides Meta, the app only asks GitHub once an hour (or when you press **Check now**) whether a new version is out. You can turn that off in **Settings**.
 - Found a vulnerability? See the [security policy](SECURITY.md).
 
 </details>
