@@ -126,7 +126,7 @@ These broke the build or the running server before:
 
 ## Privacy promise
 
-The app sends nothing anywhere except Meta's Graph API (`graph.facebook.com`) and, once a day, GitHub's
+The app sends nothing anywhere except Meta's Graph API (`graph.facebook.com`) and, once an hour or on **Check now**, GitHub's
 latest-release endpoint (`server/utils/version.ts`, off with `WHATSAPP_TEMPLATES_UPDATE_CHECK=false`). No
 analytics, no fonts or scripts from a CDN, no error reporting service. Keep it that way.
 
