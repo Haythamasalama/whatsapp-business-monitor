@@ -205,6 +205,8 @@ async function save(): Promise<void> {
             <TemplateDetails :template="template" />
           </div>
 
+          <RejectionHelp v-if="template.status === 'REJECTED'" :template="template" :editable="editable" @fix="mode = 'edit'" />
+
           <TemplateStatsCard
             :stats="stats"
             :days="analytics?.days ?? 30"
